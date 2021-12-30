@@ -6,9 +6,7 @@
   <Target Name="XAMLToolsXAMLCombineTarget"
           AfterTargets="PrepareForBuild"
           DependsOnTargets="$(XAMLToolsDependsOnTargets)"
-          Condition="$(MSBuildProjectName.Contains('_wpftmp')) != 'true'"
-          Inputs="@(XAMLCombineItems)"
-          Outputs="@(XAMLCombineWrittenFiles)">
+          Condition="$(MSBuildProjectName.Contains('_wpftmp')) != 'true'">
 
     <Error Condition="($(MsBuildMajorVersion) &lt; 16)"
            Text="XAMLTools is only supported on MSBuild 16 and above. Current version: $(MsBuildMajorVersion)." />
@@ -48,5 +46,7 @@
 
     <EmbeddedResource Include="@(XAMLColorSchemeGeneratorItems)" Condition="'$(EmbedXAMLColorSchemeGeneratorInputs)' == 'True'" />
     <EmbeddedResource Include="@(XAMLColorSchemeGeneratorItems->Metadata('ParametersFile'))" Condition="'$(EmbedXAMLColorSchemeGeneratorInputs)' == 'True'" />
+
+    <UpToDateCheckInput Include="@(XAMLColorSchemeGeneratorItems->Metadata('ParametersFile'))" />
   </ItemGroup>
 </Project>

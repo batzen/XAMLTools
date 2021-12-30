@@ -18,6 +18,11 @@
     <RemoveXAMLCombineItemsFromPages Condition="'$(Configuration)' == 'Release'">true</RemoveXAMLCombineItemsFromPages>
   </PropertyGroup>
 
+  <PropertyGroup Label="XAMLColorSchemeGenerator">
+    <RemoveXAMLColorSchemeGeneratorItemsFromPages>true</RemoveXAMLColorSchemeGeneratorItemsFromPages>
+    <EmbedXAMLColorSchemeGeneratorInputs>true</EmbedXAMLColorSchemeGeneratorInputs>
+  </PropertyGroup>
+
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>
 </Project>
