@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "XAMLTools": {
+      "commandName": "Project",
+      "commandLineArgs": "combine"
+    }
+  }
+}

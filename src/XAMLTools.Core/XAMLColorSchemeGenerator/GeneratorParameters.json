@@ -1,0 +1,150 @@
+﻿{
+  "DefaultValues": {
+    "Fluent.Ribbon.Colors.IdealForegroundColor": "White",
+    "Fluent.Ribbon.Colors.DarkIdealForegroundDisabledColor": "#ADADAD",
+    "Fluent.Ribbon.Colors.ExtremeHighlightColor": "#FFFFD232",
+    "Fluent.Ribbon.Colors.DarkExtremeHighlightColor": "#FFF29536",
+    "Fluent.Ribbon.Brushes.ApplicationMenuItem.CheckBox.Background": "#FFFCF1C2",
+    "Fluent.Ribbon.Brushes.ApplicationMenuItem.CheckBox.BorderBrush": "#FFF29536"
+  },
+  "BaseColorSchemes": [
+    {
+      "Name": "Dark",
+      "Values": {
+        "BlackColor": "#FFFFFFFF",
+        "WhiteColor": "#FF252525",
+        "Gray1": "#FFF9F9F9",
+        "Gray2": "#FF7F7F7F",
+        "Gray3": "#FF9D9D9D",
+        "Gray4": "#FFA59F93",
+        "Gray5": "#FFB9B9B9",
+        "Gray6": "#FFCCCCCC",
+        "Gray7": "#FF7E7E7E",
+        "Gray8": "#FF454545",
+        "Gray9": "#5EC9C9C9",
+        "Gray10": "#FF2F2F2F",
+        "Fluent.Ribbon.Brushes.LabelTextBrush": "{StaticResource Gray6}",
+        "Fluent.Ribbon.Brushes.RibbonContextualTabGroup.TabItemMouseOverForeground": "{StaticResource BlackBrush}",
+        "Fluent.Ribbon.Brushes.RibbonGroupBox.Header.Foreground": "{StaticResource Gray6}",
+        "Fluent.Ribbon.Brushes.RibbonTabControl.Content.Background": "#363636",
+        "Fluent.Ribbon.Brushes.RibbonTabControl.Content.Foreground": "{StaticResource Gray6}",
+        "Fluent.Ribbon.Brushes.RibbonTabItem.Foreground": "{StaticResource Gray5}",
+        "Fluent.Ribbon.Brushes.RibbonTabItem.Active.Background": "#363636",
+        "Fluent.Ribbon.Brushes.RibbonTabItem.MouseOver.Background": "#444444",
+        "Fluent.Ribbon.Brushes.RibbonTabItem.MouseOver.Foreground": "{StaticResource BlackBrush}"
+      }
+    },
+    {
+      "Name": "Light",
+      "Values": {
+        "BlackColor": "#FF000000",
+        "WhiteColor": "#FFFFFFFF",
+        "Gray1": "#FF333333",
+        "Gray2": "#FF7F7F7F",
+        "Gray3": "#FF9D9D9D",
+        "Gray4": "#FFA59F93",
+        "Gray5": "#FFB9B9B9",
+        "Gray6": "#FFCCCCCC",
+        "Gray7": "#FFD8D8D9",
+        "Gray8": "#FFE0E0E0",
+        "Gray9": "#5EC9C9C9",
+        "Gray10": "#FFF7F7F7",
+        "Fluent.Ribbon.Brushes.LabelTextBrush": "{StaticResource BlackColor}",
+        "Fluent.Ribbon.Brushes.RibbonGroupBox.Header.Foreground": "{StaticResource Gray2}",
+        "Fluent.Ribbon.Brushes.RibbonContextualTabGroup.TabItemMouseOverForeground": "{StaticResource Fluent.Ribbon.Colors.HighlightColor}",
+        "Fluent.Ribbon.Brushes.RibbonTabControl.Content.Background": "{StaticResource WhiteColor}",
+        "Fluent.Ribbon.Brushes.RibbonTabControl.Content.Foreground": "{StaticResource BlackColor}",
+        "Fluent.Ribbon.Brushes.RibbonTabItem.Foreground": "{StaticResource BlackColor}",
+        "Fluent.Ribbon.Brushes.RibbonTabItem.Active.Background": "{StaticResource WhiteColor}",
+        "Fluent.Ribbon.Brushes.RibbonTabItem.MouseOver.Background": "Transparent",
+        "Fluent.Ribbon.Brushes.RibbonTabItem.MouseOver.Foreground": "{StaticResource Fluent.Ribbon.Colors.HighlightColor}"
+      }
+    }
+  ],
+  "AdditionalColorSchemeVariants": [
+    {
+      "Name": "Colorful",
+      "Values": {
+        "Fluent.Ribbon.Colors.Images.DefaultColor": "{StaticResource Fluent.Ribbon.Colors.IdealForegroundColor}",
+        "Fluent.Ribbon.Brushes.RibbonTabControl.Background": "{StaticResource Fluent.Ribbon.Colors.AccentBaseColor}",
+        "Fluent.Ribbon.Brushes.RibbonContextualTabGroup.TabItemSelectedForeground": "{StaticResource Gray1}",
+        "Fluent.Ribbon.Brushes.RibbonContextualTabGroup.TabItemMouseOverForeground": "{StaticResource Fluent.Ribbon.Colors.IdealForegroundColor}",
+        "Fluent.Ribbon.Brushes.RibbonContextualTabGroup.TabItemSelectedMouseOverForeground": "{StaticResource Gray1}",
+        "Fluent.Ribbon.Brushes.RibbonTabItem.Foreground": "{StaticResource Fluent.Ribbon.Colors.IdealForegroundColor}",
+        "Fluent.Ribbon.Brushes.RibbonTabItem.MouseOver.Background": "#44FFFFFF",
+        "Fluent.Ribbon.Brushes.RibbonTabItem.MouseOver.Foreground": "{StaticResource WhiteColor}",
+        "Fluent.Ribbon.Brushes.RibbonTabItem.Selected.MouseOver.Foreground": "{StaticResource Gray1}",
+        "Fluent.Ribbon.Brushes.RibbonWindow.TitleBackground": "{StaticResource Fluent.Ribbon.Colors.AccentBaseColor}",
+        "Fluent.Ribbon.Brushes.RibbonWindow.TitleForeground": "{StaticResource Fluent.Ribbon.Colors.IdealForegroundColor}",
+        "Fluent.Ribbon.Brushes.WindowCommands.CaptionButton.Foreground": "{StaticResource Fluent.Ribbon.Colors.IdealForegroundColor}"
+      }
+    }
+  ],
+  "ColorSchemes": [
+    {
+      "Name": "Blue",
+      "ForColorSchemeVariant": "Colorful",
+      "Values": {
+        "Fluent.Ribbon.Colors.AccentBaseColor": "#FF2B579A",
+        "Fluent.Ribbon.Colors.AccentColor80": "#CC2B579A",
+        "Fluent.Ribbon.Colors.AccentColor60": "#992B579A",
+        "Fluent.Ribbon.Colors.AccentColor40": "#662B579A",
+        "Fluent.Ribbon.Colors.AccentColor20": "#332B579A",
+        "Fluent.Ribbon.Colors.HighlightColor": "#FF086F9E"
+      }
+    },
+    {
+      "Name": "Green",
+      "ForBaseColor": "Light",
+      "ForColorSchemeVariant": "None",
+      "IsHighContrast": true,
+      "Values": {
+        "Fluent.Ribbon.Colors.AccentBaseColor": "#FF60A917",
+        "Fluent.Ribbon.Colors.AccentColor80": "#CC60A917",
+        "Fluent.Ribbon.Colors.AccentColor60": "#9960A917",
+        "Fluent.Ribbon.Colors.AccentColor40": "#6660A917",
+        "Fluent.Ribbon.Colors.AccentColor20": "#3360A917",
+        "Fluent.Ribbon.Colors.HighlightColor": "#FF477D11"
+      }
+    },
+    {
+      "Name": "Green",
+      "ForBaseColor": "Dark",
+      "IsHighContrast": true,
+      "Values": {
+        "Fluent.Ribbon.Colors.AccentBaseColor": "#FF60A917",
+        "Fluent.Ribbon.Colors.AccentColor80": "#CC60A917",
+        "Fluent.Ribbon.Colors.AccentColor60": "#9960A917",
+        "Fluent.Ribbon.Colors.AccentColor40": "#6660A917",
+        "Fluent.Ribbon.Colors.AccentColor20": "#3360A917",
+        "Fluent.Ribbon.Colors.HighlightColor": "#FF477D11"
+      }
+    },
+    {
+      "Name": "Blue",
+      "Values": {
+        "Fluent.Ribbon.Colors.AccentBaseColor": "#FF2B579A",
+        "Fluent.Ribbon.Colors.AccentColor80": "#CC2B579A",
+        "Fluent.Ribbon.Colors.AccentColor60": "#992B579A",
+        "Fluent.Ribbon.Colors.AccentColor40": "#662B579A",
+        "Fluent.Ribbon.Colors.AccentColor20": "#332B579A",
+        "Fluent.Ribbon.Colors.HighlightColor": "#FF086F9E"
+      }
+    },
+    {
+      "Name": "Yellow",
+      "Values": {
+        "Fluent.Ribbon.Colors.AccentBaseColor": "#FFFEDE06",
+        "Fluent.Ribbon.Colors.AccentColor80": "#CCFEDE06",
+        "Fluent.Ribbon.Colors.AccentColor60": "#99FEDE06",
+        "Fluent.Ribbon.Colors.AccentColor40": "#66FEDE06",
+        "Fluent.Ribbon.Colors.AccentColor20": "#33FEDE06",
+        "Fluent.Ribbon.Colors.HighlightColor": "#FFBBA404",
+        "Fluent.Ribbon.Colors.IdealForegroundColor": "Black",
+        "Fluent.Ribbon.Colors.DarkIdealForegroundDisabledColor": "Pink",
+        "Fluent.Ribbon.Colors.ExtremeHighlightColor": "#FFFFD232",
+        "Fluent.Ribbon.Colors.DarkExtremeHighlightColor": "#FFF29536"
+      }
+    }
+  ]
+}

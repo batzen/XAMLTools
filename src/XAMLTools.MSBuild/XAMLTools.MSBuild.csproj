@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+    <!-- Project properties -->
+    <PropertyGroup>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <Description>Generates color scheme xaml files while replacing certain parts of a template file.</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <None Include="..\..\LICENSE" Pack="true" PackagePath="licenses" />
+      <None Include="build/*.*" Pack="true" PackagePath="build" />
+      <None Include="buildMultiTargeting/*.*" Pack="true" PackagePath="buildMultiTargeting" />
+
+      <None Include="$(OutputPath)\net472\publish\$(AssemblyName).exe" Pack="true" PackagePath="tools/net472" Visible="False" />
+      <None Include="$(OutputPath)\net472\publish\$(AssemblyName).exe.config" Pack="true" PackagePath="tools/net472" Visible="False" />
+      <None Include="$(OutputPath)\net472\publish\$(AssemblyName).pdb" Pack="true" PackagePath="tools/net472" Visible="False" />
+
+      <None Include="$(OutputPath)\netcoreapp3.1\publish\System.Text.Json.dll" Pack="true" PackagePath="tools/netcoreapp3.1" Visible="False" />
+      <None Include="$(OutputPath)\netcoreapp3.1\publish\$(AssemblyName).dll" Pack="true" PackagePath="tools/netcoreapp3.1" Visible="False" />
+      <None Include="$(OutputPath)\netcoreapp3.1\publish\$(AssemblyName).dll.config" Pack="true" PackagePath="tools/netcoreapp3.1" Visible="False" />
+      <None Include="$(OutputPath)\netcoreapp3.1\publish\$(AssemblyName).exe" Pack="true" PackagePath="tools/netcoreapp3.1" Visible="False" />
+      <None Include="$(OutputPath)\netcoreapp3.1\publish\$(AssemblyName).deps.json" Pack="true" PackagePath="tools/netcoreapp3.1" Visible="False" />
+      <None Include="$(OutputPath)\netcoreapp3.1\publish\$(AssemblyName).runtimeconfig.json" Pack="true" PackagePath="tools/netcoreapp3.1" Visible="False" />
+      <None Include="$(OutputPath)\netcoreapp3.1\publish\$(AssemblyName).pdb" Pack="true" PackagePath="tools/netcoreapp3.1" Visible="False" />
+    </ItemGroup>
+  
+    <ItemGroup>
+      <PackageReference Include="Microsoft.Build.Tasks.Core" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\XAMLTools.Core\XAMLTools.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="GeneratorParameters.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Theme.Template.xaml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+</Project>

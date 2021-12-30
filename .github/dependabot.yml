@@ -1,0 +1,14 @@
+version: 2
+updates:
+- package-ecosystem: nuget
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: System.Text.Json
+    versions:
+    - ">= 5.a, < 6"
+  - dependency-name: Nuke.Common
+    versions:
+    - 5.1.0

@@ -1,0 +1,30 @@
+# http://www.appveyor.com/docs/appveyor-yml
+branches:
+  only:
+    - develop
+    - master
+    - /v\d*\.\d*\.\d*/
+
+image: Visual Studio 2019
+test: off
+
+pull_requests:
+  do_not_increment_build_number: false
+
+install:
+  - ps: Invoke-WebRequest 'https://dot.net/v1/dotnet-install.ps1' -OutFile 'dotnet-install.ps1'
+  - ps: ./dotnet-install.ps1 -Version 5.0.400 -InstallDir "C:\Program Files\dotnet"
+
+build_script:
+  - cmd: dotnet --info
+  - cmd: build.cmd CI
+
+artifacts:
+  - path: \artifacts\*.*
+
+nuget:
+  disable_publish_on_pr: true
+
+skip_commits:
+  files:
+    - '**/*.md'
