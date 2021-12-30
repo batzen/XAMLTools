@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+
+    <ManagePackageVersionsCentrally>False</ManagePackageVersionsCentrally>
+    <RestoreSources>$(MSBuildThisFileDirectory)/../bin/$(Configuration)/XAMLTools.MSBuild/;$(RestoreSources)</RestoreSources>
+    <XAMLToolsPath>C:\DEV\OSS_Own\XAMLTools\bin\Debug\XAMLTools.MSBuild\</XAMLToolsPath>
+  </PropertyGroup>
+
+  <Import Project="..\XAMLTools.MSBuild\build\XAMLTools.MSBuild.props" />
+
+  <ItemGroup>
+    <!--    <PackageReference Include="XAMLTools.MSBuild" Version="*" />-->
+    <ProjectReference Include="..\XAMLTools.MSBuild\XAMLTools.MSBuild.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <XAMLCombineItems Include="Source.xaml">
+      <TargetFile>Themes/Generic.xaml</TargetFile>
+    </XAMLCombineItems>
+  </ItemGroup>
+
+  <ItemGroup>
+<!--    <Page Remove="Themes/Theme.Template.xaml" />-->
+
+    <XAMLColorSchemeGeneratorItems Include="Themes/Theme.Template.xaml">
+      <ParametersFile>Themes/GeneratorParameters.json</ParametersFile>
+      <OutputPath>Themes/ColorSchemes</OutputPath>
+    </XAMLColorSchemeGeneratorItems>
+  </ItemGroup>
+
+  <Import Project="..\XAMLTools.MSBuild\build\XAMLTools.MSBuild.targets" />
+</Project>

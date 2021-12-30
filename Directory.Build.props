@@ -7,6 +7,7 @@
         <TargetCulture>en-US</TargetCulture>
         <UseVSHostingProcess>false</UseVSHostingProcess>
         <Nullable>enable</Nullable>
+      <DebugType>embedded</DebugType>
     </PropertyGroup>
 
     <!-- Project properties -->
@@ -18,7 +19,7 @@
         <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
         <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
         <!-- <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\ControlzEx.ruleset</CodeAnalysisRuleSet> -->
-        <OutputPath>$(MSBuildThisFileDirectory)/bin/$(Configuration)/</OutputPath>
+        <OutputPath>$(MSBuildThisFileDirectory)/bin/$(Configuration)/$(MSBuildProjectName)/</OutputPath>
     </PropertyGroup>
 
     <PropertyGroup>

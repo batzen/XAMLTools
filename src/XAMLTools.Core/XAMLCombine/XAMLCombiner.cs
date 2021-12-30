@@ -23,16 +23,26 @@
         /// Combines multiple XAML resource dictionaries in one.
         /// </summary>
         /// <param name="sourceFile">Filename of list of XAML's.</param>
-        /// <param name="resultFile">Result XAML filename.</param>
-        public void Combine(string sourceFile, string resultFile)
+        /// <param name="targetFile">Result XAML filename.</param>
+        public void Combine(string sourceFile, string targetFile)
         {
             Trace.WriteLine(string.Format("Loading resources list from \"{0}\"", sourceFile));
 
             sourceFile = this.GetFilePath(sourceFile);
 
             // Load resource file list
-            var resourceFiles = File.ReadAllLines(sourceFile);
+            var resourceFileLines = File.ReadAllLines(sourceFile);
 
+            this.Combine(resourceFileLines, targetFile);
+        }
+
+        /// <summary>
+        /// Combines multiple XAML resource dictionaries in one.
+        /// </summary>
+        /// <param name="sourceFiles">Source files.</param>
+        /// <param name="targetFile">Result XAML filename.</param>
+        public void Combine(IEnumerable<string> sourceFiles, string targetFile)
+        {
             // Create result XML document
             var finalDocument = new XmlDocument();
             var rootNode = finalDocument.CreateElement("ResourceDictionary", "http://schemas.microsoft.com/winfx/2006/xaml/presentation");
@@ -48,10 +58,8 @@
             var resourcesList = new List<ResourceElement>();
 
             // For each resource file
-            for (var i = 0; i < resourceFiles.Length; i++)
+            foreach (var resourceFile in sourceFiles)
             {
-                var resourceFile = resourceFiles[i];
-
                 // ignore empty and lines that start with '#'
                 if (string.IsNullOrEmpty(resourceFile)
                     || resourceFile.StartsWith("#"))
@@ -235,7 +243,7 @@
             }
 
             // Save result file
-            WriteResultFile(resultFile, finalDocument);
+            WriteResultFile(targetFile, finalDocument);
         }
 
         private string GetFilePath(string file)
@@ -375,6 +383,13 @@
                 if (File.Exists(resultFile) == false
                     || AreFileContentsDifferent(resultFile, tempFile))
                 {
+                    var directory = Path.GetDirectoryName(resultFile);
+
+                    if (string.IsNullOrEmpty(directory) == false)
+                    {
+                        Directory.CreateDirectory(directory);
+                    }
+
                     File.Copy(tempFile, resultFile, true);
 
                     Console.WriteLine($"Resource Dictionary saved to \"{resultFile}\".");
