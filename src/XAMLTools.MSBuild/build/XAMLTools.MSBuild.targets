@@ -13,10 +13,12 @@
 
     <XAMLCombineTask Items="@(XAMLCombineItems)">
       <Output ItemName="XAMLCombineWrittenFiles" TaskParameter="WrittenFiles"/>
+      <Output ItemName="XAMLCombineNewFiles" TaskParameter="NewFiles"/>
     </XAMLCombineTask>
 
     <ItemGroup>
       <FileWrites Include="@(XAMLCombineWrittenFiles)"/>
+      <Page Include="@(XAMLCombineNewFiles)"/>
     </ItemGroup>
   </Target>
 
@@ -35,10 +37,12 @@
 
     <XAMLColorSchemeGeneratorTask Items="@(XAMLColorSchemeGeneratorItems)">
       <Output ItemName="XAMLColorSchemeGeneratorWrittenFiles" TaskParameter="WrittenFiles"/>
+      <Output ItemName="XAMLColorSchemeGeneratorNewFiles" TaskParameter="NewFiles"/>
     </XAMLColorSchemeGeneratorTask>
 
     <ItemGroup>
       <FileWrites Include="@(XAMLColorSchemeGeneratorWrittenFiles)"/>
+      <Page Include="@(XAMLColorSchemeGeneratorNewFiles)"/>
     </ItemGroup>
   </Target>
 

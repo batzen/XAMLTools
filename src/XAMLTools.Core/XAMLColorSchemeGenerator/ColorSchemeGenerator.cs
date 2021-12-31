@@ -11,7 +11,20 @@ namespace XAMLTools.XAMLColorSchemeGenerator
     {
         private const int BufferSize = 32768; // 32 Kilobytes
 
-        public IEnumerable<string> GenerateColorSchemeFiles(string generatorParametersFile, string templateFile, string? outputPath = null)
+        public class GeneratedFile
+        {
+            public GeneratedFile(string path, bool isNew)
+            {
+                this.Path = path;
+                this.IsNew = isNew;
+            }
+
+            public string Path { get; }
+
+            public bool IsNew { get; }
+        }
+
+        public IEnumerable<GeneratedFile> GenerateColorSchemeFiles(string generatorParametersFile, string templateFile, string? outputPath = null)
         {
             var parameters = GetParametersFromFile(generatorParametersFile);
 
@@ -112,7 +125,7 @@ namespace XAMLTools.XAMLColorSchemeGenerator
             }
         }
 
-        public string GenerateColorSchemeFile(string outputPath, string templateContent, string themeName, string themeDisplayName, string baseColorScheme, string colorScheme, string alternativeColorScheme, bool isHighContrast, params Dictionary<string, string>[] valueSources)
+        public GeneratedFile GenerateColorSchemeFile(string outputPath, string templateContent, string themeName, string themeDisplayName, string baseColorScheme, string colorScheme, string alternativeColorScheme, bool isHighContrast, params Dictionary<string, string>[] valueSources)
         {
             if (isHighContrast)
             {
@@ -129,10 +142,11 @@ namespace XAMLTools.XAMLColorSchemeGenerator
             }
 
             var themeFile = Path.Combine(outputPath, $"{themeFilename}.xaml");
+            var generatedFile = new GeneratedFile(themeFile, File.Exists(themeFile) == false);
 
             Trace.WriteLine($"Checking \"{themeFile}\"...");
 
-            var fileHasToBeWritten = File.Exists(themeFile) == false
+            var fileHasToBeWritten = generatedFile.IsNew
                                      || ReadAllTextShared(themeFile) != themeTempFileContent;
 
             if (fileHasToBeWritten)
@@ -149,7 +163,7 @@ namespace XAMLTools.XAMLColorSchemeGenerator
                 Trace.WriteLine("New Resource Dictionary did not differ from existing file. No new file written.");
             }
 
-            return themeFile;
+            return generatedFile;
         }
     }
 }

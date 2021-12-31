@@ -16,11 +16,15 @@
         [Output]
         public ITaskItem[]? WrittenFiles { get; set; }
 
+        [Output]
+        public ITaskItem[]? NewFiles { get; set; }
+
         public override bool Execute()
         {
             //System.Diagnostics.Debugger.Launch();
 
             var writtenFiles = new List<ITaskItem>();
+            var newFiles = new List<ITaskItem>();
 
             foreach (var item in this.Items)
             {
@@ -33,11 +37,17 @@
 
                 foreach (var generatedFile in generatedFiles)
                 {
-                    writtenFiles.Add(new TaskItem(generatedFile));
+                    writtenFiles.Add(new TaskItem(generatedFile.Path));
+
+                    if (generatedFile.IsNew)
+                    {
+                        newFiles.Add(new TaskItem(generatedFile.Path));
+                    }
                 }
             }
 
             this.WrittenFiles = writtenFiles.ToArray();
+            this.NewFiles = newFiles.ToArray();
 
             return true;
         }

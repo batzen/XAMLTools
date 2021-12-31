@@ -15,11 +15,15 @@
         [Output]
         public ITaskItem[]? WrittenFiles { get; set; }
 
+        [Output]
+        public ITaskItem[]? NewFiles { get; set; }
+
         public override bool Execute()
         {
             //System.Diagnostics.Debugger.Launch();
 
             var writtenFiles = new List<ITaskItem>();
+            var newFiles = new List<ITaskItem>();
 
             var grouped = this.Items.GroupBy(x => x.GetMetadata("TargetFile"));
 
@@ -28,14 +32,21 @@
                 var sourceFiles = item.Select(x => x.ItemSpec);
                 var targetFile = item.Key;
 
-                var combiner = new XAMLCombiner();
+                var targetFileIsNew = System.IO.File.Exists(targetFile) == false;
 
+                var combiner = new XAMLCombiner();
                 combiner.Combine(sourceFiles, targetFile);
 
                 writtenFiles.Add(new TaskItem(targetFile));
+
+                if (targetFileIsNew)
+                {
+                    newFiles.Add(new TaskItem(targetFile));
+                }
             }
 
             this.WrittenFiles = writtenFiles.ToArray();
+            this.NewFiles = newFiles.ToArray();
 
             return true;
         }
