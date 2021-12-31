@@ -8,34 +8,36 @@
 
     <XAMLToolsToolDirectory Condition="$(MSBuildRuntimeType) == 'Core'">$(XAMLToolsPath)tools\netcoreapp3.1\</XAMLToolsToolDirectory>
     <XAMLToolsToolDirectory Condition="$(MSBuildRuntimeType) != 'Core'">$(XAMLToolsPath)tools\net472\</XAMLToolsToolDirectory>
-    <XAMLToolsExecutable>$(XAMLToolsToolDirectory)XAMLTools.exe</XAMLToolsExecutable>
+    <XAMLToolsExecutable>$(XAMLToolsToolDirectory)\XAMLTools.exe</XAMLToolsExecutable>
 
     <MsBuildMajorVersion>15</MsBuildMajorVersion>
     <MsBuildMajorVersion Condition="'$(MSBuildVersion)' != ''">$([System.Version]::Parse($(MSBuildVersion)).Major)</MsBuildMajorVersion>
   </PropertyGroup>
 
   <PropertyGroup Label="XAMLCombine">
+    <XAMLCombineEnabled Condition="'$(XAMLCombineEnabled)' == ''">True</XAMLCombineEnabled>
     <RemoveXAMLCombineItemsFromPages Condition="'$(RemoveXAMLCombineItemsFromPages)' == '' And '$(Configuration)' == 'Debug'">False</RemoveXAMLCombineItemsFromPages>
     <RemoveXAMLCombineItemsFromPages Condition="'$(RemoveXAMLCombineItemsFromPages)' == ''">True</RemoveXAMLCombineItemsFromPages>
   </PropertyGroup>
 
   <PropertyGroup Label="XAMLColorSchemeGenerator">
+    <XAMLColorSchemeGeneratorEnabled Condition="'$(XAMLColorSchemeGeneratorEnabled)' == ''">True</XAMLColorSchemeGeneratorEnabled>
     <RemoveXAMLColorSchemeGeneratorItemsFromPages Condition="'$(RemoveXAMLColorSchemeGeneratorItemsFromPages)' == ''">True</RemoveXAMLColorSchemeGeneratorItemsFromPages>
     <EmbedXAMLColorSchemeGeneratorInputs Condition="'$(EmbedXAMLColorSchemeGeneratorInputs)' == ''">True</EmbedXAMLColorSchemeGeneratorInputs>
   </PropertyGroup>
 
   <PropertyGroup Label="TargetOrder">
-    <XAMLToolsXAMLCombineTargetTargetsBefore>
+    <XAMLCombineTargetsBefore>
       BeforeCompile;
       CoreCompile;
-    </XAMLToolsXAMLCombineTargetTargetsBefore>
+    </XAMLCombineTargetsBefore>
 
-    <XAMLToolsXAMLColorSchemeGeneratorTargetTargetsBefore>
+    <XAMLColorSchemeGeneratorTargetsBefore>
       BeforeCompile;
       CoreCompile;
-    </XAMLToolsXAMLColorSchemeGeneratorTargetTargetsBefore>
+    </XAMLColorSchemeGeneratorTargetsBefore>
 
     <!-- Ensure XAMLTools run prior to XAML's Markup Compiler in order to have the generated files available. -->
-    <MarkupCompilePass1DependsOn>$(MarkupCompilePass1DependsOn);XAMLToolsXAMLColorSchemeGeneratorTarget;XAMLToolsXAMLCombineTarget</MarkupCompilePass1DependsOn>
+    <MarkupCompilePass1DependsOn>XAMLColorSchemeGenerator;XAMLCombine;$(MarkupCompilePass1DependsOn)</MarkupCompilePass1DependsOn>
   </PropertyGroup>
 </Project>

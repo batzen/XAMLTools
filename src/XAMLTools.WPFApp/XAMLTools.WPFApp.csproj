@@ -6,7 +6,7 @@
     <UseWPF>true</UseWPF>
 
     <ManagePackageVersionsCentrally>False</ManagePackageVersionsCentrally>
-    <RestoreSources>$(MSBuildThisFileDirectory)/../bin/$(Configuration)/XAMLTools.MSBuild/;$(RestoreSources)</RestoreSources>
+    <RestoreSources>$(MSBuildThisFileDirectory)/../artifacts/;$(RestoreSources)</RestoreSources>
     <XAMLToolsPath>C:\DEV\OSS_Own\XAMLTools\bin\Debug\XAMLTools.MSBuild\</XAMLToolsPath>
   </PropertyGroup>
 

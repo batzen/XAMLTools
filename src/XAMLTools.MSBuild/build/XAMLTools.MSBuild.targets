@@ -3,10 +3,10 @@
   <UsingTask TaskName="XAMLTools.MSBuild.XAMLCombineTask" AssemblyFile="$(XAMLToolsAssembly)"/>
   <UsingTask TaskName="XAMLTools.MSBuild.XAMLColorSchemeGeneratorTask" AssemblyFile="$(XAMLToolsAssembly)"/>
 
-  <Target Name="XAMLToolsXAMLCombineTarget"
-          BeforeTargets="$(XAMLToolsXAMLCombineTargetTargetsBefore)"
-          DependsOnTargets="$(XAMLToolsDependsOnTargets)"
-          Condition="$(MSBuildProjectName.Contains('_wpftmp')) != 'True'">
+  <Target Name="XAMLCombine"
+          BeforeTargets="$(XAMLCombineTargetsBefore)"
+          DependsOnTargets="$(XAMLCombineDependsOnTargets)"
+          Condition="'$(XAMLCombineEnabled)' == 'True' And $(MSBuildProjectName.Contains('_wpftmp')) != 'True'">
 
     <Error Condition="($(MsBuildMajorVersion) &lt; 16)"
            Text="XAMLTools is only supported on MSBuild 16 and above. Current version: $(MsBuildMajorVersion)."/>
@@ -27,10 +27,10 @@
 <!--    <Page Include="@(XAMLCombineItems)" Condition="'$(RemoveXAMLCombineItemsFromPages)' == 'False'"/>-->
   </ItemGroup>
 
-  <Target Name="XAMLToolsXAMLColorSchemeGeneratorTarget"
-          BeforeTargets="$(XAMLToolsXAMLColorSchemeGeneratorTargetTargetsBefore)"
-          DependsOnTargets="$(XAMLToolsDependsOnTargets)"
-          Condition="$(MSBuildProjectName.Contains('_wpftmp')) != 'True'">
+  <Target Name="XAMLColorSchemeGenerator"
+          BeforeTargets="$(XAMLToolsXAMLColorSchemeGeneratorTargetsBefore)"
+          DependsOnTargets="$(XAMLColorSchemeGeneratorDependsOnTargets)"
+          Condition="'$(XAMLColorSchemeGeneratorEnabled)' == 'True' And $(MSBuildProjectName.Contains('_wpftmp')) != 'True'">
 
     <Error Condition="($(MsBuildMajorVersion) &lt; 16)"
            Text="XAMLTools is only supported on MSBuild 16 and above. Current version: $(MsBuildMajorVersion)."/>
