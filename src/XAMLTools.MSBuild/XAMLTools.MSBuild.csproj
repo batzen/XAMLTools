@@ -5,43 +5,35 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <Description>Generates color scheme xaml files while replacing certain parts of a template file.</Description>
 
-      <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+        <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     </PropertyGroup>
 
     <ItemGroup>
-      <None Include="..\..\LICENSE" Pack="true" PackagePath="licenses" />
-      <None Include="build/*.*" Pack="true" PackagePath="build" />
-      <None Include="buildMultiTargeting/*.*" Pack="true" PackagePath="buildMultiTargeting" />
+        <None Include="..\..\LICENSE" Pack="true" PackagePath="licenses"/>
+        <None Include="build/*.*" Pack="true" PackagePath="build"/>
+        <None Include="buildMultiTargeting/*.*" Pack="true" PackagePath="buildMultiTargeting"/>
 
-      <None Include="$(OutputPath)\net472\XAMLTools.Core.dll" Pack="true" PackagePath="build/net472" Visible="False" />
-      <None Include="$(OutputPath)\net472\$(AssemblyName).dll" Pack="true" PackagePath="build/net472" Visible="False" />
-      <!--<None Include="$(OutputPath)\net472\$(AssemblyName).dll.config" Pack="true" PackagePath="net472" Visible="False" />-->
-      <!--<None Include="$(OutputPath)\net472\$(AssemblyName).pdb" Pack="true" PackagePath="net472" Visible="False" />-->
+        <None Include="$(OutputPath)\net472\XAMLTools.Core.dll" Pack="true" PackagePath="build/net472" Visible="False"/>
+        <None Include="$(OutputPath)\net472\$(AssemblyName).dll" Pack="true" PackagePath="build/net472" Visible="False"/>
+        <!--<None Include="$(OutputPath)\net472\$(AssemblyName).dll.config" Pack="true" PackagePath="net472" Visible="False" />-->
+        <!--<None Include="$(OutputPath)\net472\$(AssemblyName).pdb" Pack="true" PackagePath="net472" Visible="False" />-->
 
-      <!--<None Include="$(OutputPath)\netstandard2.0\System.Text.Json.dll" Pack="true" PackagePath="netstandard2.0" Visible="False" />-->
-      <None Include="$(OutputPath)\netstandard2.0\XAMLTools.Core.dll" Pack="true" PackagePath="build/netstandard2.0" Visible="False" />
-      <None Include="$(OutputPath)\netstandard2.0\$(AssemblyName).dll" Pack="true" PackagePath="build/netstandard2.0" Visible="False" />
-      <!--<None Include="$(OutputPath)\netstandard2.0\$(AssemblyName).dll.config" Pack="true" PackagePath="netstandard2.0" Visible="False" />-->
-      <!--<None Include="$(OutputPath)\netstandard2.0\$(AssemblyName).exe" Pack="true" PackagePath="netstandard2.0" Visible="False" />-->
-      <!--<None Include="$(OutputPath)\netstandard2.0\$(AssemblyName).deps.json" Pack="true" PackagePath="netstandard2.0" Visible="False" />-->
-      <!--<None Include="$(OutputPath)\netstandard2.0\$(AssemblyName).runtimeconfig.json" Pack="true" PackagePath="netstandard2.0" Visible="False" />-->
-      <!--<None Include="$(OutputPath)\netstandard2.0\$(AssemblyName).pdb" Pack="true" PackagePath="netstandard2.0" Visible="False" />-->
-    </ItemGroup>
-  
-    <ItemGroup>
-      <PackageReference Include="Microsoft.Build.Tasks.Core" />
+        <!--<None Include="$(OutputPath)\netstandard2.0\System.Text.Json.dll" Pack="true" PackagePath="netstandard2.0" Visible="False" />-->
+        <None Include="$(OutputPath)\netstandard2.0\XAMLTools.Core.dll" Pack="true" PackagePath="build/netstandard2.0" Visible="False"/>
+        <None Include="$(OutputPath)\netstandard2.0\$(AssemblyName).dll" Pack="true" PackagePath="build/netstandard2.0" Visible="False"/>
+        <!--<None Include="$(OutputPath)\netstandard2.0\$(AssemblyName).dll.config" Pack="true" PackagePath="netstandard2.0" Visible="False" />-->
+        <!--<None Include="$(OutputPath)\netstandard2.0\$(AssemblyName).exe" Pack="true" PackagePath="netstandard2.0" Visible="False" />-->
+        <!--<None Include="$(OutputPath)\netstandard2.0\$(AssemblyName).deps.json" Pack="true" PackagePath="netstandard2.0" Visible="False" />-->
+        <!--<None Include="$(OutputPath)\netstandard2.0\$(AssemblyName).runtimeconfig.json" Pack="true" PackagePath="netstandard2.0" Visible="False" />-->
+        <!--<None Include="$(OutputPath)\netstandard2.0\$(AssemblyName).pdb" Pack="true" PackagePath="netstandard2.0" Visible="False" />-->
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\XAMLTools.Core\XAMLTools.Core.csproj" />
+        <PackageReference Include="Microsoft.Build.Tasks.Core" />
+        <PackageReference Include="Microsoft.Win32.Registry" />
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="GeneratorParameters.json">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="Theme.Template.xaml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
+        <ProjectReference Include="..\XAMLTools.Core\XAMLTools.Core.csproj"/>
     </ItemGroup>
 </Project>
