@@ -6,7 +6,7 @@
   <Target Name="XAMLToolsXAMLCombineTarget"
           BeforeTargets="$(XAMLToolsXAMLCombineTargetTargetsBefore)"
           DependsOnTargets="$(XAMLToolsDependsOnTargets)"
-          Condition="$(MSBuildProjectName.Contains('_wpftmp')) != 'true'">
+          Condition="$(MSBuildProjectName.Contains('_wpftmp')) != 'True'">
 
     <Error Condition="($(MsBuildMajorVersion) &lt; 16)"
            Text="XAMLTools is only supported on MSBuild 16 and above. Current version: $(MsBuildMajorVersion)."/>
@@ -22,12 +22,13 @@
 
   <ItemGroup>
     <Page Remove="@(XAMLCombineItems)" Condition="'$(RemoveXAMLCombineItemsFromPages)' != 'False'"/>
+<!--    <Page Include="@(XAMLCombineItems)" Condition="'$(RemoveXAMLCombineItemsFromPages)' == 'False'"/>-->
   </ItemGroup>
 
   <Target Name="XAMLToolsXAMLColorSchemeGeneratorTarget"
           BeforeTargets="$(XAMLToolsXAMLColorSchemeGeneratorTargetTargetsBefore)"
           DependsOnTargets="$(XAMLToolsDependsOnTargets)"
-          Condition="$(MSBuildProjectName.Contains('_wpftmp')) != 'true'">
+          Condition="$(MSBuildProjectName.Contains('_wpftmp')) != 'True'">
 
     <Error Condition="($(MsBuildMajorVersion) &lt; 16)"
            Text="XAMLTools is only supported on MSBuild 16 and above. Current version: $(MsBuildMajorVersion)."/>

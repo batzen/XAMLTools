@@ -10,11 +10,11 @@
     <XAMLToolsPath>C:\DEV\OSS_Own\XAMLTools\bin\Debug\XAMLTools.MSBuild\</XAMLToolsPath>
   </PropertyGroup>
 
-  <Import Project="..\XAMLTools.MSBuild\build\XAMLTools.MSBuild.props"/>
+  <Import Project="..\XAMLTools.MSBuild\build\XAMLTools.MSBuild.props" />
 
   <ItemGroup>
     <!--    <PackageReference Include="XAMLTools.MSBuild" Version="*" />-->
-    <ProjectReference Include="..\XAMLTools.MSBuild\XAMLTools.MSBuild.csproj"/>
+    <ProjectReference Include="..\XAMLTools.MSBuild\XAMLTools.MSBuild.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,5 +30,5 @@
     </XAMLColorSchemeGeneratorItems>
   </ItemGroup>
 
-  <Import Project="..\XAMLTools.MSBuild\build\XAMLTools.MSBuild.targets"/>
+  <Import Project="..\XAMLTools.MSBuild\build\XAMLTools.MSBuild.targets" />
 </Project>

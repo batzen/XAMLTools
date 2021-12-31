@@ -15,12 +15,13 @@
   </PropertyGroup>
 
   <PropertyGroup Label="XAMLCombine">
-    <RemoveXAMLCombineItemsFromPages Condition="'$(Configuration)' == 'Release'">true</RemoveXAMLCombineItemsFromPages>
+    <RemoveXAMLCombineItemsFromPages Condition="'$(RemoveXAMLCombineItemsFromPages)' == '' And '$(Configuration)' == 'Debug'">False</RemoveXAMLCombineItemsFromPages>
+    <RemoveXAMLCombineItemsFromPages Condition="'$(RemoveXAMLCombineItemsFromPages)' == ''">True</RemoveXAMLCombineItemsFromPages>
   </PropertyGroup>
 
   <PropertyGroup Label="XAMLColorSchemeGenerator">
-    <RemoveXAMLColorSchemeGeneratorItemsFromPages>true</RemoveXAMLColorSchemeGeneratorItemsFromPages>
-    <EmbedXAMLColorSchemeGeneratorInputs>true</EmbedXAMLColorSchemeGeneratorInputs>
+    <RemoveXAMLColorSchemeGeneratorItemsFromPages>True</RemoveXAMLColorSchemeGeneratorItemsFromPages>
+    <EmbedXAMLColorSchemeGeneratorInputs>True</EmbedXAMLColorSchemeGeneratorInputs>
   </PropertyGroup>
 
   <PropertyGroup Label="TargetOrder">
