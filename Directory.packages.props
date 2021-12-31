@@ -8,7 +8,7 @@
         <PackageVersion Include="System.Text.Json" Version="6.0.1" />
         <PackageVersion Include="CommandLineParser" Version="2.8.0" />
 
-        <PackageVersion Include="Microsoft.Build.Framework" Version="16.8" />
         <PackageVersion Include="Microsoft.Build.Tasks.Core" Version="17.0.0" />
+        <PackageVersion Include="Microsoft.Win32.Registry" Version="5.0.0" />
     </ItemGroup>
 </Project>
