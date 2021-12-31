@@ -1,67 +1,67 @@
 <Project>
-    <PropertyGroup>
-        <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
-        <ManagePackageVersionsCentrally>True</ManagePackageVersionsCentrally>
-        <LangVersion>10</LangVersion>
-        <Prefer32Bit>false</Prefer32Bit>
-        <TargetCulture>en-US</TargetCulture>
-        <UseVSHostingProcess>false</UseVSHostingProcess>
-        <Nullable>enable</Nullable>
-      <DebugType>embedded</DebugType>
-    </PropertyGroup>
+  <PropertyGroup>
+    <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
+    <ManagePackageVersionsCentrally>True</ManagePackageVersionsCentrally>
+    <LangVersion>10</LangVersion>
+    <Prefer32Bit>false</Prefer32Bit>
+    <TargetCulture>en-US</TargetCulture>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <Nullable>enable</Nullable>
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
 
-    <!-- Project properties -->
-    <PropertyGroup>
-        <TargetFrameworks>net472;netstandard2.0</TargetFrameworks>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
-        <GenerateDocumentationFile>false</GenerateDocumentationFile>
-        <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
-        <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-        <!-- <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\ControlzEx.ruleset</CodeAnalysisRuleSet> -->
-        <OutputPath>$(MSBuildThisFileDirectory)/bin/$(Configuration)/$(MSBuildProjectName)/</OutputPath>
-      <PackageOutputPath>$(MSBuildThisFileDirectory)/artifacts/</PackageOutputPath>
-    </PropertyGroup>
+  <!-- Project properties -->
+  <PropertyGroup>
+    <TargetFrameworks>net472;netstandard2.0</TargetFrameworks>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <!-- <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\ControlzEx.ruleset</CodeAnalysisRuleSet> -->
+    <OutputPath>$(MSBuildThisFileDirectory)/bin/$(Configuration)/$(MSBuildProjectName)/</OutputPath>
+    <PackageOutputPath>$(MSBuildThisFileDirectory)/artifacts/</PackageOutputPath>
+  </PropertyGroup>
 
-    <PropertyGroup>
-        <!-- <AnalysisMode>AllEnabledByDefault</AnalysisMode> -->
-        <NoWarn>$(NoWarn);CS1591</NoWarn>
-        <NoError>$(NoError);CS1591</NoError>
-    </PropertyGroup>
+  <PropertyGroup>
+    <!-- <AnalysisMode>AllEnabledByDefault</AnalysisMode> -->
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <NoError>$(NoError);CS1591</NoError>
+  </PropertyGroup>
 
-    <!-- NuGet -->
-    <PropertyGroup>
-        <Authors>Bastian Schmidt</Authors>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageProjectUrl>https://github.com/batzen/XAMLTools</PackageProjectUrl>
-        <!-- <PackageIconUrl></PackageIconUrl> -->
-        <PackageTags>xaml color scheme generator</PackageTags>
-        <PackageReleaseNotes>https://github.com/batzen/XAMLTools/releases</PackageReleaseNotes>
-        <RepositoryUrl>https://github.com/batzen/XAMLTools.git</RepositoryUrl>
-        <RepositoryType>git</RepositoryType>
+  <!-- NuGet -->
+  <PropertyGroup>
+    <Authors>Bastian Schmidt</Authors>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/batzen/XAMLTools</PackageProjectUrl>
+    <!-- <PackageIconUrl></PackageIconUrl> -->
+    <PackageTags>xaml color scheme generator</PackageTags>
+    <PackageReleaseNotes>https://github.com/batzen/XAMLTools/releases</PackageReleaseNotes>
+    <RepositoryUrl>https://github.com/batzen/XAMLTools.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
 
-        <IncludeBuildOutput>false</IncludeBuildOutput>
-        <DevelopmentDependency>true</DevelopmentDependency>
-        <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
-    </PropertyGroup>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+  </PropertyGroup>
 
-    <!-- Sign assembly -->
-    <PropertyGroup>
-        <SignAssembly>True</SignAssembly>
-        <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)\src\SharedKey.snk</AssemblyOriginatorKeyFile>
-        <DelaySign>false</DelaySign>
-        <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
-    </PropertyGroup>
+  <!-- Sign assembly -->
+  <PropertyGroup>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)\src\SharedKey.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>false</DelaySign>
+    <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
+  </PropertyGroup>
 
-    <PropertyGroup>
-      <IsFullFramework>false</IsFullFramework>
-      <IsFullFramework Condition="'$(TargetFramework)' == 'net472'">true</IsFullFramework>
-      <DefineConstants Condition="'$(IsFullFramework)' == 'true'">$(DefineConstants);IsFullFramework</DefineConstants>
-    </PropertyGroup>
+  <PropertyGroup>
+    <IsFullFramework>false</IsFullFramework>
+    <IsFullFramework Condition="'$(TargetFramework)' == 'net472'">true</IsFullFramework>
+    <DefineConstants Condition="'$(IsFullFramework)' == 'true'">$(DefineConstants);IsFullFramework</DefineConstants>
+  </PropertyGroup>
 
-    <!-- Build references -->
-    <ItemGroup>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" IncludeAssets="build; native" />
-        <PackageReference Include="JetBrains.Annotations" PrivateAssets="All" includeAssets="build;compile" />
-    </ItemGroup>
+  <!-- Build references -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" IncludeAssets="build; native"/>
+    <PackageReference Include="JetBrains.Annotations" PrivateAssets="All" includeAssets="build;compile"/>
+  </ItemGroup>
 </Project>

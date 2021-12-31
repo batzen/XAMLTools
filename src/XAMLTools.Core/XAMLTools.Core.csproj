@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-    <!-- Project properties -->
-    <PropertyGroup>
-      <RootNamespace>XAMLTools</RootNamespace>
-      <GenerateDocumentationFile>true</GenerateDocumentationFile>
-      <Description>Generates color scheme xaml files while replacing certain parts of a template file.</Description>
-    </PropertyGroup>
+  <!-- Project properties -->
+  <PropertyGroup>
+    <RootNamespace>XAMLTools</RootNamespace>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Description>Generates color scheme xaml files while replacing certain parts of a template file.</Description>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <PackageReference Include="System.Text.Json" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json"/>
+  </ItemGroup>
 
-    <ItemGroup>
-      <None Update="GeneratorParameters.json">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="Theme.Template.xaml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-    </ItemGroup>
+  <ItemGroup>
+    <None Update="GeneratorParameters.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Theme.Template.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
