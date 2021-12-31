@@ -20,6 +20,7 @@
         <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
         <!-- <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\ControlzEx.ruleset</CodeAnalysisRuleSet> -->
         <OutputPath>$(MSBuildThisFileDirectory)/bin/$(Configuration)/$(MSBuildProjectName)/</OutputPath>
+      <PackageOutputPath>$(MSBuildThisFileDirectory)/artifacts/</PackageOutputPath>
     </PropertyGroup>
 
     <PropertyGroup>
