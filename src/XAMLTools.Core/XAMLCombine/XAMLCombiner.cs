@@ -5,10 +5,13 @@
     using System.Diagnostics;
     using System.Globalization;
     using System.IO;
+    using System.Text;
     using System.Xml;
 
     public class XAMLCombiner
     {
+        private const int BufferSize = 32768; // 32 Kilobytes
+
         /// <summary>
         /// Dynamic resource string.
         /// </summary>
@@ -70,7 +73,7 @@
                 var current = new XmlDocument();
                 current.Load(this.GetFilePath(resourceFile));
 
-                Debug.WriteLine(string.Format("Loading resource \"{0}\"", resourceFile));
+                Trace.WriteLine(string.Format("Loading resource \"{0}\"", resourceFile));
 
                 // Set and fix resource dictionary attributes
                 var root = current.DocumentElement;
@@ -197,7 +200,7 @@
                 {
                     finalOrderList.Add(resourcesList[i]);
 
-                    Debug.WriteLine($"Adding resource \"{resourcesList[i].Key}\"");
+                    Trace.WriteLine($"Adding resource \"{resourcesList[i].Key}\"");
 
                     resourcesList.RemoveAt(i);
                     i--;
@@ -226,7 +229,7 @@
                     {
                         finalOrderList.Add(resourcesList[i]);
 
-                        Debug.WriteLine($"Adding resource \"{resourcesList[i].Key}\"");
+                        Trace.WriteLine($"Adding resource \"{resourcesList[i].Key}\"");
 
                         resourcesList.RemoveAt(i);
                         i--;
@@ -375,13 +378,21 @@
         {
             try
             {
-                var tempFile = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.tmp");
-                finalDocument.Save(tempFile);
+                var stringWriter = new UTF8StringWriter();
 
-                //Console.WriteLine(string.Format("Comparing temp file \"{0}\" to \"{1}\"", tempFile, resultFile));
+                using (stringWriter)
+                {
+                    finalDocument.Save(stringWriter);
+                }
 
-                if (File.Exists(resultFile) == false
-                    || AreFileContentsDifferent(resultFile, tempFile))
+                var tempFileContent = stringWriter.ToString();
+
+                Trace.WriteLine($"Checking \"{resultFile}\"...");
+
+                var fileHasToBeWritten = File.Exists(resultFile) == false
+                                         || ReadAllTextShared(resultFile) != tempFileContent;
+
+                if (fileHasToBeWritten)
                 {
                     var directory = Path.GetDirectoryName(resultFile);
 
@@ -390,29 +401,22 @@
                         Directory.CreateDirectory(directory);
                     }
 
-                    File.Copy(tempFile, resultFile, true);
+                    using (var sw = new StreamWriter(resultFile, false, Encoding.UTF8, BufferSize))
+                    {
+                        sw.Write(tempFileContent);
+                    }
 
-                    Console.WriteLine($"Resource Dictionary saved to \"{resultFile}\".");
+                    Trace.WriteLine($"Resource Dictionary saved to \"{resultFile}\".");
                 }
                 else
                 {
-                    //Console.WriteLine("New Resource Dictionary did not differ from existing file. No new file written.");
-                }
-
-                if (File.Exists(tempFile))
-                {
-                    File.Delete(tempFile);
+                    Trace.WriteLine("New Resource Dictionary did not differ from existing file. No new file written.");
                 }
             }
             catch (Exception e)
             {
                 throw new Exception("Error during Resource Dictionary saving: {0}", e);
             }
-        }
-
-        private static bool AreFileContentsDifferent(string file1, string file2)
-        {
-            return ReadAllTextShared(file1) != File.ReadAllText(file2);
         }
 
         private static string ReadAllTextShared(string file)
