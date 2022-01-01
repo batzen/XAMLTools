@@ -7,36 +7,51 @@
 [![Nuget](https://img.shields.io/nuget/vpre/XAMLTools.svg?style=flat-square)](http://nuget.org/packages/XAMLTools)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/batzen/XAMLTools/blob/master/License.txt)
 
-Generates color scheme xaml files while replacing certain parts of a template file.
+Various tools for easing the development of XAML related applications.
 
-For an example on how this tool works see the [generator input](src/GeneratorParameters.json) and [template](src/Theme.Template.xaml) files.
+As i only use WPF myself everything is focused on WPF, but things should work for other XAML dialects (at least in theory).
 
-## Using the tool
+You can either use `XAMLTools.exe` or `XAMLTools.MSBuild` to make use of the provided functionalities.
 
-### Usage with commandline parameters
+## XAMLCombine
 
-`XAMLTools` accepts the following commandline parameters:
+Combines multiple XAML files to one large file.  
+This is useful when you want to provide one `Generic.xaml` instead of multiple small XAML files.
 
-- `-g "Path_To_Your_GeneratorParameters.json"`
-- `-t "Path_To_Your_Theme.Template.xaml"`
-- `-o "Path_To_Your_Output_Folder"`
-- `-v` = enables verbose console output
+### Using the MSBuild-Task
 
-### Usage without commandline parameters
-
-Just set the working directory to a directory containing `GeneratorParameters.json` and `Theme.Template.xaml` and call `XAMLTools.exe`.
-The tool then also uses the current working dir as the output folder.
-
-### Usage during build
-
-```xml
-    <ItemGroup>
-      <PackageReference Include="XAMLTools" version="4-*" privateAssets="All" includeAssets="build" />
-    </ItemGroup>
-
-    <Target Name="GenerateXamlFiles" BeforeTargets="DispatchToInnerBuilds">
-      <!-- Generate theme files -->
-      <Message Text="$(XAMLToolsExecutable)" />
-      <Exec Command="&quot;$(XAMLToolsExecutable)&quot;" WorkingDirectory="$(MSBuildProjectDirectory)/Themes/Themes" />
-    </Target>
 ```
+<XAMLCombineItems Include="Themes/Controls/*.xaml">
+  <TargetFile>Themes/Generic.xaml</TargetFile>
+</XAMLCombineItems>
+```
+
+### Using the executable
+
+`XAMLTools` accepts the following commandline parameters for the `combine` verb:
+
+- `-s "Path_To_Your_SourceFile"` => A file containing a new line separated list of files to combine
+- `-t "Path_To_Your_Target_File.xaml"`
+
+## XAMLColorSchemeGenerator
+
+Generates color scheme XAML files while replacing certain parts of a template file.
+
+For an example on how this tool works see the [generator input](src/XAMLTools.Core/XAMLColorSchemeGenerator/GeneratorParameters.json) and [template](src/XAMLTools.Core/XAMLColorSchemeGenerator/ColorScheme.Template.xaml) files.
+
+### Using the MSBuild-Task
+
+```
+<XAMLColorSchemeGeneratorItems Include="Themes/ColorScheme.Template.xaml">
+  <ParametersFile>Themes/GeneratorParameters.json</ParametersFile>
+  <OutputPath>Themes/ColorSchemes</OutputPath>
+</XAMLColorSchemeGeneratorItems>
+```
+
+### Using the executable
+
+`XAMLTools` accepts the following commandline parameters for the `colorscheme` verb:
+
+- `-p "Path_To_Your_GeneratorParameters.json"`
+- `-t "Path_To_Your_ColorScheme.Template.xaml"`
+- `-o "Path_To_Your_Output_Folder"`
