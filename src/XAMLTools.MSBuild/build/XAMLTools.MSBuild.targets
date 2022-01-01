@@ -22,9 +22,13 @@
     </ItemGroup>
   </Target>
 
-  <ItemGroup>
+  <ItemGroup Label="XAMLCombine">
+    <!-- Remove items from pages to prevent binary pollution/reduce it's size -->
     <Page Remove="@(XAMLCombineItems)" Condition="'$(RemoveXAMLCombineItemsFromPages)' != 'False'"/>
-<!--    <Page Include="@(XAMLCombineItems)" Condition="'$(RemoveXAMLCombineItemsFromPages)' == 'False'"/>-->
+    <None Include="@(XAMLCombineItems)" Condition="'$(RemoveXAMLCombineItemsFromPages)' != 'False'"/>
+
+    <!-- Add as pages if items should not be removed. Exclude existing pages to prevent duplicates -->
+    <Page Include="@(XAMLCombineItems)" Exclude="@(Page)" Condition="'$(RemoveXAMLCombineItemsFromPages)' == 'False'"/>
   </ItemGroup>
 
   <Target Name="XAMLColorSchemeGenerator"
@@ -46,7 +50,7 @@
     </ItemGroup>
   </Target>
 
-  <ItemGroup>
+  <ItemGroup Label="XAMLColorSchemeGenerator">
     <Page Remove="@(XAMLColorSchemeGeneratorItems)" Condition="'$(RemoveXAMLColorSchemeGeneratorItemsFromPages)' != 'False'"/>
 
     <EmbeddedResource Include="@(XAMLColorSchemeGeneratorItems)" Condition="'$(EmbedXAMLColorSchemeGeneratorInputs)' == 'True'"/>
