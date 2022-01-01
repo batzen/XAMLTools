@@ -7,7 +7,7 @@
 
     <ManagePackageVersionsCentrally>False</ManagePackageVersionsCentrally>
     <RestoreSources>$(MSBuildThisFileDirectory)/../artifacts/;$(RestoreSources)</RestoreSources>
-    <XAMLToolsPath>C:\DEV\OSS_Own\XAMLTools\bin\Debug\XAMLTools.MSBuild\</XAMLToolsPath>
+    <XAMLToolsPath>C:\DEV\OSS_Own\XAMLTools\bin\$(Configuration)\XAMLTools.MSBuild\</XAMLToolsPath>
   </PropertyGroup>
 
   <Import Project="..\XAMLTools.MSBuild\build\XAMLTools.MSBuild.props" />
