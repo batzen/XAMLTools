@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <XAMLColorSchemeGeneratorItems Include="Themes/Theme.Template.xaml">
+    <XAMLColorSchemeGeneratorItems Include="Themes/ColorScheme.Template.xaml">
       <ParametersFile>Themes/GeneratorParameters.json</ParametersFile>
       <OutputPath>Themes/ColorSchemes</OutputPath>
     </XAMLColorSchemeGeneratorItems>

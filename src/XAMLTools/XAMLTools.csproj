@@ -48,13 +48,4 @@
   <ItemGroup>
     <ProjectReference Include="..\XAMLTools.Core\XAMLTools.Core.csproj"/>
   </ItemGroup>
-
-  <ItemGroup>
-    <None Update="GeneratorParameters.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Theme.Template.xaml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
 </Project>
