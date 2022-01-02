@@ -10,7 +10,5 @@
 
         <PackageVersion Include="Microsoft.Build.Tasks.Core" Version="17.0.0" />
         <PackageVersion Include="Microsoft.Win32.Registry" Version="5.0.0" />
-
-        <PackageVersion Include="System.CodeDom" Version="4.4.0" />
     </ItemGroup>
 </Project>

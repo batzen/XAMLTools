@@ -12,14 +12,15 @@
 
   <!-- Project properties -->
   <PropertyGroup>
-    <TargetFrameworks>net472;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net472;netstandard2.0</TargetFrameworks>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <!-- <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\ControlzEx.ruleset</CodeAnalysisRuleSet> -->
-    <OutputPath>$(MSBuildThisFileDirectory)/bin/$(Configuration)/$(MSBuildProjectName)/</OutputPath>
+    <OutputRoot>$(MSBuildThisFileDirectory)/bin/$(Configuration)</OutputRoot>
+    <OutputPath>$(OutputRoot)/$(MSBuildProjectName)/</OutputPath>
     <PackageOutputPath>$(MSBuildThisFileDirectory)/artifacts/</PackageOutputPath>
   </PropertyGroup>
 
