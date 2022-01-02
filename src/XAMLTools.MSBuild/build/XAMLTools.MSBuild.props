@@ -12,6 +12,9 @@
 
     <MsBuildMajorVersion>15</MsBuildMajorVersion>
     <MsBuildMajorVersion Condition="'$(MSBuildVersion)' != ''">$([System.Version]::Parse($(MSBuildVersion)).Major)</MsBuildMajorVersion>
+
+    <IsBuildingInsideRider>False</IsBuildingInsideRider>
+    <IsBuildingInsideRider Condition="'$(RESHARPER_FUS_BUILD)' != ''">True</IsBuildingInsideRider>
   </PropertyGroup>
 
   <PropertyGroup Label="XAMLCombine">

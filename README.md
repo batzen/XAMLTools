@@ -26,6 +26,22 @@ This is useful when you want to provide one `Generic.xaml` instead of multiple s
 </XAMLCombineItems>
 ```
 
+The MSBuild-Task includes the items used for combining as pages during debug builds and removes them from pages during release builds.
+This is done to reduce the binary size for release builds and still enable intellisense in debug builds for those XAML files.
+
+Remarks when using Rider:  
+To get intellisense in debug builds inside the XAML files and to prevent duplicate display of those files you have to define:
+
+```
+<PropertyGroup Condition="'$(IsBuildingInsideRider)' == 'True'">
+  <DefaultItemExcludes>$(DefaultItemExcludes);Themes/Controls/*.xaml</DefaultItemExcludes>
+</PropertyGroup>
+
+<ItemGroup Condition="'$(IsBuildingInsideRider)' == 'True'">
+  <Page Include="Themes/Controls/*.xaml" />
+</ItemGroup>
+```
+
 ### Using the executable
 
 `XAMLTools` accepts the following commandline parameters for the `combine` verb:

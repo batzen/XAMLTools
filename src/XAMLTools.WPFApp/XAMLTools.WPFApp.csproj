@@ -12,14 +12,22 @@
 
   <Import Project="..\XAMLTools.MSBuild\build\XAMLTools.MSBuild.props" />
 
+  <PropertyGroup Condition="'$(IsBuildingInsideRider)' == 'True'">
+    <DefaultItemExcludes>$(DefaultItemExcludes);Themes/Controls/*.xaml</DefaultItemExcludes>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(IsBuildingInsideRider)' == 'True'">
+    <Page Include="Themes/Controls/*.xaml" />
+  </ItemGroup>
+
   <ItemGroup>
-    <!--    <PackageReference Include="XAMLTools.MSBuild" Version="*" />-->
     <ProjectReference Include="..\XAMLTools.MSBuild\XAMLTools.MSBuild.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <XAMLCombineItems Include="Themes/Controls/*.xaml">
       <TargetFile>Themes/Generic.xaml</TargetFile>
+      <Visible>False</Visible>
     </XAMLCombineItems>
   </ItemGroup>
 
