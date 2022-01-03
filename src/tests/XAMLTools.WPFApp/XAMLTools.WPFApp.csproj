@@ -9,10 +9,10 @@
 <!--    <RestoreSources>$(MSBuildThisFileDirectory)/../artifacts/;$(RestoreSources)</RestoreSources>-->
     <XAMLCombineEnabled Condition="'$(XAMLCombineEnabled)' == ''">False</XAMLCombineEnabled>
     <XAMLColorSchemeGeneratorEnabled Condition="'$(XAMLColorSchemeGeneratorEnabled)' == ''">False</XAMLColorSchemeGeneratorEnabled>
-    <XAMLToolsPath>C:\DEV\OSS_Own\XAMLTools\bin\$(Configuration)\XAMLTools.MSBuild\</XAMLToolsPath>
+    <XAMLToolsPath>..\..\bin\$(Configuration)\XAMLTools.MSBuild\</XAMLToolsPath>
   </PropertyGroup>
 
-  <Import Project="..\XAMLTools.MSBuild\build\XAMLTools.MSBuild.props" />
+  <Import Project="..\..\XAMLTools.MSBuild\build\XAMLTools.MSBuild.props" />
 
   <PropertyGroup Condition="'$(IsBuildingInsideRider)' == 'True'">
     <DefaultItemExcludes>$(DefaultItemExcludes);Themes/Controls/*.xaml</DefaultItemExcludes>
@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\XAMLTools.MSBuild\XAMLTools.MSBuild.csproj" />
+    <ProjectReference Include="..\..\XAMLTools.MSBuild\XAMLTools.MSBuild.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -40,5 +40,5 @@
     </XAMLColorSchemeGeneratorItems>
   </ItemGroup>
 
-  <Import Project="..\XAMLTools.MSBuild\build\XAMLTools.MSBuild.targets" />
+  <Import Project="..\..\XAMLTools.MSBuild\build\XAMLTools.MSBuild.targets" />
 </Project>
