@@ -31,11 +31,13 @@
 
   <PropertyGroup Label="TargetOrder">
     <XAMLCombineTargetsBefore>
+      DispatchToInnerBuilds;
       BeforeCompile;
       CoreCompile;
     </XAMLCombineTargetsBefore>
 
     <XAMLColorSchemeGeneratorTargetsBefore>
+      DispatchToInnerBuilds;
       BeforeCompile;
       CoreCompile;
     </XAMLColorSchemeGeneratorTargetsBefore>
