@@ -11,7 +11,9 @@ Various tools for easing the development of XAML related applications.
 
 As i only use WPF myself everything is focused on WPF, but things should work for other XAML dialects (at least in theory).
 
-You can either use `XAMLTools.exe` or `XAMLTools.MSBuild` to make use of the provided functionalities.
+You can either use the commandline tool `XAMLTools` or the MSBuild version `XAMLTools.MSBuild` to make use of the provided functionalities.
+
+CI builds can be consumed from [appveyor](https://ci.appveyor.com/nuget/xamltools).
 
 ## XAMLCombine
 
