@@ -2,7 +2,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <XAMLToolsPath Condition="$(XAMLToolsPath) == ''">$(MSBuildThisFileDirectory)</XAMLToolsPath>
-    <XAMLToolsAssemblyDirectory Condition="$(MSBuildRuntimeType) == 'Core'">$(XAMLToolsPath)netcoreapp3.1</XAMLToolsAssemblyDirectory>
+    <XAMLToolsAssemblyDirectory Condition="$(MSBuildRuntimeType) == 'Core'">$(XAMLToolsPath)netstandard2.0</XAMLToolsAssemblyDirectory>
     <XAMLToolsAssemblyDirectory Condition="$(MSBuildRuntimeType) != 'Core'">$(XAMLToolsPath)net472</XAMLToolsAssemblyDirectory>
     <XAMLToolsAssembly Condition="$(XAMLToolsAssembly) == ''">$(XAMLToolsAssemblyDirectory)\$(MSBuildThisFileName).dll</XAMLToolsAssembly>
 
