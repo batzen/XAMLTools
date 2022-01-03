@@ -1,18 +1,15 @@
 using System;
-using System.Linq;
 using Nuke.Common;
 using Nuke.Common.Execution;
-using Nuke.Common.Git;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitVersion;
-using Nuke.Common.Utilities.Collections;
-using static Nuke.Common.EnvironmentInfo;
-using static Nuke.Common.IO.FileSystemTasks;
-using static Nuke.Common.IO.PathConstruction;
+
+using static Nuke.Common.IO.CompressionTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
+using static Nuke.Common.IO.FileSystemTasks;
 
 [CheckBuildProjectConfigurations]
 [UnsetVisualStudioEnvironmentVariables]
@@ -27,12 +24,19 @@ class Build : NukeBuild
         ProcessTasks.DefaultLogInvocation = true;
         ProcessTasks.DefaultLogOutput = true;
 
-        Console.WriteLine("IsLocalBuild           : {0}", IsLocalBuild);
-        Console.WriteLine("Informational   Version: {0}", GitVersion.InformationalVersion);
-        Console.WriteLine("SemVer          Version: {0}", GitVersion.SemVer);
-        Console.WriteLine("AssemblySemVer  Version: {0}", GitVersion.AssemblySemVer);
-        Console.WriteLine("MajorMinorPatch Version: {0}", GitVersion.MajorMinorPatch);
-        Console.WriteLine("NuGet           Version: {0}", GitVersion.NuGetVersion);
+        if (GitVersion is null
+            && IsLocalBuild == false)
+        {
+            throw new Exception("Could not initialize GitVersion.");
+        }
+
+        Console.WriteLine("IsLocalBuild           : {0}", IsLocalBuild.ToString());
+
+        Console.WriteLine("Informational   Version: {0}", InformationalVersion);
+        Console.WriteLine("SemVer          Version: {0}", SemVer);
+        Console.WriteLine("AssemblySemVer  Version: {0}", AssemblySemVer);
+        Console.WriteLine("MajorMinorPatch Version: {0}", MajorMinorPatch);
+        Console.WriteLine("NuGet           Version: {0}", NuGetVersion);
     }
 
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
@@ -40,8 +44,6 @@ class Build : NukeBuild
 
     [Solution] readonly Solution Solution;
 
-    [GitRepository] readonly GitRepository GitRepository;
-    
     [GitVersion(Framework = "netcoreapp3.1")] readonly GitVersion GitVersion;
 
     string AssemblySemVer => GitVersion?.AssemblySemVer ?? "1.0.0";
@@ -50,6 +52,8 @@ class Build : NukeBuild
     string NuGetVersion => GitVersion?.NuGetVersion ?? "1.0.0";
     string MajorMinorPatch => GitVersion?.MajorMinorPatch ?? "1.0.0";
     string AssemblySemFileVer => GitVersion?.AssemblySemFileVer ?? "1.0.0";
+
+    AbsolutePath BuildBinDirectory => RootDirectory / "bin";
 
     AbsolutePath SourceDirectory => RootDirectory / "src";
 
@@ -80,6 +84,7 @@ class Build : NukeBuild
 
     Target Pack => _ => _
         .DependsOn(Compile)
+        .Produces(ArtifactsDirectory / "*.nupkg", ArtifactsDirectory / "*.zip")
         .Executes(() =>
         {
             EnsureCleanDirectory(ArtifactsDirectory);
@@ -95,6 +100,8 @@ class Build : NukeBuild
                 .SetAssemblyVersion(AssemblySemVer)
                 .SetFileVersion(AssemblySemFileVer)
                 .SetInformationalVersion(InformationalVersion));
+
+            Compress(BuildBinDirectory / Configuration / "XAMLTools", ArtifactsDirectory / $"XAMLTools-v{NuGetVersion}.zip");
         });
 
     Target CI => _ => _
