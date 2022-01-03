@@ -16,9 +16,7 @@
     <None Include="$(OutputRoot)\XAMLTools\net472\XAMLTools.exe" Pack="true" PackagePath="tools/net472" Visible="False" />
     <None Include="$(OutputRoot)\XAMLTools\net472\XAMLTools.exe.config" Pack="true" PackagePath="tools/net472" Visible="False" />
 
-    <None Include="$(OutputPath)\net472\System.Text.Json.dll" Pack="true" PackagePath="build/net472" Visible="False" />
-    <None Include="$(OutputPath)\net472\XAMLTools.Core.dll" Pack="true" PackagePath="build/net472" Visible="False" />
-    <None Include="$(OutputPath)\net472\$(AssemblyName).dll" Pack="true" PackagePath="build/net472" Visible="False" />
+    <None Include="$(OutputPath)\net472\*.dll" Pack="true" PackagePath="build/net472" Visible="False" />
 
     <None Include="$(OutputRoot)\XAMLTools\netcoreapp3.1\*.dll" Pack="true" PackagePath="tools/netcoreapp3.1" Visible="False" />
     <None Include="$(OutputRoot)\XAMLTools\netcoreapp3.1\XAMLTools.dll.config" Pack="true" PackagePath="tools/netcoreapp3.1" Visible="False" />
@@ -26,9 +24,7 @@
     <None Include="$(OutputRoot)\XAMLTools\netcoreapp3.1\XAMLTools.exe" Pack="true" PackagePath="tools/netcoreapp3.1" Visible="False" />
     <None Include="$(OutputRoot)\XAMLTools\netcoreapp3.1\XAMLTools.runtimeconfig.json" Pack="true" PackagePath="tools/netcoreapp3.1" Visible="False" />
 
-    <None Include="$(OutputPath)\netstandard2.0\System.Text.Json.dll" Pack="true" PackagePath="build/netstandard2.0" Visible="False" />
-    <None Include="$(OutputPath)\netstandard2.0\XAMLTools.Core.dll" Pack="true" PackagePath="build/netstandard2.0" Visible="False" />
-    <None Include="$(OutputPath)\netstandard2.0\$(AssemblyName).dll" Pack="true" PackagePath="build/netstandard2.0" Visible="False" />
+    <None Include="$(OutputPath)\netstandard2.0\*.dll" Pack="true" PackagePath="build/netstandard2.0" Visible="False" />>
   </ItemGroup>
 
   <ItemGroup>
