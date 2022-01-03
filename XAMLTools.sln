@@ -22,7 +22,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XAMLTools", "src\XAMLTools\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XAMLTools.MSBuild", "src\XAMLTools.MSBuild\XAMLTools.MSBuild.csproj", "{FDC4A636-24DE-43CE-B0AB-F469EDD3B687}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XAMLTools.WPFApp", "src\XAMLTools.WPFApp\XAMLTools.WPFApp.csproj", "{283EF326-1400-4E07-A3C2-BF505782A293}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XAMLTools.WPFApp", "src\tests\XAMLTools.WPFApp\XAMLTools.WPFApp.csproj", "{283EF326-1400-4E07-A3C2-BF505782A293}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{117DC9D7-9E2D-4D23-955F-E7892DC949A7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -54,5 +56,8 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {854C6F4F-4D88-4024-BEDC-34E4FCE36013}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{283EF326-1400-4E07-A3C2-BF505782A293} = {117DC9D7-9E2D-4D23-955F-E7892DC949A7}
 	EndGlobalSection
 EndGlobal
