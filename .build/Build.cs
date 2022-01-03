@@ -18,12 +18,6 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 [UnsetVisualStudioEnvironmentVariables]
 class Build : NukeBuild
 {
-    /// Support plugins are available for:
-    ///   - JetBrains ReSharper        https://nuke.build/resharper
-    ///   - JetBrains Rider            https://nuke.build/rider
-    ///   - Microsoft VisualStudio     https://nuke.build/visualstudio
-    ///   - Microsoft VSCode           https://nuke.build/vscode
-
     public static int Main () => Execute<Build>(x => x.Compile);
 
     protected override void OnBuildInitialized()
@@ -50,6 +44,13 @@ class Build : NukeBuild
     
     [GitVersion(Framework = "netcoreapp3.1")] readonly GitVersion GitVersion;
 
+    string AssemblySemVer => GitVersion?.AssemblySemVer ?? "1.0.0";
+    string SemVer => GitVersion?.SemVer ?? "1.0.0";
+    string InformationalVersion => GitVersion?.InformationalVersion ?? "1.0.0";
+    string NuGetVersion => GitVersion?.NuGetVersion ?? "1.0.0";
+    string MajorMinorPatch => GitVersion?.MajorMinorPatch ?? "1.0.0";
+    string AssemblySemFileVer => GitVersion?.AssemblySemFileVer ?? "1.0.0";
+
     AbsolutePath SourceDirectory => RootDirectory / "src";
 
     [Parameter]
@@ -69,10 +70,11 @@ class Build : NukeBuild
             DotNetBuild(s => s
                 .SetProjectFile(Solution)
                 .SetConfiguration(Configuration)
-                .SetVersion(GitVersion.MajorMinorPatch)
-                .SetAssemblyVersion(GitVersion.AssemblySemVer)
-                .SetFileVersion(GitVersion.AssemblySemFileVer)
-                .SetInformationalVersion(GitVersion.InformationalVersion)
+
+                .SetAssemblyVersion(AssemblySemVer)
+                .SetFileVersion(AssemblySemVer)
+                .SetInformationalVersion(InformationalVersion)
+
                 .EnableNoRestore());
         });
 
@@ -82,28 +84,17 @@ class Build : NukeBuild
         {
             EnsureCleanDirectory(ArtifactsDirectory);
 
-            DotNetPublish(s => s
-                .SetConfiguration(Configuration)
-                .SetVersion(GitVersion.MajorMinorPatch)
-                .SetAssemblyVersion(GitVersion.AssemblySemVer)
-                .SetFileVersion(GitVersion.AssemblySemFileVer)
-                .SetInformationalVersion(GitVersion.InformationalVersion)
-                .SetFramework("net45"));
-
-            DotNetPublish(s => s
-               .SetConfiguration(Configuration)
-               .SetVersion(GitVersion.MajorMinorPatch)
-               .SetAssemblyVersion(GitVersion.AssemblySemVer)
-               .SetFileVersion(GitVersion.AssemblySemFileVer)
-               .SetInformationalVersion(GitVersion.InformationalVersion)
-               .SetFramework("netcoreapp3.1"));
-
             DotNetPack(s => s
-                .SetVersion(GitVersion.NuGetVersion)
+                .SetProject(SourceDirectory / "XAMLTools.MSBuild")
                 .SetConfiguration(Configuration)
-                .SetOutputDirectory(ArtifactsDirectory)
-                .EnableNoBuild()
-                .EnableNoRestore());
+
+                .When(GitVersion is not null, x => x
+                                                   .SetProperty("RepositoryBranch", GitVersion?.BranchName)
+                                                   .SetProperty("RepositoryCommit", GitVersion?.Sha))
+                .SetVersion(NuGetVersion)
+                .SetAssemblyVersion(AssemblySemVer)
+                .SetFileVersion(AssemblySemFileVer)
+                .SetInformationalVersion(InformationalVersion));
         });
 
     Target CI => _ => _
