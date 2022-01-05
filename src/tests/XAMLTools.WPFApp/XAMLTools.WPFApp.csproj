@@ -9,7 +9,7 @@
 <!--    <RestoreSources>$(MSBuildThisFileDirectory)/../artifacts/;$(RestoreSources)</RestoreSources>-->
     <XAMLCombineEnabled Condition="'$(XAMLCombineEnabled)' == ''">False</XAMLCombineEnabled>
     <XAMLColorSchemeGeneratorEnabled Condition="'$(XAMLColorSchemeGeneratorEnabled)' == ''">False</XAMLColorSchemeGeneratorEnabled>
-    <XAMLToolsPath>..\..\bin\$(Configuration)\XAMLTools.MSBuild\</XAMLToolsPath>
+    <XAMLToolsPath>..\..\..\bin\$(Configuration)\XAMLTools.MSBuild\</XAMLToolsPath>
   </PropertyGroup>
 
   <Import Project="..\..\XAMLTools.MSBuild\build\XAMLTools.MSBuild.props" />
