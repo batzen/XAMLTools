@@ -8,6 +8,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using CommandLine;
+    using XAMLTools.Helpers;
     using XAMLTools.XAMLColorSchemeGenerator;
     using XAMLTools.XAMLCombine;
 
@@ -26,7 +27,7 @@
             public Task<int> Execute()
             {
                 var combiner = new XAMLCombiner();
-                combiner.Combine(this.SourceFile, this.TargetFile);
+                MutexHelper.ExecuteLocked(() => combiner.Combine(this.SourceFile, this.TargetFile), this.TargetFile);
 
                 return Task.FromResult(0);
             }
@@ -46,19 +47,9 @@
 
             public Task<int> Execute()
             {
-                using (var mutex = Lock(this.ParametersFile))
-                {
-                    try
-                    {
-                        var generator = new ColorSchemeGenerator();
+                var generator = new ColorSchemeGenerator();
 
-                        generator.GenerateColorSchemeFiles(this.ParametersFile, this.TemplateFile, this.OutputPath);
-                    }
-                    finally
-                    {
-                        mutex.ReleaseMutex();
-                    }
-                }
+                MutexHelper.ExecuteLocked(() => generator.GenerateColorSchemeFiles(this.ParametersFile, this.TemplateFile, this.OutputPath), this.TemplateFile);
 
                 return Task.FromResult(0);
             }
@@ -108,20 +99,6 @@
             }
 
             return Task.FromResult(1);
-        }
-
-        private static Mutex Lock(string file)
-        {           
-            var mutexName = "Local\\XamlTools_" + Path.GetFileName(file);
-
-            var mutex = new Mutex(false, mutexName);
-
-            if (mutex.WaitOne(TimeSpan.FromSeconds(10)) == false)
-            {
-                throw new TimeoutException("Another instance of this application blocked the concurrent execution.");
-            }
-            
-            return mutex;
         }
     }
 }

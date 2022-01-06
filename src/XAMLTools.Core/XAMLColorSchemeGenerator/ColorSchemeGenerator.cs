@@ -6,6 +6,7 @@ namespace XAMLTools.XAMLColorSchemeGenerator
     using System.IO;
     using System.Linq;
     using System.Text;
+    using XAMLTools.Helpers;
 
     public class ColorSchemeGenerator
     {

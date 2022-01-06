@@ -263,4 +263,4 @@ tools/*
 
 # XamlStyler
 !XamlStyler/
-src/XAMLTools.WPFApp/Themes/Generic.xaml
+src/tests/XAMLTools.WPFApp/Themes/Generic.xaml

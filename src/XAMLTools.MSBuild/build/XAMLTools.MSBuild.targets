@@ -5,6 +5,7 @@
 
   <Target Name="XAMLCombine"
           BeforeTargets="$(XAMLCombineTargetsBefore)"
+          AfterTargets="XAMLColorSchemeGenerator"
           DependsOnTargets="$(XAMLCombineDependsOnTargets)"
           Condition="'$(XAMLCombineEnabled)' == 'True' And $(MSBuildProjectName.Contains('_wpftmp')) != 'True'">
 

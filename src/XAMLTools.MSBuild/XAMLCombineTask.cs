@@ -1,14 +1,16 @@
 ﻿namespace XAMLTools.MSBuild
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Microsoft.Build.Framework;
     using Microsoft.Build.Utilities;
+    using XAMLTools.Helpers;
     using XAMLTools.XAMLCombine;
 
     public class XAMLCombineTask : Task
     {
+        public const string TargetFileMetadataName = "TargetFile";
+
         [Required]
         public ITaskItem[] Items { get; set; } = null!;
 
@@ -25,7 +27,7 @@
             var writtenFiles = new List<ITaskItem>();
             var newFiles = new List<ITaskItem>();
 
-            var grouped = this.Items.GroupBy(x => x.GetMetadata("TargetFile"));
+            var grouped = this.Items.GroupBy(x => x.GetMetadata(TargetFileMetadataName));
 
             foreach (var item in grouped)
             {
@@ -34,8 +36,10 @@
 
                 var targetFileIsNew = System.IO.File.Exists(targetFile) == false;
 
+                this.BuildEngine.LogMessageEvent(new BuildMessageEventArgs($"Generating combined XAML file \"{targetFile}\".", string.Empty, nameof(XAMLCombineTask), MessageImportance.High));
+
                 var combiner = new XAMLCombiner();
-                combiner.Combine(sourceFiles, targetFile);
+                MutexHelper.ExecuteLocked(() => combiner.Combine(sourceFiles, targetFile), targetFile);
 
                 writtenFiles.Add(new TaskItem(targetFile));
 

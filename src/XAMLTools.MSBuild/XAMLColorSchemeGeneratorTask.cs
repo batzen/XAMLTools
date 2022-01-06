@@ -1,15 +1,17 @@
 ﻿namespace XAMLTools.MSBuild
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
     using Microsoft.Build.Framework;
     using Microsoft.Build.Utilities;
+    using XAMLTools.Helpers;
     using XAMLTools.XAMLColorSchemeGenerator;
-    using XAMLTools.XAMLCombine;
 
     public class XAMLColorSchemeGeneratorTask : Task
     {
+        public const string ParametersFileMetadataName = "ParametersFile";
+
+        public const string OutputPathMetadataName = "OutputPath";
+
         [Required]
         public ITaskItem[] Items { get; set; } = null!;
 
@@ -29,11 +31,13 @@
             foreach (var item in this.Items)
             {
                 var templateFile = item.ItemSpec;
-                var generatorParametersFile = item.GetMetadata("ParametersFile");
-                var outputPath = item.GetMetadata("OutputPath");
+                var generatorParametersFile = item.GetMetadata(ParametersFileMetadataName);
+                var outputPath = item.GetMetadata(OutputPathMetadataName);
+
+                this.BuildEngine.LogMessageEvent(new BuildMessageEventArgs($"Generating XAML files from \"{templateFile}\" with \"{generatorParametersFile}\" to \"{outputPath}\".", string.Empty, nameof(XAMLColorSchemeGeneratorTask), MessageImportance.High));
 
                 var generator = new ColorSchemeGenerator();
-                var generatedFiles = generator.GenerateColorSchemeFiles(generatorParametersFile, templateFile, outputPath);
+                var generatedFiles = MutexHelper.ExecuteLocked(() => generator.GenerateColorSchemeFiles(generatorParametersFile, templateFile, outputPath), templateFile);
 
                 foreach (var generatedFile in generatedFiles)
                 {
