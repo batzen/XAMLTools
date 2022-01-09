@@ -36,11 +36,11 @@ To get intellisense in debug builds inside the XAML files and to prevent duplica
 
 ```
 <PropertyGroup Condition="'$(IsBuildingInsideRider)' == 'True'">
-  <DefaultItemExcludes>$(DefaultItemExcludes);Themes/Controls/*.xaml</DefaultItemExcludes>
+  <DefaultItemExcludes>$(DefaultItemExcludes);Themes\Controls\*.xaml</DefaultItemExcludes>
 </PropertyGroup>
 
 <ItemGroup Condition="'$(IsBuildingInsideRider)' == 'True'">
-  <Page Include="Themes/Controls/*.xaml" />
+  <Page Include="Themes\Controls\*.xaml" />
 </ItemGroup>
 ```
 
@@ -60,9 +60,9 @@ For an example on how this tool works see the [generator input](src/XAMLTools.Co
 ### Using the MSBuild-Task
 
 ```
-<XAMLColorSchemeGeneratorItems Include="Themes/ColorScheme.Template.xaml">
-  <ParametersFile>Themes/GeneratorParameters.json</ParametersFile>
-  <OutputPath>Themes/ColorSchemes</OutputPath>
+<XAMLColorSchemeGeneratorItems Include="Themes\ColorScheme.Template.xaml">
+  <ParametersFile>Themes\GeneratorParameters.json</ParametersFile>
+  <OutputPath>Themes\ColorSchemes</OutputPath>
 </XAMLColorSchemeGeneratorItems>
 ```
 

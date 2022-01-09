@@ -13,13 +13,13 @@
            Text="XAMLTools is only supported on MSBuild 16 and above. Current version: $(MsBuildMajorVersion)."/>
 
     <XAMLCombineTask Items="@(XAMLCombineItems)">
-      <Output ItemName="XAMLCombineWrittenFiles" TaskParameter="WrittenFiles"/>
-      <Output ItemName="XAMLCombineNewFiles" TaskParameter="NewFiles"/>
+      <Output ItemName="XAMLCombineGeneratedFiles" TaskParameter="GeneratedFiles"/>
     </XAMLCombineTask>
 
     <ItemGroup>
-      <FileWrites Include="@(XAMLCombineWrittenFiles)"/>
-      <Page Include="@(XAMLCombineNewFiles)"/>
+      <FileWrites Include="@(XAMLCombineGeneratedFiles)"/>
+      <NewPagesFromXAMLCombine Include="@(XAMLCombineGeneratedFiles)" Exclude="@(Page)"/>
+      <Page Include="@(NewPagesFromXAMLCombine)" />
     </ItemGroup>
   </Target>
 
@@ -41,13 +41,14 @@
            Text="XAMLTools is only supported on MSBuild 16 and above. Current version: $(MsBuildMajorVersion)."/>
 
     <XAMLColorSchemeGeneratorTask Items="@(XAMLColorSchemeGeneratorItems)">
-      <Output ItemName="XAMLColorSchemeGeneratorWrittenFiles" TaskParameter="WrittenFiles"/>
-      <Output ItemName="XAMLColorSchemeGeneratorNewFiles" TaskParameter="NewFiles"/>
+      <Output ItemName="XAMLColorSchemeGeneratorGeneratedFiles" TaskParameter="GeneratedFiles"/>
     </XAMLColorSchemeGeneratorTask>
 
     <ItemGroup>
-      <FileWrites Include="@(XAMLColorSchemeGeneratorWrittenFiles)"/>
-      <Page Include="@(XAMLColorSchemeGeneratorNewFiles)"/>
+      <FileWrites Include="@(XAMLColorSchemeGeneratorGeneratedFiles)"/>
+      <NewPagesFromXAMLColorSchemeGenerator Include="@(XAMLColorSchemeGeneratorGeneratedFiles)" Exclude="@(Page)"/>
+<!--      <NewPagesFromXAMLColorSchemeGenerator Remove="@(Page)"/>-->
+      <Page Include="@(NewPagesFromXAMLColorSchemeGenerator)" />
     </ItemGroup>
   </Target>
 

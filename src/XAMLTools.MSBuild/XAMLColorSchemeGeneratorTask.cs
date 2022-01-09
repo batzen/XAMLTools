@@ -16,17 +16,13 @@
         public ITaskItem[] Items { get; set; } = null!;
 
         [Output]
-        public ITaskItem[]? WrittenFiles { get; set; }
-
-        [Output]
-        public ITaskItem[]? NewFiles { get; set; }
+        public ITaskItem[]? GeneratedFiles { get; set; }
 
         public override bool Execute()
         {
             //System.Diagnostics.Debugger.Launch();
 
-            var writtenFiles = new List<ITaskItem>();
-            var newFiles = new List<ITaskItem>();
+            var generatedFiles = new List<ITaskItem>();
 
             foreach (var item in this.Items)
             {
@@ -37,21 +33,15 @@
                 this.BuildEngine.LogMessageEvent(new BuildMessageEventArgs($"Generating XAML files from \"{templateFile}\" with \"{generatorParametersFile}\" to \"{outputPath}\".", string.Empty, nameof(XAMLColorSchemeGeneratorTask), MessageImportance.High));
 
                 var generator = new ColorSchemeGenerator();
-                var generatedFiles = MutexHelper.ExecuteLocked(() => generator.GenerateColorSchemeFiles(generatorParametersFile, templateFile, outputPath), templateFile);
+                var currentGeneratedFiles = MutexHelper.ExecuteLocked(() => generator.GenerateColorSchemeFiles(generatorParametersFile, templateFile, outputPath), templateFile);
 
-                foreach (var generatedFile in generatedFiles)
+                foreach (var generatedFile in currentGeneratedFiles)
                 {
-                    writtenFiles.Add(new TaskItem(generatedFile.Path));
-
-                    if (generatedFile.IsNew)
-                    {
-                        newFiles.Add(new TaskItem(generatedFile.Path));
-                    }
+                    generatedFiles.Add(new TaskItem(generatedFile));
                 }
             }
 
-            this.WrittenFiles = writtenFiles.ToArray();
-            this.NewFiles = newFiles.ToArray();
+            this.GeneratedFiles = generatedFiles.ToArray();
 
             return true;
         }

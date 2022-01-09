@@ -6,26 +6,12 @@ namespace XAMLTools.XAMLColorSchemeGenerator
     using System.IO;
     using System.Linq;
     using System.Text;
-    using XAMLTools.Helpers;
 
     public class ColorSchemeGenerator
     {
         private const int BufferSize = 32768; // 32 Kilobytes
 
-        public class GeneratedFile
-        {
-            public GeneratedFile(string path, bool isNew)
-            {
-                this.Path = path;
-                this.IsNew = isNew;
-            }
-
-            public string Path { get; }
-
-            public bool IsNew { get; }
-        }
-
-        public IEnumerable<GeneratedFile> GenerateColorSchemeFiles(string generatorParametersFile, string templateFile, string? outputPath = null)
+        public IEnumerable<string> GenerateColorSchemeFiles(string generatorParametersFile, string templateFile, string? outputPath = null)
         {
             var parameters = GetParametersFromFile(generatorParametersFile);
 
@@ -78,7 +64,7 @@ namespace XAMLTools.XAMLColorSchemeGenerator
 
                 foreach (var colorSchemeVariant in parameters.AdditionalColorSchemeVariants)
                 {
-                    foreach (var colorScheme in colorSchemesWithoutVariantName.Concat(colorSchemesWithVariantName))
+                    foreach (var colorScheme in parameters.ColorSchemes)
                     {
                         if (string.IsNullOrEmpty(colorScheme.ForBaseColor) == false
                             && colorScheme.ForBaseColor != baseColorScheme.Name)
@@ -86,7 +72,9 @@ namespace XAMLTools.XAMLColorSchemeGenerator
                             continue;
                         }
 
-                        if (colorScheme.ForColorSchemeVariant == "None")
+                        if (colorScheme.ForColorSchemeVariant == "None"
+                            // if there is a color scheme specific for the current variant skip the unspecific one
+                            || parameters.ColorSchemes.Any(x => x != colorScheme && colorScheme.Name == x.Name && colorScheme.IsHighContrast == x.IsHighContrast && x.ForColorSchemeVariant == colorSchemeVariant.Name))
                         {
                             continue;
                         }
@@ -126,7 +114,7 @@ namespace XAMLTools.XAMLColorSchemeGenerator
             }
         }
 
-        public GeneratedFile GenerateColorSchemeFile(string outputPath, string templateContent, string themeName, string themeDisplayName, string baseColorScheme, string colorScheme, string alternativeColorScheme, bool isHighContrast, params Dictionary<string, string>[] valueSources)
+        public string GenerateColorSchemeFile(string outputPath, string templateContent, string themeName, string themeDisplayName, string baseColorScheme, string colorScheme, string alternativeColorScheme, bool isHighContrast, params Dictionary<string, string>[] valueSources)
         {
             if (isHighContrast)
             {
@@ -142,12 +130,13 @@ namespace XAMLTools.XAMLColorSchemeGenerator
                 themeFilename += ".HighContrast";
             }
 
+            //Debugger.Launch();
             var themeFile = Path.Combine(outputPath, $"{themeFilename}.xaml");
-            var generatedFile = new GeneratedFile(themeFile, File.Exists(themeFile) == false);
+            var isNewFile = File.Exists(themeFile) == false;
 
             Trace.WriteLine($"Checking \"{themeFile}\"...");
 
-            var fileHasToBeWritten = generatedFile.IsNew
+            var fileHasToBeWritten = isNewFile
                                      || ReadAllTextShared(themeFile) != themeTempFileContent;
 
             if (fileHasToBeWritten)
@@ -164,7 +153,7 @@ namespace XAMLTools.XAMLColorSchemeGenerator
                 Trace.WriteLine("New Resource Dictionary did not differ from existing file. No new file written.");
             }
 
-            return generatedFile;
+            return themeFile;
         }
     }
 }
