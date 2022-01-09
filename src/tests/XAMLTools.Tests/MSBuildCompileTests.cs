@@ -1,8 +1,5 @@
 ﻿namespace XAMLTools.Tests;
 
-using System.Collections;
-using System.Diagnostics;
-using System.Reflection;
 using CliWrap;
 using CliWrap.Buffered;
 using NUnit.Framework;
@@ -12,34 +9,37 @@ public class MSBuildCompileTests
 {
     [Test]
     [TestCase("Debug")]
-    //[TestCase("Release")]
+    [TestCase("Release")]
     public async Task CheckCompileOutputAfterGitClean(string configuration)
     {
-        var currentDir = Environment.CurrentDirectory;
-        var wpfAppDirectory = Path.GetFullPath("../../../../src/tests/XAMLTools.WPFApp");
+        var currentAssemblyDir = Path.GetDirectoryName(this.GetType().Assembly.Location)!;
+        var wpfAppDirectory = Path.GetFullPath(Path.Combine(currentAssemblyDir, "../../../../src/tests/XAMLTools.WPFApp"));
+
+        Assert.That(wpfAppDirectory, Does.Exist);
 
 #if NET472
+        const string assemblyName = "XAMLTools.WPFApp.exe";
         const string framework = "net472";
 #else
+        const string assemblyName = "XAMLTools.WPFApp.dll";
         const string framework = "net6.0-windows";
 #endif
 
         var binPath = Path.Combine(wpfAppDirectory, "bin", configuration, framework);
 
-        Assert.That(wpfAppDirectory, Does.Exist);
-
         {
-            using var proc = Process.Start(new ProcessStartInfo("git", "clean -fxd") { WorkingDirectory = wpfAppDirectory });
-            Assert.That(proc, Is.Not.Null);
+            var result = await Cli.Wrap("git")
+                                  .WithArguments($"clean -fxd")
+                                  .WithWorkingDirectory(wpfAppDirectory)
+                                  .WithValidation(CommandResultValidation.None)
+                                  .ExecuteBufferedAsync();
 
-            proc!.WaitForExit();
-
-            Assert.That(proc.ExitCode, Is.EqualTo(0));
+            Assert.That(result.ExitCode, Is.EqualTo(0), result.StandardError);
         }
 
         {
             var result = await Cli.Wrap("dotnet")
-                            .WithArguments($"build -c {configuration} /p:XAMLColorSchemeGeneratorEnabled=true /p:XAMLCombineEnabled=true /nr:false --no-dependencies") // -v:diag")
+                            .WithArguments($"build -c {configuration} /p:XAMLColorSchemeGeneratorEnabled=true /p:XAMLCombineEnabled=true /nr:false --no-dependencies -v:diag")
                             .WithWorkingDirectory(wpfAppDirectory)
                             .WithValidation(CommandResultValidation.None)
                             .ExecuteBufferedAsync();
@@ -47,11 +47,24 @@ public class MSBuildCompileTests
             Assert.That(result.ExitCode, Is.EqualTo(0), result.StandardOutput);
         }
 
-        {
-            var assemblyFile = Path.Combine(binPath, "XAMLTools.WPFApp.dll");
-            var assembly = Assembly.LoadFile(assemblyFile);
+        var assemblyFile = Path.Combine(binPath, assemblyName);
+        var outputPath = Path.GetDirectoryName(assemblyFile)!;
 
-            var resourceNames = assembly.GetManifestResourceNames();
+        {
+            var xamlToolsExe = Path.Combine(currentAssemblyDir, "XAMLTools.exe");
+            Assert.That(xamlToolsExe, Does.Exist);
+
+            var result = await Cli.Wrap(xamlToolsExe)
+                                  .WithArguments($"dump-resources -a \"{assemblyFile}\" -o \"{outputPath}\"")
+                                  .WithWorkingDirectory(currentAssemblyDir)
+                                  .WithValidation(CommandResultValidation.None)
+                                  .ExecuteBufferedAsync();
+
+            Assert.That(result.ExitCode, Is.EqualTo(0), result.StandardError);
+        }
+
+        {
+            var resourceNames = File.ReadAllLines(Path.Combine(outputPath, "ResourceNames"));
 
             Assert.That(resourceNames, Is.EquivalentTo(new[]
             {
@@ -60,28 +73,50 @@ public class MSBuildCompileTests
                 "XAMLTools.WPFApp.Themes.GeneratorParameters.json"
             }));
 
-            using var xamlResourcesStream = assembly.GetManifestResourceStream("XAMLTools.WPFApp.g.resources")!;
-            using var reader = new System.Resources.ResourceReader(xamlResourcesStream);
-            var xamlResourceEntries = reader.Cast<DictionaryEntry>().Select(entry => (string)entry.Key).ToArray();
-            Assert.That(xamlResourceEntries, Is.EquivalentTo(
-                            new[]
-                            {
-                                "themes/colorschemes/light.yellow.colorful.baml",
-                                "themes/colorschemes/dark.yellow.colorful.baml",
-                                "themes/colorschemes/light.yellow.baml",
-                                "themes/colorschemes/dark.blue.colorful.baml",
-                                "themes/colorschemes/dark.green.colorful.highcontrast.baml",
-                                "themes/colorschemes/dark.yellow.baml",
-                                "themes/generic.baml",
-                                "themes/colorschemes/light.blue.baml",
-                                "themes/colorschemes/light.blue.colorful.baml",
-                                "mainwindow.baml",
-                                "themes/colorschemes/dark.green.highcontrast.baml",
-                                "themes/colorschemes/dark.blue.baml",
-                                "themes/colorschemes/light.green.highcontrast.baml",
-                                "themes/controls/control2.baml",
-                                "themes/controls/control1.baml",
-                            }));
+            var xamlResourceNames = File.ReadAllLines(Path.Combine(outputPath, "XAMLResourceNames"));
+
+            if (configuration == "Debug")
+            {
+                Assert.That(xamlResourceNames, Is.EquivalentTo(
+                                new[]
+                                {
+                                    "themes/colorschemes/light.yellow.colorful.baml",
+                                    "themes/colorschemes/dark.yellow.colorful.baml",
+                                    "themes/colorschemes/light.yellow.baml",
+                                    "themes/colorschemes/dark.blue.colorful.baml",
+                                    "themes/colorschemes/dark.green.colorful.highcontrast.baml",
+                                    "themes/colorschemes/dark.yellow.baml",
+                                    "themes/generic.baml",
+                                    "themes/colorschemes/light.blue.baml",
+                                    "themes/colorschemes/light.blue.colorful.baml",
+                                    "mainwindow.baml",
+                                    "themes/colorschemes/dark.green.highcontrast.baml",
+                                    "themes/colorschemes/dark.blue.baml",
+                                    "themes/colorschemes/light.green.highcontrast.baml",
+                                    "themes/controls/control2.baml",
+                                    "themes/controls/control1.baml",
+                                }));
+            }
+            else
+            {
+                Assert.That(xamlResourceNames, Is.EquivalentTo(
+                                new[]
+                                {
+                                    "themes/colorschemes/light.yellow.colorful.baml",
+                                    "themes/colorschemes/dark.yellow.colorful.baml",
+                                    "themes/colorschemes/light.yellow.baml",
+                                    "themes/colorschemes/dark.blue.colorful.baml",
+                                    "themes/colorschemes/dark.green.colorful.highcontrast.baml",
+                                    "themes/colorschemes/dark.yellow.baml",
+                                    "themes/generic.baml",
+                                    "themes/colorschemes/light.blue.baml",
+                                    "themes/colorschemes/light.blue.colorful.baml",
+                                    "mainwindow.baml",
+                                    "themes/colorschemes/dark.green.highcontrast.baml",
+                                    "themes/colorschemes/dark.blue.baml",
+                                    "themes/colorschemes/light.green.highcontrast.baml"
+                                }));
+            }
         }
     }
 }

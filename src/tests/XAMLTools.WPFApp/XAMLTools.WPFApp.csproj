@@ -28,16 +28,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <XAMLCombineItems Include="Themes\Controls\*.xaml">
-      <TargetFile>Themes\Generic.xaml</TargetFile>
+    <XAMLCombineItems Include="Themes/Controls/*.xaml">
+      <TargetFile>Themes/Generic.xaml</TargetFile>
       <Visible>False</Visible>
     </XAMLCombineItems>
   </ItemGroup>
 
   <ItemGroup>
-    <XAMLColorSchemeGeneratorItems Include="Themes\ColorScheme.Template.xaml">
-      <ParametersFile>Themes\GeneratorParameters.json</ParametersFile>
-      <OutputPath>Themes\ColorSchemes</OutputPath>
+    <XAMLColorSchemeGeneratorItems Include="Themes/ColorScheme.Template.xaml">
+      <ParametersFile>Themes/GeneratorParameters.json</ParametersFile>
+      <OutputPath>Themes/ColorSchemes</OutputPath>
     </XAMLColorSchemeGeneratorItems>
   </ItemGroup>
 

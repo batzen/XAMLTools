@@ -11,7 +11,6 @@ using static Nuke.Common.IO.CompressionTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using static Nuke.Common.IO.FileSystemTasks;
 
-[CheckBuildProjectConfigurations]
 [UnsetVisualStudioEnvironmentVariables]
 class Build : NukeBuild
 {
@@ -42,7 +41,7 @@ class Build : NukeBuild
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
-    [Solution] readonly Solution Solution;
+    [Solution(GenerateProjects = true)] readonly Solution Solution;
 
     [GitVersion(Framework = "netcoreapp3.1")] readonly GitVersion GitVersion;
 
@@ -60,11 +59,11 @@ class Build : NukeBuild
     [Parameter]
     readonly AbsolutePath ArtifactsDirectory = RootDirectory / "artifacts";
 
+    AbsolutePath TestResultsDir => RootDirectory / "TestResults";
+
     Target Restore => _ => _
         .Executes(() =>
         {
-            DotNetRestore(s => s
-                .SetProjectFile(Solution));
         });
 
     Target Compile => _ => _
@@ -72,14 +71,36 @@ class Build : NukeBuild
         .Executes(() =>
         {
             DotNetBuild(s => s
-                .SetProjectFile(Solution)
+                             .SetProjectFile(Solution)
+                             .SetConfiguration("Debug")
+                             .SetAssemblyVersion(AssemblySemVer)
+                             .SetFileVersion(AssemblySemVer)
+                             .SetInformationalVersion(InformationalVersion));
+
+            DotNetBuild(s => s
+                             .SetProjectFile(Solution)
+                             .SetConfiguration("Release")
+                             .SetAssemblyVersion(AssemblySemVer)
+                             .SetFileVersion(AssemblySemVer)
+                             .SetInformationalVersion(InformationalVersion));
+        });
+
+    Target Test => _ => _
+            .After(Compile)
+            .Before(Pack)
+            .Executes(() =>
+        {
+            EnsureCleanDirectory(TestResultsDir);
+
+            DotNetTest(_ => _
                 .SetConfiguration(Configuration)
-
-                .SetAssemblyVersion(AssemblySemVer)
-                .SetFileVersion(AssemblySemVer)
-                .SetInformationalVersion(InformationalVersion)
-
-                .EnableNoRestore());
+                .SetProjectFile(SourceDirectory / "tests" / "XAMLTools.Tests")
+                .SetProcessWorkingDirectory(SourceDirectory / "tests" / "XAMLTools.Tests")
+                .EnableNoBuild()
+                .EnableNoRestore()
+                .AddLoggers("trx")
+                .SetResultsDirectory(TestResultsDir)
+                .SetVerbosity(DotNetVerbosity.Normal));
         });
 
     Target Pack => _ => _
@@ -105,5 +126,5 @@ class Build : NukeBuild
         });
 
     Target CI => _ => _
-        .DependsOn(Pack);
+        .DependsOn(Compile, Test, Pack);
 }

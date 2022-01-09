@@ -44,7 +44,7 @@
         /// </summary>
         /// <param name="sourceFiles">Source files.</param>
         /// <param name="targetFile">Result XAML filename.</param>
-        public void Combine(IEnumerable<string> sourceFiles, string targetFile)
+        public string Combine(IEnumerable<string> sourceFiles, string targetFile)
         {
             // Create result XML document
             var finalDocument = new XmlDocument();
@@ -246,7 +246,7 @@
             }
 
             // Save result file
-            WriteResultFile(targetFile, finalDocument);
+            return WriteResultFile(targetFile, finalDocument);
         }
 
         private string GetFilePath(string file)
@@ -258,7 +258,7 @@
                 throw new FileNotFoundException("Unable to find file.", file);
             }
 
-            return filePath;
+            return Path.GetFullPath(filePath);
         }
 
         /// <summary>
@@ -374,10 +374,12 @@
             return result.ToArray();
         }
 
-        private static void WriteResultFile(string resultFile, XmlDocument finalDocument)
+        private static string WriteResultFile(string resultFile, XmlDocument finalDocument)
         {
             try
             {
+                resultFile = resultFile.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+
                 var stringWriter = new UTF8StringWriter();
 
                 using (stringWriter)
@@ -417,6 +419,8 @@
             {
                 throw new Exception("Error during Resource Dictionary saving: {0}", e);
             }
+
+            return resultFile;
         }
 
         private static string ReadAllTextShared(string file)

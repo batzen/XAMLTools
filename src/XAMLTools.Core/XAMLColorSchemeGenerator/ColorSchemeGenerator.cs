@@ -131,6 +131,7 @@ namespace XAMLTools.XAMLColorSchemeGenerator
             }
 
             //Debugger.Launch();
+            themeFilename = themeFilename.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
             var themeFile = Path.Combine(outputPath, $"{themeFilename}.xaml");
             var isNewFile = File.Exists(themeFile) == false;
 

@@ -77,7 +77,8 @@
               "CI",
               "Compile",
               "Pack",
-              "Restore"
+              "Restore",
+              "Test"
             ]
           }
         },
@@ -94,7 +95,8 @@
               "CI",
               "Compile",
               "Pack",
-              "Restore"
+              "Restore",
+              "Test"
             ]
           }
         },

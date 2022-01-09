@@ -9,6 +9,7 @@
     using System.Threading.Tasks;
     using CommandLine;
     using XAMLTools.Helpers;
+    using XAMLTools.ResourceDump;
     using XAMLTools.XAMLColorSchemeGenerator;
     using XAMLTools.XAMLCombine;
 
@@ -55,6 +56,25 @@
             }
         }
 
+        [Verb("dump-resources", HelpText = "Generate XAML color scheme files.")]
+        private class DumpResourcesOptions
+        {
+            [Option('a', Required = true, HelpText = "Assembly file")]
+            public string AssemblyFile { get; set; } = null!;
+
+            [Option('o', Required = true, HelpText = "Output path")]
+            public string OutputPath { get; set; } = null!;
+
+            public Task<int> Execute()
+            {
+                var resourceDumper = new ResourceDumper();
+
+                resourceDumper.DumpResources(this.AssemblyFile, this.OutputPath);
+
+                return Task.FromResult(0);
+            }
+        }
+
         private static async Task<int> Main(string[] args)
         {
             const string ProfileFile = "XAMLTools.profile";
@@ -66,10 +86,11 @@
 
             try
             {
-                var result = Parser.Default.ParseArguments<XAMLCombineOptions, XAMLColorSchemeGeneratorOptions>(args)
+                var result = Parser.Default.ParseArguments<XAMLCombineOptions, XAMLColorSchemeGeneratorOptions, DumpResourcesOptions>(args)
                                    .MapResult(
                     async (XAMLCombineOptions options) => await options.Execute(),
                     async (XAMLColorSchemeGeneratorOptions options) => await options.Execute(),
+                    async (DumpResourcesOptions options) => await options.Execute(),
                     errors => Task.FromResult(1));
 
                 return await result;

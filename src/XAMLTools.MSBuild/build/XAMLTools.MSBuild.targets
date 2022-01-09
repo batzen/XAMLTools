@@ -47,7 +47,6 @@
     <ItemGroup>
       <FileWrites Include="@(XAMLColorSchemeGeneratorGeneratedFiles)"/>
       <NewPagesFromXAMLColorSchemeGenerator Include="@(XAMLColorSchemeGeneratorGeneratedFiles)" Exclude="@(Page)"/>
-<!--      <NewPagesFromXAMLColorSchemeGenerator Remove="@(Page)"/>-->
       <Page Include="@(NewPagesFromXAMLColorSchemeGenerator)" />
     </ItemGroup>
   </Target>

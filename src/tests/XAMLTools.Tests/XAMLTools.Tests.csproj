@@ -6,13 +6,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Using Remove="System.Net.Http"/>
+    <Using Remove="System.Net.Http" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk"/>
-    <PackageReference Include="NUnit"/>
-    <PackageReference Include="NUnit3TestAdapter"/>
-    <PackageReference Include="CliWrap"/>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="NUnit" />
+    <PackageReference Include="NUnit3TestAdapter" />
+    <PackageReference Include="CliWrap" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\XAMLTools\XAMLTools.csproj" />
   </ItemGroup>
 </Project>
