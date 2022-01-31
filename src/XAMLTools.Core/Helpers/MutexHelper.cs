@@ -12,10 +12,12 @@ public class MutexHelper
         var mutexName = "Local\\XamlTools_" + Path.GetFileName(file);
 
         using var mutex = new Mutex(false, mutexName);
+        bool acquired = false;
 
         try
         {
-            if (mutex.WaitOne(timeout ?? TimeSpan.FromSeconds(10)) == false)
+            acquired = mutex.WaitOne(timeout ?? TimeSpan.FromSeconds(10));
+            if (acquired == false)
             {
                 throw new TimeoutException(errorMessage);
             }
@@ -24,7 +26,10 @@ public class MutexHelper
         }
         finally
         {
-            mutex.ReleaseMutex();
+            if (acquired)
+            {
+                mutex.ReleaseMutex();
+            }
         }
     }
 
@@ -33,10 +38,12 @@ public class MutexHelper
         var mutexName = "Local\\XamlTools_" + Path.GetFileName(file);
 
         using var mutex = new Mutex(false, mutexName);
+        bool acquired = false;
 
         try
         {
-            if (mutex.WaitOne(timeout ?? TimeSpan.FromSeconds(10)) == false)
+            acquired = mutex.WaitOne(timeout ?? TimeSpan.FromSeconds(10));
+            if (acquired == false)
             {
                 throw new TimeoutException(errorMessage);
             }
@@ -45,7 +52,10 @@ public class MutexHelper
         }
         finally
         {
-            mutex.ReleaseMutex();
+            if (acquired)
+            {
+                mutex.ReleaseMutex();
+            }
         }
     }
 }
