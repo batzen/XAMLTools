@@ -1,8 +1,4 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
-    <Style x:Key="Control2">
-    </Style>
-
-    <Color x:Key="Control2_Color">#FF2B579A</Color>
 </ResourceDictionary>

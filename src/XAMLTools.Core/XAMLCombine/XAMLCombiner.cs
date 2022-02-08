@@ -92,10 +92,11 @@
                             && attr.Prefix == "xmlns")
                         {
                             // Create new namespace name
-                            var index = 0;
+                            var index = -1;
                             string name;
                             do
                             {
+                                index++;
                                 name = attr.LocalName + "_" + index.ToString(CultureInfo.InvariantCulture);
                             }
                             while (rootNode.HasAttribute("xmlns:" + name));
