@@ -93,6 +93,7 @@ public class MSBuildCompileTests
                                     "themes/colorschemes/dark.green.highcontrast.baml",
                                     "themes/colorschemes/dark.blue.baml",
                                     "themes/colorschemes/light.green.highcontrast.baml",
+                                    "themes/controls/control3.baml",
                                     "themes/controls/control2.baml",
                                     "themes/controls/control1.baml",
                                 }));
