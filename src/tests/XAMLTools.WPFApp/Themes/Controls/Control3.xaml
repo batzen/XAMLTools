@@ -1,9 +1,12 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/XAMLTools.WPFApp;component/Themes/Controls/Control2.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
+    <sys:String x:Key="string3">stringValue</sys:String>
+    <Style TargetType="Block"></Style>
 </ResourceDictionary>

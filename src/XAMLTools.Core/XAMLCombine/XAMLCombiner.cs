@@ -41,7 +41,7 @@
         {
             Trace.WriteLine(string.Format("Loading resources list from \"{0}\"", sourceFile));
 
-            sourceFile = this.GetFilePath(sourceFile);
+            sourceFile = this.GetFullFilePath(sourceFile);
 
             // Load resource file list
             var resourceFileLines = File.ReadAllLines(sourceFile);
@@ -74,7 +74,7 @@
             var resourcesList = new List<ResourceElement>();
 
             // For each resource file
-            foreach (var resourceFile in sourceFiles)
+            foreach (var resourceFile in sourceFiles.OrderBy(x => x))
             {
                 // ignore empty and lines that start with '#'
                 if (string.IsNullOrEmpty(resourceFile)
@@ -84,7 +84,7 @@
                 }
 
                 var current = new XmlDocument();
-                current.Load(this.GetFilePath(resourceFile));
+                current.Load(this.GetFullFilePath(resourceFile));
 
                 Trace.WriteLine(string.Format("Loading resource \"{0}\"", resourceFile));
 
@@ -97,7 +97,7 @@
 
                 for (var j = 0; j < root.Attributes.Count; j++)
                 {
-                    XmlAttribute attr = root.Attributes[j];
+                    var attr = root.Attributes[j];
                     if (rootNode.HasAttribute(attr.Name))
                     {
                         // If namespace with this name exists and not equal
@@ -120,7 +120,7 @@
                             ChangeNamespacePrefix(root, attr.LocalName, name);
 
                             // Add renamed namespace
-                            XmlAttribute a = finalDocument.CreateAttribute("xmlns", name, attr.NamespaceURI);
+                            var a = finalDocument.CreateAttribute("xmlns", name, attr.NamespaceURI);
                             a.Value = attr.Value;
                             rootNode.Attributes.Append(a);
                         }
@@ -151,7 +151,7 @@
                         if (exists == false)
                         {
                             // Add namespace to result resource dictionarty
-                            XmlAttribute a = finalDocument.CreateAttribute(attr.Prefix, attr.LocalName, attr.NamespaceURI);
+                            var a = finalDocument.CreateAttribute(attr.Prefix, attr.LocalName, attr.NamespaceURI);
                             a.Value = attr.Value;
                             rootNode.Attributes.Append(a);
                         }
@@ -161,103 +161,43 @@
                 // Extract resources
                 foreach (XmlNode? node in root.ChildNodes)
                 {
-                    if (node is not XmlElement xmlElement)
+                    if (node is XmlElement
+                        && node.Name != "ResourceDictionary.MergedDictionaries")
                     {
-                        continue;
-                    }
+                        // Import XML node from one XML document to result XML document                        
+                        var importedElement = (XmlElement)finalDocument.ImportNode(node, true);
 
-                    // Merged resource dictionaries (at the top)
-                    if (node.Name == MergedDictionariesString)
-                    {
-                        if (importMergedResourceDictionariesReferences)
+                        // Find resource key
+                        // TODO: Is any other variants???
+                        var key = string.Empty;
+                        if (importedElement.HasAttribute("Key"))
                         {
-                            if (rootNode.ChildNodes.Count == 0)
-                            {
-                                mergedDictionariesListNode = finalDocument.CreateElement(MergedDictionariesString, "http://schemas.microsoft.com/winfx/2006/xaml/presentation");
-                                rootNode.AppendChild(mergedDictionariesListNode);
-                            }
-                            else if (rootNode.FirstChild.Name != MergedDictionariesString)
-                            {
-                                mergedDictionariesListNode = finalDocument.CreateElement(MergedDictionariesString, "http://schemas.microsoft.com/winfx/2006/xaml/presentation");
-                                rootNode.InsertBefore(mergedDictionariesListNode, rootNode.FirstChild);
-                            }
-                            else
-                            {
-                                // Already created;
-                            }
+                            key = importedElement.Attributes["Key"].Value;
+                        }
+                        else if (importedElement.HasAttribute("x:Key"))
+                        {
+                            key = importedElement.Attributes["x:Key"].Value;
+                        }
+                        else if (importedElement.HasAttribute("TargetType"))
+                        {
+                            key = importedElement.Attributes["TargetType"].Value;
+                        }
 
-                            if (mergedDictionariesListNode == null)
+                        if (string.IsNullOrEmpty(key) == false)
+                        {
+                            // Check key unique
+                            if (keys.Contains(key))
                             {
                                 continue;
                             }
 
-                            var currentMergedSources = mergedDictionariesListNode.ChildNodes.OfType<XmlElement>()
-                                .Select(node => node.GetAttribute("Source"))
-                                .Where(source => !string.IsNullOrEmpty(source)).ToList();
+                            keys.Add(key);
 
-                            foreach (var mergedDictionaryReference in xmlElement.ChildNodes)
-                            {
-                                if (mergedDictionaryReference is not XmlElement mergedDictionaryReferenceElement || mergedDictionaryReferenceElement.Name != "ResourceDictionary")
-                                {
-                                    continue;
-                                }
-
-                                var sourceValue = mergedDictionaryReferenceElement.GetAttribute("Source");
-                                if (string.IsNullOrEmpty(sourceValue))
-                                {
-                                    continue;
-                                }
-
-                                // Check if it was already added
-                                if (currentMergedSources.Any(x => x.Equals(sourceValue)))
-                                {
-                                    continue;
-                                }
-
-                                // Import ResourceDictionary reference node from one XML document to result XML document                        
-                                var importedResourceDictionaryReference = (XmlElement)finalDocument.ImportNode(mergedDictionaryReferenceElement, false);
-                                mergedDictionariesListNode.AppendChild(importedResourceDictionaryReference);
-                            }
+                            // Create ResourceElement for key and XML node
+                            var res = new ResourceElement(key, importedElement, FillKeys(importedElement));
+                            resourceElements.Add(key, res);
+                            resourcesList.Add(res);
                         }
-
-                        continue;
-                    }
-
-                    // Resources
-
-                    // Import XML node from one XML document to result XML document                        
-                    var importedElement = (XmlElement)finalDocument.ImportNode(xmlElement, true);
-
-                    // Find resource key
-                    // TODO: Is any other variants???
-                    var key = string.Empty;
-                    if (importedElement.HasAttribute("Key"))
-                    {
-                        key = importedElement.Attributes["Key"].Value;
-                    }
-                    else if (importedElement.HasAttribute("x:Key"))
-                    {
-                        key = importedElement.Attributes["x:Key"].Value;
-                    }
-                    else if (importedElement.HasAttribute("TargetType"))
-                    {
-                        key = importedElement.Attributes["TargetType"].Value;
-                    }
-
-                    if (string.IsNullOrEmpty(key) == false)
-                    {
-                        // Check key unique
-                        if (keys.Contains(key))
-                        {
-                            continue;
-                        }
-
-                        keys.Add(key);
-
-                        // Create ResourceElement for key and XML  node
-                        var res = new ResourceElement(key, importedElement, FillKeys(importedElement));
-                        resourceElements.Add(key, res);
-                        resourcesList.Add(res);
                     }
 
                     // TODO: Add output information.
@@ -298,7 +238,7 @@
                         }
                     }
 
-                    // If all used keys is in result list ad this resource to result list
+                    // If all used keys are in the result list add this resource to result list
                     if (containsAll)
                     {
                         finalOrderList.Add(resourcesList[i]);
@@ -323,16 +263,14 @@
             return WriteResultFile(targetFile, finalDocument);
         }
 
-        private string GetFilePath(string file)
+        private string GetFullFilePath(string file)
         {
-            var filePath = file;
-
-            if (File.Exists(filePath) == false)
+            if (File.Exists(file) == false)
             {
                 throw new FileNotFoundException("Unable to find file.", file);
             }
 
-            return Path.GetFullPath(filePath);
+            return Path.GetFullPath(file);
         }
 
         /// <summary>
@@ -351,60 +289,48 @@
 
             foreach (XmlNode? child in element.ChildNodes)
             {
-                if (child is XmlElement childElement)
+                if (child is not XmlElement childElement)
                 {
-                    if (child.Prefix == oldPrefix)
-                    {
-                        child.Prefix = newPrefix;
-                    }
-
-                    foreach (XmlAttribute? attr in childElement.Attributes)
-                    {
-                        if (attr is null)
-                        {
-                            continue;
-                        }
-
-                        // Check all attributes prefix
-                        if (attr.Prefix == oldPrefix)
-                        {
-                            attr.Prefix = newPrefix;
-                        }
-
-                        if (attr.Value.Contains(oldStringSpaced))
-                        {
-                            // Check {x:Type {x:Static in attributes values
-                            // TODO: Is any other???
-                            if (attr.Value.Contains("{x:Type") || attr.Value.Contains("{x:Static"))
-                            {
-                                attr.Value = attr.Value.Replace(oldStringSpaced, newStringSpaced);
-                            }
-                        }
-                        else
-                        {
-                            if (attr.Value.Contains(oldString))
-                            {
-                                // Check MarkdownExtension
-                                var match = MarkupExtensionSearch.Match(attr.Value);
-                                if (match.Success && match.Value.StartsWith(oldString))
-                                {
-                                    attr.Value = attr.Value.Replace(oldString, newString);
-                                }
-                            }
-                        }
-
-                        // Check Property attribute
-                        // TODO: Is any other???
-                        if (attr.Name == "Property"
-                            && attr.Value.StartsWith(oldString))
-                        {
-                            attr.Value = attr.Value.Replace(oldString, newString);
-                        }
-                    }
-
-                    // Change namespaces for child node
-                    ChangeNamespacePrefix(childElement, oldPrefix, newPrefix);
+                    continue;
                 }
+
+                if (child.Prefix == oldPrefix)
+                {
+                    child.Prefix = newPrefix;
+                }
+
+                foreach (XmlAttribute? attr in childElement.Attributes)
+                {
+                    if (attr is null)
+                    {
+                        continue;
+                    }
+
+                    // Check all attributes prefix
+                    if (attr.Prefix == oldPrefix)
+                    {
+                        attr.Prefix = newPrefix;
+                    }
+
+                    // Check {x:Type {x:Static in attributes values
+                    // TODO: Is any other???
+                    if ((attr.Value.Contains("{x:Type") || attr.Value.Contains("{x:Static"))
+                        && attr.Value.Contains(oldStringSpaced))
+                    {
+                        attr.Value = attr.Value.Replace(oldStringSpaced, newStringSpaced);
+                    }
+
+                    // Check Property attribute
+                    // TODO: Is any other???
+                    if (attr.Name == "Property"
+                        && attr.Value.StartsWith(oldString))
+                    {
+                        attr.Value = attr.Value.Replace(oldString, newString);
+                    }
+                }
+
+                // Change namespaces for child node
+                ChangeNamespacePrefix(childElement, oldPrefix, newPrefix);
             }
         }
 
