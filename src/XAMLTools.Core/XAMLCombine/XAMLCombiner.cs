@@ -161,43 +161,103 @@
                 // Extract resources
                 foreach (XmlNode? node in root.ChildNodes)
                 {
-                    if (node is XmlElement
-                        && node.Name != "ResourceDictionary.MergedDictionaries")
+                    if (node is not XmlElement xmlElement)
                     {
-                        // Import XML node from one XML document to result XML document                        
-                        var importedElement = (XmlElement)finalDocument.ImportNode(node, true);
+                        continue;
+                    }
 
-                        // Find resource key
-                        // TODO: Is any other variants???
-                        var key = string.Empty;
-                        if (importedElement.HasAttribute("Key"))
+                    // Merged resource dictionaries (at the top)
+                    if (node.Name == MergedDictionariesString)
+                    {
+                        if (importMergedResourceDictionariesReferences)
                         {
-                            key = importedElement.Attributes["Key"].Value;
-                        }
-                        else if (importedElement.HasAttribute("x:Key"))
-                        {
-                            key = importedElement.Attributes["x:Key"].Value;
-                        }
-                        else if (importedElement.HasAttribute("TargetType"))
-                        {
-                            key = importedElement.Attributes["TargetType"].Value;
-                        }
+                            if (rootNode.ChildNodes.Count == 0)
+                            {
+                                mergedDictionariesListNode = finalDocument.CreateElement(MergedDictionariesString, "http://schemas.microsoft.com/winfx/2006/xaml/presentation");
+                                rootNode.AppendChild(mergedDictionariesListNode);
+                            }
+                            else if (rootNode.FirstChild.Name != MergedDictionariesString)
+                            {
+                                mergedDictionariesListNode = finalDocument.CreateElement(MergedDictionariesString, "http://schemas.microsoft.com/winfx/2006/xaml/presentation");
+                                rootNode.InsertBefore(mergedDictionariesListNode, rootNode.FirstChild);
+                            }
+                            else
+                            {
+                                // Already created;
+                            }
 
-                        if (string.IsNullOrEmpty(key) == false)
-                        {
-                            // Check key unique
-                            if (keys.Contains(key))
+                            if (mergedDictionariesListNode == null)
                             {
                                 continue;
                             }
 
-                            keys.Add(key);
+                            var currentMergedSources = mergedDictionariesListNode.ChildNodes.OfType<XmlElement>()
+                                .Select(node => node.GetAttribute("Source"))
+                                .Where(source => !string.IsNullOrEmpty(source)).ToList();
 
-                            // Create ResourceElement for key and XML node
-                            var res = new ResourceElement(key, importedElement, FillKeys(importedElement));
-                            resourceElements.Add(key, res);
-                            resourcesList.Add(res);
+                            foreach (var mergedDictionaryReference in xmlElement.ChildNodes)
+                            {
+                                if (mergedDictionaryReference is not XmlElement mergedDictionaryReferenceElement || mergedDictionaryReferenceElement.Name != "ResourceDictionary")
+                                {
+                                    continue;
+                                }
+
+                                var sourceValue = mergedDictionaryReferenceElement.GetAttribute("Source");
+                                if (string.IsNullOrEmpty(sourceValue))
+                                {
+                                    continue;
+                                }
+
+                                // Check if it was already added
+                                if (currentMergedSources.Any(x => x.Equals(sourceValue)))
+                                {
+                                    continue;
+                                }
+
+                                // Import ResourceDictionary reference node from one XML document to result XML document                        
+                                var importedResourceDictionaryReference = (XmlElement)finalDocument.ImportNode(mergedDictionaryReferenceElement, false);
+                                mergedDictionariesListNode.AppendChild(importedResourceDictionaryReference);
+                            }
                         }
+
+                        continue;
+                    }
+
+                    // Resources
+
+                    // Import XML node from one XML document to result XML document                        
+                    var importedElement = (XmlElement)finalDocument.ImportNode(xmlElement, true);
+
+                    // Find resource key
+                    // TODO: Is any other variants???
+                    var key = string.Empty;
+                    if (importedElement.HasAttribute("Key"))
+                    {
+                        key = importedElement.Attributes["Key"].Value;
+                    }
+                    else if (importedElement.HasAttribute("x:Key"))
+                    {
+                        key = importedElement.Attributes["x:Key"].Value;
+                    }
+                    else if (importedElement.HasAttribute("TargetType"))
+                    {
+                        key = importedElement.Attributes["TargetType"].Value;
+                    }
+
+                    if (string.IsNullOrEmpty(key) == false)
+                    {
+                        // Check key unique
+                        if (keys.Contains(key))
+                        {
+                            continue;
+                        }
+
+                        keys.Add(key);
+
+                        // Create ResourceElement for key and XML  node
+                        var res = new ResourceElement(key, importedElement, FillKeys(importedElement));
+                        resourceElements.Add(key, res);
+                        resourcesList.Add(res);
                     }
 
                     // TODO: Add output information.
@@ -294,6 +354,7 @@
                     continue;
                 }
 
+
                 if (child.Prefix == oldPrefix)
                 {
                     child.Prefix = newPrefix;
@@ -312,12 +373,26 @@
                         attr.Prefix = newPrefix;
                     }
 
-                    // Check {x:Type {x:Static in attributes values
-                    // TODO: Is any other???
-                    if ((attr.Value.Contains("{x:Type") || attr.Value.Contains("{x:Static"))
-                        && attr.Value.Contains(oldStringSpaced))
+                    if (attr.Value.Contains(oldStringSpaced))
                     {
-                        attr.Value = attr.Value.Replace(oldStringSpaced, newStringSpaced);
+                        // Check {x:Type {x:Static in attributes values
+                        // TODO: Is any other???
+                        if (attr.Value.Contains("{x:Type") || attr.Value.Contains("{x:Static"))
+                        {
+                            attr.Value = attr.Value.Replace(oldStringSpaced, newStringSpaced);
+                        }
+                    }
+                    else
+                    {
+                        if (attr.Value.Contains(oldString))
+                        {
+                            // Check MarkdownExtension
+                            var match = MarkupExtensionSearch.Match(attr.Value);
+                            if (match.Success && match.Value.StartsWith(oldString))
+                            {
+                                attr.Value = attr.Value.Replace(oldString, newString);
+                            }
+                        }
                     }
 
                     // Check Property attribute
