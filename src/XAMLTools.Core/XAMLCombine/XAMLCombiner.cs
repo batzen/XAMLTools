@@ -129,7 +129,7 @@
 
                                 if (currentDocAttribute.Value == attributeFromFinalRoot.Value)
                                 {
-                                    this.Logger?.Warn($"Normalizing namespace prefix from \"{currentDocAttribute.Name}\" found in \"{resourceFile}\" \"{attributeFromFinalRoot.Name}\".");
+                                    this.Logger?.Warn($"Normalizing namespace prefix from \"{currentDocAttribute.Name}\" to \"{attributeFromFinalRoot.Name}\" found in \"{resourceFile}\".");
 
                                     currentDocRoot.SetAttribute(currentDocAttribute.Name, currentDocAttribute.Value);
                                     ChangeNamespacePrefix(currentDocRoot, currentDocAttribute.LocalName, attributeFromFinalRoot.LocalName);
