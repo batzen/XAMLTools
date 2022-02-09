@@ -36,8 +36,8 @@
         /// </summary>
         /// <param name="sourceFile">Filename of list of XAML's.</param>
         /// <param name="targetFile">Result XAML filename.</param>
-        /// <param name="includeMergedResourceDictionaryReferences"></param>
-        public void Combine(string sourceFile, string targetFile, bool includeMergedResourceDictionaryReferences = false)
+        /// <param name="importMergedResourceDictionariesReferences"></param>
+        public void Combine(string sourceFile, string targetFile, bool importMergedResourceDictionariesReferences = false)
         {
             Trace.WriteLine(string.Format("Loading resources list from \"{0}\"", sourceFile));
 
@@ -46,7 +46,7 @@
             // Load resource file list
             var resourceFileLines = File.ReadAllLines(sourceFile);
 
-            this.Combine(resourceFileLines, targetFile);
+            this.Combine(resourceFileLines, targetFile, importMergedResourceDictionariesReferences);
         }
 
         /// <summary>
@@ -54,8 +54,8 @@
         /// </summary>
         /// <param name="sourceFiles">Source files.</param>
         /// <param name="targetFile">Result XAML filename.</param>
-        /// <param name="includeMergedResourceDictionaryReferences"></param>
-        public string Combine(IEnumerable<string> sourceFiles, string targetFile, bool includeMergedResourceDictionaryReferences = false)
+        /// <param name="importMergedResourceDictionariesReferences"></param>
+        public string Combine(IEnumerable<string> sourceFiles, string targetFile, bool importMergedResourceDictionariesReferences = false)
         {
             // Create result XML document
             var finalDocument = new XmlDocument();
@@ -169,7 +169,7 @@
                     // Merged resource dictionaries (at the top)
                     if (node.Name == MergedDictionariesString)
                     {
-                        if (includeMergedResourceDictionaryReferences)
+                        if (importMergedResourceDictionariesReferences)
                         {
                             if (rootNode.ChildNodes.Count == 0)
                             {

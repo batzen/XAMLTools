@@ -1,10 +1,9 @@
 ﻿namespace XAMLTools.MSBuild
 {
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
     using Microsoft.Build.Framework;
     using Microsoft.Build.Utilities;
+    using System.Collections.Generic;
+    using System.Linq;
     using XAMLTools.Helpers;
     using XAMLTools.XAMLCombine;
 
@@ -18,6 +17,8 @@
         [Output]
         public ITaskItem[]? GeneratedFiles { get; set; }
 
+        public bool ImportMergedResourceDictionariesReferences { get; set; }
+
         public override bool Execute()
         {
             //System.Diagnostics.Debugger.Launch();
@@ -26,6 +27,8 @@
 
             var grouped = this.Items.GroupBy(x => x.GetMetadata(TargetFileMetadataName));
 
+            var importMergedResourceDictionariesReferences = ImportMergedResourceDictionariesReferences;
+
             foreach (var item in grouped)
             {
                 var sourceFiles = item.Select(x => x.ItemSpec);
@@ -33,8 +36,13 @@
 
                 this.BuildEngine.LogMessageEvent(new BuildMessageEventArgs($"Generating combined XAML file \"{targetFile}\".", string.Empty, nameof(XAMLCombineTask), MessageImportance.High));
 
+                if (importMergedResourceDictionariesReferences)
+                {
+                    this.BuildEngine.LogMessageEvent(new BuildMessageEventArgs($"Import for merged ResourceDictionary elements enabled for this generated content", string.Empty, nameof(XAMLCombine), MessageImportance.Low));
+                }
+
                 var combiner = new XAMLCombiner();
-                targetFile = MutexHelper.ExecuteLocked(() => combiner.Combine(sourceFiles, targetFile), targetFile);
+                targetFile = MutexHelper.ExecuteLocked(() => combiner.Combine(sourceFiles, targetFile, importMergedResourceDictionariesReferences), targetFile);
 
                 generatedFiles.Add(new TaskItem(targetFile));
             }
