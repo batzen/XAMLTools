@@ -2,7 +2,6 @@ namespace XAMLTools.XAMLColorSchemeGenerator
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Text;
@@ -10,6 +9,8 @@ namespace XAMLTools.XAMLColorSchemeGenerator
     public class ColorSchemeGenerator
     {
         private const int BufferSize = 32768; // 32 Kilobytes
+
+        public ILogger? Logger { get; set; } = new TraceLogger();
 
         public IEnumerable<string> GenerateColorSchemeFiles(string generatorParametersFile, string templateFile, string? outputPath = null)
         {
@@ -130,12 +131,12 @@ namespace XAMLTools.XAMLColorSchemeGenerator
                 themeFilename += ".HighContrast";
             }
 
-            //Debugger.Launch();
-            themeFilename = themeFilename.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
             var themeFile = Path.Combine(outputPath, $"{themeFilename}.xaml");
+            themeFile = themeFile.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+
             var isNewFile = File.Exists(themeFile) == false;
 
-            Trace.WriteLine($"Checking \"{themeFile}\"...");
+            this.Logger?.Info($"Checking \"{themeFile}\"...");
 
             var fileHasToBeWritten = isNewFile
                                      || ReadAllTextShared(themeFile) != themeTempFileContent;
@@ -147,11 +148,11 @@ namespace XAMLTools.XAMLColorSchemeGenerator
                     sw.Write(themeTempFileContent);
                 }
 
-                Trace.WriteLine($"Resource Dictionary saved to \"{themeFile}\".");
+                this.Logger?.Info($"Resource Dictionary saved to \"{themeFile}\".");
             }
             else
             {
-                Trace.WriteLine("New Resource Dictionary did not differ from existing file. No new file written.");
+                this.Logger?.Info("New Resource Dictionary did not differ from existing file. No new file written.");
             }
 
             return themeFile;

@@ -7,7 +7,6 @@
     <UseWPF>true</UseWPF>
 
     <ManagePackageVersionsCentrally>False</ManagePackageVersionsCentrally>
-<!--    <RestoreSources>$(MSBuildThisFileDirectory)/../artifacts/;$(RestoreSources)</RestoreSources>-->
     <XAMLCombineEnabled Condition="'$(XAMLCombineEnabled)' == ''">False</XAMLCombineEnabled>
     <XAMLColorSchemeGeneratorEnabled Condition="'$(XAMLColorSchemeGeneratorEnabled)' == ''">False</XAMLColorSchemeGeneratorEnabled>
     <XAMLToolsPath>..\..\..\bin\$(Configuration)\XAMLTools.MSBuild\</XAMLToolsPath>
@@ -21,10 +20,6 @@
 
   <ItemGroup Condition="'$(IsBuildingInsideRider)' == 'True'">
     <Page Include="Themes/Controls/*.xaml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\XAMLTools.MSBuild\XAMLTools.MSBuild.csproj" />
   </ItemGroup>
 
   <ItemGroup>

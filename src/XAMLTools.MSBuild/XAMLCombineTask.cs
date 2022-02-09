@@ -1,6 +1,7 @@
 ﻿namespace XAMLTools.MSBuild
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using Microsoft.Build.Framework;
@@ -20,8 +21,6 @@
 
         public override bool Execute()
         {
-            //System.Diagnostics.Debugger.Launch();
-
             var generatedFiles = new List<ITaskItem>();
 
             var grouped = this.Items.GroupBy(x => x.GetMetadata(TargetFileMetadataName));
@@ -33,7 +32,10 @@
 
                 this.BuildEngine.LogMessageEvent(new BuildMessageEventArgs($"Generating combined XAML file \"{targetFile}\".", string.Empty, nameof(XAMLCombineTask), MessageImportance.High));
 
-                var combiner = new XAMLCombiner();
+                var combiner = new XAMLCombiner
+                {
+                    Logger = new Logger(this.BuildEngine, nameof(XAMLCombineTask))
+                };
                 targetFile = MutexHelper.ExecuteLocked(() => combiner.Combine(sourceFiles, targetFile), targetFile);
 
                 generatedFiles.Add(new TaskItem(targetFile));
