@@ -1,4 +1,4 @@
-namespace XAMLTools.XAMLCombine
+﻿namespace XAMLTools.XAMLCombine
 {
     using System;
     using System.Collections.Generic;
@@ -32,7 +32,7 @@ namespace XAMLTools.XAMLCombine
         {
             Trace.WriteLine(string.Format("Loading resources list from \"{0}\"", sourceFile));
 
-            sourceFile = this.GetFilePath(sourceFile);
+            sourceFile = this.GetFullFilePath(sourceFile);
 
             // Load resource file list
             var resourceFileLines = File.ReadAllLines(sourceFile);
@@ -72,7 +72,7 @@ namespace XAMLTools.XAMLCombine
                 }
 
                 var current = new XmlDocument();
-                current.Load(this.GetFilePath(resourceFile));
+                current.Load(this.GetFullFilePath(resourceFile));
 
                 Trace.WriteLine(string.Format("Loading resource \"{0}\"", resourceFile));
 
@@ -85,7 +85,7 @@ namespace XAMLTools.XAMLCombine
 
                 for (var j = 0; j < root.Attributes.Count; j++)
                 {
-                    XmlAttribute attr = root.Attributes[j];
+                    var attr = root.Attributes[j];
                     if (rootNode.HasAttribute(attr.Name))
                     {
                         // If namespace with this name exists and not equal
@@ -108,7 +108,7 @@ namespace XAMLTools.XAMLCombine
                             ChangeNamespacePrefix(root, attr.LocalName, name);
 
                             // Add renamed namespace
-                            XmlAttribute a = finalDocument.CreateAttribute("xmlns", name, attr.NamespaceURI);
+                            var a = finalDocument.CreateAttribute("xmlns", name, attr.NamespaceURI);
                             a.Value = attr.Value;
                             rootNode.Attributes.Append(a);
                         }
@@ -139,7 +139,7 @@ namespace XAMLTools.XAMLCombine
                         if (exists == false)
                         {
                             // Add namespace to result resource dictionarty
-                            XmlAttribute a = finalDocument.CreateAttribute(attr.Prefix, attr.LocalName, attr.NamespaceURI);
+                            var a = finalDocument.CreateAttribute(attr.Prefix, attr.LocalName, attr.NamespaceURI);
                             a.Value = attr.Value;
                             rootNode.Attributes.Append(a);
                         }
@@ -181,7 +181,7 @@ namespace XAMLTools.XAMLCombine
 
                             keys.Add(key);
 
-                            // Create ResourceElement for key and XML  node
+                            // Create ResourceElement for key and XML node
                             var res = new ResourceElement(key, importedElement, FillKeys(importedElement));
                             resourceElements.Add(key, res);
                             resourcesList.Add(res);
@@ -226,7 +226,7 @@ namespace XAMLTools.XAMLCombine
                         }
                     }
 
-                    // If all used keys is in result list ad this resource to result list
+                    // If all used keys are in the result list add this resource to result list
                     if (containsAll)
                     {
                         finalOrderList.Add(resourcesList[i]);
@@ -251,16 +251,14 @@ namespace XAMLTools.XAMLCombine
             return WriteResultFile(targetFile, finalDocument);
         }
 
-        private string GetFilePath(string file)
+        private string GetFullFilePath(string file)
         {
-            var filePath = file;
-
-            if (File.Exists(filePath) == false)
+            if (File.Exists(file) == false)
             {
                 throw new FileNotFoundException("Unable to find file.", file);
             }
 
-            return Path.GetFullPath(filePath);
+            return Path.GetFullPath(file);
         }
 
         /// <summary>
@@ -279,46 +277,48 @@ namespace XAMLTools.XAMLCombine
 
             foreach (XmlNode? child in element.ChildNodes)
             {
-                if (child is XmlElement childElement)
+                if (child is not XmlElement childElement)
                 {
-                    if (child.Prefix == oldPrefix)
-                    {
-                        child.Prefix = newPrefix;
-                    }
-
-                    foreach (XmlAttribute? attr in childElement.Attributes)
-                    {
-                        if (attr is null)
-                        {
-                            continue;
-                        }
-
-                        // Check all attributes prefix
-                        if (attr.Prefix == oldPrefix)
-                        {
-                            attr.Prefix = newPrefix;
-                        }
-
-                        // Check {x:Type {x:Static in attributes values
-                        // TODO: Is any other???
-                        if ((attr.Value.Contains("{x:Type") || attr.Value.Contains("{x:Static"))
-                            && attr.Value.Contains(oldStringSpaced))
-                        {
-                            attr.Value = attr.Value.Replace(oldStringSpaced, newStringSpaced);
-                        }
-
-                        // Check Property attribute
-                        // TODO: Is any other???
-                        if (attr.Name == "Property"
-                            && attr.Value.StartsWith(oldString))
-                        {
-                            attr.Value = attr.Value.Replace(oldString, newString);
-                        }
-                    }
-
-                    // Change namespaces for child node
-                    ChangeNamespacePrefix(childElement, oldPrefix, newPrefix);
+                    continue;
                 }
+
+                if (child.Prefix == oldPrefix)
+                {
+                    child.Prefix = newPrefix;
+                }
+
+                foreach (XmlAttribute? attr in childElement.Attributes)
+                {
+                    if (attr is null)
+                    {
+                        continue;
+                    }
+
+                    // Check all attributes prefix
+                    if (attr.Prefix == oldPrefix)
+                    {
+                        attr.Prefix = newPrefix;
+                    }
+
+                    // Check {x:Type {x:Static in attributes values
+                    // TODO: Is any other???
+                    if ((attr.Value.Contains("{x:Type") || attr.Value.Contains("{x:Static"))
+                        && attr.Value.Contains(oldStringSpaced))
+                    {
+                        attr.Value = attr.Value.Replace(oldStringSpaced, newStringSpaced);
+                    }
+
+                    // Check Property attribute
+                    // TODO: Is any other???
+                    if (attr.Name == "Property"
+                        && attr.Value.StartsWith(oldString))
+                    {
+                        attr.Value = attr.Value.Replace(oldString, newString);
+                    }
+                }
+
+                // Change namespaces for child node
+                ChangeNamespacePrefix(childElement, oldPrefix, newPrefix);
             }
         }
 
@@ -431,7 +431,7 @@ namespace XAMLTools.XAMLCombine
             try
             {
                 stream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read);
-                
+
                 using (var textReader = new StreamReader(stream))
                 {
                     stream = null;
