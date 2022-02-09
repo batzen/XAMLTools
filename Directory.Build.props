@@ -30,6 +30,17 @@
     <NoError>$(NoError);CS1591</NoError>
   </PropertyGroup>
 
+  <!-- Assembly info -->
+  <PropertyGroup>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+
+    <Company>https://github.com/batzen/XAMLTools</Company>
+    <Product>XAMLTools</Product>
+    <Copyright>Copyright © 2015 - $([System.DateTime]::Today.ToString(yyyy)) Bastian Schmidt</Copyright>
+
+    <VersionPrefix>4.0</VersionPrefix>
+  </PropertyGroup>
+
   <!-- NuGet -->
   <PropertyGroup>
     <Authors>Bastian Schmidt</Authors>
@@ -44,6 +55,19 @@
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <DevelopmentDependency>true</DevelopmentDependency>
     <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+  </PropertyGroup>
+
+  <!-- SourceLink -->
+  <PropertyGroup>
+    <!-- Optional: Declare that the Repository URL can be published to NuSpec -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <!-- Optional: Embed source files that are not tracked by the source control manager to the PDB -->
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <!-- Optional: Include PDB in the built .nupkg -->
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+    <!-- By using EmbedAllSources we don't need SourceLink itself -->
+    <!-- https://github.com/dotnet/sourcelink/blob/master/docs/README.md#embedallsources -->
+    <EmbedAllSources>True</EmbedAllSources>
   </PropertyGroup>
 
   <!-- Sign assembly -->
