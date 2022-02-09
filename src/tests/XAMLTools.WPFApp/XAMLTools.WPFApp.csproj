@@ -8,7 +8,7 @@
 
     <ManagePackageVersionsCentrally>False</ManagePackageVersionsCentrally>
 <!--    <RestoreSources>$(MSBuildThisFileDirectory)/../artifacts/;$(RestoreSources)</RestoreSources>-->
-    <XAMLCombineEnabled Condition="'$(XAMLCombineEnabled)' == ''">True</XAMLCombineEnabled>
+    <XAMLCombineEnabled Condition="'$(XAMLCombineEnabled)' == ''">False</XAMLCombineEnabled>
     <XAMLColorSchemeGeneratorEnabled Condition="'$(XAMLColorSchemeGeneratorEnabled)' == ''">False</XAMLColorSchemeGeneratorEnabled>
     <XAMLCombineImportMergedResourceDictionariesReferences>False</XAMLCombineImportMergedResourceDictionariesReferences>
     <XAMLToolsPath>..\..\..\bin\$(Configuration)\XAMLTools.MSBuild\</XAMLToolsPath>

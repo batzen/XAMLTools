@@ -181,10 +181,6 @@
                                 mergedDictionariesListNode = finalDocument.CreateElement(MergedDictionariesString, "http://schemas.microsoft.com/winfx/2006/xaml/presentation");
                                 rootNode.InsertBefore(mergedDictionariesListNode, rootNode.FirstChild);
                             }
-                            else
-                            {
-                                // Already created;
-                            }
 
                             if (mergedDictionariesListNode == null)
                             {
@@ -214,7 +210,7 @@
                                     continue;
                                 }
 
-                                // Import ResourceDictionary reference node from one XML document to result XML document                        
+                                // Import ResourceDictionary reference node from processed XML document to final XML document                        
                                 var importedResourceDictionaryReference = (XmlElement)finalDocument.ImportNode(mergedDictionaryReferenceElement, false);
                                 mergedDictionariesListNode.AppendChild(importedResourceDictionaryReference);
                             }
