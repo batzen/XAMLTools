@@ -1,10 +1,11 @@
-﻿namespace XAMLTools.XAMLCombine
+namespace XAMLTools.XAMLCombine
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Globalization;
     using System.IO;
+    using System.Linq;
     using System.Text;
     using System.Xml;
 
@@ -61,7 +62,7 @@
             var resourcesList = new List<ResourceElement>();
 
             // For each resource file
-            foreach (var resourceFile in sourceFiles)
+            foreach (var resourceFile in sourceFiles.OrderBy(x => x))
             {
                 // ignore empty and lines that start with '#'
                 if (string.IsNullOrEmpty(resourceFile)
