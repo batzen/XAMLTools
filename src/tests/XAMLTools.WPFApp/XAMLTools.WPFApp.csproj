@@ -23,6 +23,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\XAMLTools.MSBuild\XAMLTools.MSBuild.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <XAMLCombineItems Include="Themes/Controls/*.xaml">
       <TargetFile>Themes/Generic.xaml</TargetFile>
       <Visible>False</Visible>
