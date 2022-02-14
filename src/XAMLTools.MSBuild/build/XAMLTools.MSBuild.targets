@@ -12,7 +12,7 @@
     <Error Condition="($(MsBuildMajorVersion) &lt; 16)"
            Text="XAMLTools is only supported on MSBuild 16 and above. Current version: $(MsBuildMajorVersion)."/>
 
-    <XAMLCombineTask Items="@(XAMLCombineItems)">
+    <XAMLCombineTask Items="@(XAMLCombineItems)" ImportMergedResourceDictionariesReferences="$(XAMLCombineImportMergedResourceDictionariesReferences)">
       <Output ItemName="XAMLCombineGeneratedFiles" TaskParameter="GeneratedFiles"/>
     </XAMLCombineTask>
 
