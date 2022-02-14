@@ -17,7 +17,7 @@
         [Output]
         public ITaskItem[]? GeneratedFiles { get; set; }
 
-        public bool ImportMergedResourceDictionariesReferences { get; set; }
+        public bool ImportMergedResourceDictionaryReferences { get; set; }
 
         public override bool Execute()
         {
@@ -25,9 +25,9 @@
 
             var grouped = Items.GroupBy(x => x.GetMetadata(TargetFileMetadataName));
 
-            var importMergedResourceDictionariesReferences = ImportMergedResourceDictionariesReferences;
+            var importMergedResourceDictionaryReferences = ImportMergedResourceDictionaryReferences;
 
-            if (importMergedResourceDictionariesReferences)
+            if (importMergedResourceDictionaryReferences)
             {
                 BuildEngine.LogMessageEvent(new BuildMessageEventArgs($"Import for merged ResourceDictionary elements enabled for this generated content", string.Empty, nameof(XAMLCombine), MessageImportance.Low));
             }
@@ -43,7 +43,7 @@
                 {
                     Logger = new Logger(this.BuildEngine, nameof(XAMLCombineTask))
                 };
-                targetFile = MutexHelper.ExecuteLocked(() => combiner.Combine(sourceFiles, targetFile, importMergedResourceDictionariesReferences), targetFile);
+                targetFile = MutexHelper.ExecuteLocked(() => combiner.Combine(sourceFiles, targetFile, importMergedResourceDictionaryReferences), targetFile);
 
                 generatedFiles.Add(new TaskItem(targetFile));
             }
