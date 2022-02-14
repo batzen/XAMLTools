@@ -97,6 +97,18 @@
                     continue;
                 }
 
+                string winfxXamlNamespaceAttributeName = "x";
+
+                // Find http://schemas.microsoft.com/winfx/2006/xaml namespace mapping
+                foreach (XmlAttribute attribute in root.Attributes)
+                {
+                    var namespaceUri = attribute.Value;
+                    if (string.Equals(namespaceUri, "http://schemas.microsoft.com/winfx/2006/xaml"))
+                    {
+                        winfxXamlNamespaceAttributeName = attribute.LocalName;
+                    }
+                }
+
                 for (var j = 0; j < root.Attributes.Count; j++)
                 {
                     var attr = root.Attributes[j];
@@ -119,7 +131,7 @@
                             root.SetAttribute("xmlns:" + name, attr.Value);
 
                             // Change namespace prefixes in resource dictionary
-                            ChangeNamespacePrefix(root, attr.LocalName, name);
+                            ChangeNamespacePrefix(root, attr.LocalName, name, winfxXamlNamespaceAttributeName);
 
                             // Add renamed namespace
                             var a = finalDocument.CreateAttribute("xmlns", name, attr.NamespaceURI);
@@ -143,7 +155,7 @@
                                 if (attr.Value == attribute.Value)
                                 {
                                     root.SetAttribute(attr.Name, attr.Value);
-                                    ChangeNamespacePrefix(root, attr.LocalName, attribute.LocalName);
+                                    ChangeNamespacePrefix(root, attr.LocalName, attribute.LocalName, winfxXamlNamespaceAttributeName);
                                     exists = true;
                                     break;
                                 }
@@ -337,7 +349,8 @@
         /// <param name="element">XML node.</param>
         /// <param name="oldPrefix">Old namespace prefix.</param>
         /// <param name="newPrefix">New namespace prefix.</param>
-        private static void ChangeNamespacePrefix(XmlElement element, string oldPrefix, string newPrefix)
+        /// <param name="winfxXamlNamespaceMapping">The local name for winfx xaml namespace</param>
+        private static void ChangeNamespacePrefix(XmlElement element, string oldPrefix, string newPrefix, string winfxXamlNamespaceMapping)
         {
             // String for search
             var oldString = oldPrefix + ":";
@@ -375,7 +388,7 @@
                     {
                         // Check {x:Type {x:Static in attributes values
                         // TODO: Is any other???
-                        if (attr.Value.Contains("{x:Type") || attr.Value.Contains("{x:Static"))
+                        if (attr.Value.Contains($"{{{winfxXamlNamespaceMapping}:Type") || attr.Value.Contains($"{{{winfxXamlNamespaceMapping}:Static"))
                         {
                             attr.Value = attr.Value.Replace(oldStringSpaced, newStringSpaced);
                         }
@@ -403,7 +416,7 @@
                 }
 
                 // Change namespaces for child node
-                ChangeNamespacePrefix(childElement, oldPrefix, newPrefix);
+                ChangeNamespacePrefix(childElement, oldPrefix, newPrefix, winfxXamlNamespaceMapping);
             }
         }
 

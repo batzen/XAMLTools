@@ -21,7 +21,7 @@
 
         public override bool Execute()
         {
-            //System.Diagnostics.Debugger.Launch();
+            // System.Diagnostics.Debugger.Launch();
 
             var generatedFiles = new List<ITaskItem>();
 
