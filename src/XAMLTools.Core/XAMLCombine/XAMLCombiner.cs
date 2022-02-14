@@ -23,10 +23,11 @@
         /// </summary>
         private const string StaticResourceString = "{StaticResource ";
 
-        public ILogger? Logger { get; set; } = new TraceLogger();
         private const string MergedDictionariesString = "ResourceDictionary.MergedDictionaries";
 
         private const string ResourceDictionaryString = "ResourceDictionary";
+
+        public ILogger? Logger { get; set; } = new TraceLogger();
 
         /// <summary>
         /// Expression matches substring which placed inside brackets, following '=' symbol
@@ -97,6 +98,19 @@
                     continue;
                 }
 
+                string winfxXamlNamespaceAttributeName = "x";
+
+                // Find http://schemas.microsoft.com/winfx/2006/xaml namespace mapping
+                foreach (XmlAttribute attribute in currentDocRoot.Attributes)
+                {
+                    var namespaceUri = attribute.Value;
+                    if (string.Equals(namespaceUri, "http://schemas.microsoft.com/winfx/2006/xaml"))
+                    {
+                        winfxXamlNamespaceAttributeName = attribute.LocalName;
+                    }
+                }
+
+
                 for (var j = 0; j < currentDocRoot.Attributes.Count; j++)
                 {
                     var currentDocAttribute = currentDocRoot.Attributes[j];
@@ -119,7 +133,7 @@
                             currentDocRoot.SetAttribute("xmlns:" + name, currentDocAttribute.Value);
 
                             // Change namespace prefixes in resource dictionary
-                            ChangeNamespacePrefix(currentDocRoot, currentDocAttribute.LocalName, name);
+                            ChangeNamespacePrefix(currentDocRoot, currentDocAttribute.LocalName, name, winfxXamlNamespaceAttributeName);
 
                             // Add renamed namespace
                             var a = finalDocument.CreateAttribute("xmlns", name, currentDocAttribute.NamespaceURI);
@@ -145,7 +159,7 @@
                                     this.Logger?.Warn($"Normalizing namespace prefix from \"{currentDocAttribute.Name}\" to \"{attributeFromFinalRoot.Name}\" found in \"{resourceFile}\".");
 
                                     currentDocRoot.SetAttribute(currentDocAttribute.Name, currentDocAttribute.Value);
-                                    ChangeNamespacePrefix(currentDocRoot, currentDocAttribute.LocalName, attributeFromFinalRoot.LocalName);
+                                    ChangeNamespacePrefix(currentDocRoot, currentDocAttribute.LocalName, attributeFromFinalRoot.LocalName, winfxXamlNamespaceAttributeName);
                                     exists = true;
                                     break;
                                 }
@@ -175,20 +189,19 @@
                     {
                         if (importMergedResourceDictionaryReferences)
                         {
-                            if (rootNode.ChildNodes.Count == 0)
+                            if (finalRootNode.ChildNodes.Count == 0)
                             {
                                 mergedDictionariesListNode = finalDocument.CreateElement(MergedDictionariesString, "http://schemas.microsoft.com/winfx/2006/xaml/presentation");
-                                rootNode.AppendChild(mergedDictionariesListNode);
+                                finalRootNode.AppendChild(mergedDictionariesListNode);
                             }
-                            else if (rootNode.FirstChild.Name != MergedDictionariesString)
+                            else if (finalRootNode.FirstChild.Name != MergedDictionariesString)
                             {
                                 mergedDictionariesListNode = finalDocument.CreateElement(MergedDictionariesString, "http://schemas.microsoft.com/winfx/2006/xaml/presentation");
-                                rootNode.InsertBefore(mergedDictionariesListNode, rootNode.FirstChild);
+                                finalRootNode.InsertBefore(mergedDictionariesListNode, finalRootNode.FirstChild);
                             }
 
                             if (mergedDictionariesListNode == null)
                             {
-                                this.Logger?.Warn($"Duplicate key \"{key}\" found in \"{resourceFile}\".");
                                 continue;
                             }
 
@@ -207,7 +220,7 @@
                                 var sourceValue = mergedDictionaryReferenceElement.GetAttribute("Source");
                                 if (string.IsNullOrEmpty(sourceValue))
                                 {
-                                    Trace.WriteLine(string.Format($"Ignore merged ResourceDictionary inside resource \"{resourceFile}\""));
+                                    Logger?.Warn(string.Format($"Ignore merged ResourceDictionary inside resource \"{resourceFile}\""));
                                     continue;
                                 }
 

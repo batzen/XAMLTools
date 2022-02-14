@@ -43,7 +43,7 @@
                 {
                     Logger = new Logger(this.BuildEngine, nameof(XAMLCombineTask))
                 };
-                targetFile = MutexHelper.ExecuteLocked(() => combiner.Combine(sourceFiles, targetFile), targetFile);
+                targetFile = MutexHelper.ExecuteLocked(() => combiner.Combine(sourceFiles, targetFile, importMergedResourceDictionariesReferences), targetFile);
 
                 generatedFiles.Add(new TaskItem(targetFile));
             }
