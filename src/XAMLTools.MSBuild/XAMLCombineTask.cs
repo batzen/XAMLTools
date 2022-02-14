@@ -21,8 +21,6 @@
 
         public override bool Execute()
         {
-            // System.Diagnostics.Debugger.Launch();
-
             var generatedFiles = new List<ITaskItem>();
 
             var grouped = Items.GroupBy(x => x.GetMetadata(TargetFileMetadataName));
@@ -41,8 +39,11 @@
 
                 BuildEngine.LogMessageEvent(new BuildMessageEventArgs($"Generating combined XAML file \"{targetFile}\".", string.Empty, nameof(XAMLCombineTask), MessageImportance.High));
 
-                var combiner = new XAMLCombiner();
-                targetFile = MutexHelper.ExecuteLocked(() => combiner.Combine(sourceFiles, targetFile, importMergedResourceDictionariesReferences), targetFile);
+                var combiner = new XAMLCombiner
+                {
+                    Logger = new Logger(this.BuildEngine, nameof(XAMLCombineTask))
+                };
+                targetFile = MutexHelper.ExecuteLocked(() => combiner.Combine(sourceFiles, targetFile), targetFile);
 
                 generatedFiles.Add(new TaskItem(targetFile));
             }

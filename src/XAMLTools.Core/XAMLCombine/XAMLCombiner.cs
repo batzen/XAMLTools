@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Globalization;
     using System.IO;
     using System.Linq;
@@ -24,6 +23,7 @@
         /// </summary>
         private const string StaticResourceString = "{StaticResource ";
 
+        public ILogger? Logger { get; set; } = new TraceLogger();
         private const string MergedDictionariesString = "ResourceDictionary.MergedDictionaries";
 
         private const string ResourceDictionaryString = "ResourceDictionary";
@@ -41,7 +41,7 @@
         /// <param name="importMergedResourceDictionaryReferences"></param>
         public void Combine(string sourceFile, string targetFile, bool importMergedResourceDictionaryReferences)
         {
-            Trace.WriteLine($"Loading resources list from \"{sourceFile}\"");
+            this.Logger?.Debug($"Loading resources list from \"{sourceFile}\"");
 
             sourceFile = this.GetFullFilePath(sourceFile);
 
@@ -61,8 +61,8 @@
         {
             // Create result XML document
             var finalDocument = new XmlDocument();
-            var rootNode = finalDocument.CreateElement("ResourceDictionary", "http://schemas.microsoft.com/winfx/2006/xaml/presentation");
-            finalDocument.AppendChild(rootNode);
+            var finalRootNode = finalDocument.CreateElement("ResourceDictionary", "http://schemas.microsoft.com/winfx/2006/xaml/presentation");
+            finalDocument.AppendChild(finalRootNode);
 
             XmlElement? mergedDictionariesListNode = default;
 
@@ -88,35 +88,23 @@
                 var current = new XmlDocument();
                 current.Load(this.GetFullFilePath(resourceFile));
 
-                Trace.WriteLine(string.Format("Loading resource \"{0}\"", resourceFile));
+                this.Logger?.Debug($"Loading resource \"{resourceFile}\"");
 
                 // Set and fix resource dictionary attributes
-                var root = current.DocumentElement;
-                if (root == null)
+                var currentDocRoot = current.DocumentElement;
+                if (currentDocRoot == null)
                 {
                     continue;
                 }
 
-                string winfxXamlNamespaceAttributeName = "x";
-
-                // Find http://schemas.microsoft.com/winfx/2006/xaml namespace mapping
-                foreach (XmlAttribute attribute in root.Attributes)
+                for (var j = 0; j < currentDocRoot.Attributes.Count; j++)
                 {
-                    var namespaceUri = attribute.Value;
-                    if (string.Equals(namespaceUri, "http://schemas.microsoft.com/winfx/2006/xaml"))
-                    {
-                        winfxXamlNamespaceAttributeName = attribute.LocalName;
-                    }
-                }
-
-                for (var j = 0; j < root.Attributes.Count; j++)
-                {
-                    var attr = root.Attributes[j];
-                    if (rootNode.HasAttribute(attr.Name))
+                    var currentDocAttribute = currentDocRoot.Attributes[j];
+                    if (finalRootNode.HasAttribute(currentDocAttribute.Name))
                     {
                         // If namespace with this name exists and not equal
-                        if (attr.Value != rootNode.Attributes[attr.Name].Value
-                            && attr.Prefix == "xmlns")
+                        if (currentDocAttribute.Value != finalRootNode.Attributes[currentDocAttribute.Name].Value
+                            && currentDocAttribute.Prefix == "xmlns")
                         {
                             // Create new namespace name
                             var index = -1;
@@ -124,38 +112,40 @@
                             do
                             {
                                 index++;
-                                name = attr.LocalName + "_" + index.ToString(CultureInfo.InvariantCulture);
+                                name = currentDocAttribute.LocalName + "_" + index.ToString(CultureInfo.InvariantCulture);
                             }
-                            while (rootNode.HasAttribute("xmlns:" + name));
+                            while (finalRootNode.HasAttribute("xmlns:" + name));
 
-                            root.SetAttribute("xmlns:" + name, attr.Value);
+                            currentDocRoot.SetAttribute("xmlns:" + name, currentDocAttribute.Value);
 
                             // Change namespace prefixes in resource dictionary
-                            ChangeNamespacePrefix(root, attr.LocalName, name, winfxXamlNamespaceAttributeName);
+                            ChangeNamespacePrefix(currentDocRoot, currentDocAttribute.LocalName, name);
 
                             // Add renamed namespace
-                            var a = finalDocument.CreateAttribute("xmlns", name, attr.NamespaceURI);
-                            a.Value = attr.Value;
-                            rootNode.Attributes.Append(a);
+                            var a = finalDocument.CreateAttribute("xmlns", name, currentDocAttribute.NamespaceURI);
+                            a.Value = currentDocAttribute.Value;
+                            finalRootNode.Attributes.Append(a);
                         }
                     }
                     else
                     {
                         var exists = false;
-                        if (attr.Prefix == "xmlns")
+                        if (currentDocAttribute.Prefix == "xmlns")
                         {
                             // Try to find equal namespace with different name
-                            foreach (XmlAttribute? attribute in rootNode.Attributes)
+                            foreach (XmlAttribute? attributeFromFinalRoot in finalRootNode.Attributes)
                             {
-                                if (attribute is null)
+                                if (attributeFromFinalRoot is null)
                                 {
                                     continue;
                                 }
 
-                                if (attr.Value == attribute.Value)
+                                if (currentDocAttribute.Value == attributeFromFinalRoot.Value)
                                 {
-                                    root.SetAttribute(attr.Name, attr.Value);
-                                    ChangeNamespacePrefix(root, attr.LocalName, attribute.LocalName, winfxXamlNamespaceAttributeName);
+                                    this.Logger?.Warn($"Normalizing namespace prefix from \"{currentDocAttribute.Name}\" to \"{attributeFromFinalRoot.Name}\" found in \"{resourceFile}\".");
+
+                                    currentDocRoot.SetAttribute(currentDocAttribute.Name, currentDocAttribute.Value);
+                                    ChangeNamespacePrefix(currentDocRoot, currentDocAttribute.LocalName, attributeFromFinalRoot.LocalName);
                                     exists = true;
                                     break;
                                 }
@@ -164,16 +154,16 @@
 
                         if (exists == false)
                         {
-                            // Add namespace to result resource dictionarty
-                            var a = finalDocument.CreateAttribute(attr.Prefix, attr.LocalName, attr.NamespaceURI);
-                            a.Value = attr.Value;
-                            rootNode.Attributes.Append(a);
+                            // Add namespace to result resource dictionary
+                            var a = finalDocument.CreateAttribute(currentDocAttribute.Prefix, currentDocAttribute.LocalName, currentDocAttribute.NamespaceURI);
+                            a.Value = currentDocAttribute.Value;
+                            finalRootNode.Attributes.Append(a);
                         }
                     }
                 }
 
                 // Extract resources
-                foreach (XmlNode? node in root.ChildNodes)
+                foreach (XmlNode? node in currentDocRoot.ChildNodes)
                 {
                     if (node is not XmlElement xmlElement)
                     {
@@ -198,6 +188,7 @@
 
                             if (mergedDictionariesListNode == null)
                             {
+                                this.Logger?.Warn($"Duplicate key \"{key}\" found in \"{resourceFile}\".");
                                 continue;
                             }
 
@@ -274,7 +265,7 @@
                 }
             }
 
-            // Result list 
+            // Result list
             var finalOrderList = new List<ResourceElement>();
 
             // Add all items with empty UsedKeys
@@ -284,7 +275,7 @@
                 {
                     finalOrderList.Add(resourcesList[i]);
 
-                    Trace.WriteLine($"Adding resource \"{resourcesList[i].Key}\"");
+                    this.Logger?.Debug($"Adding resource \"{resourcesList[i].Key}\"");
 
                     resourcesList.RemoveAt(i);
                     i--;
@@ -313,7 +304,7 @@
                     {
                         finalOrderList.Add(resourcesList[i]);
 
-                        Trace.WriteLine($"Adding resource \"{resourcesList[i].Key}\"");
+                        this.Logger?.Debug($"Adding resource \"{resourcesList[i].Key}\"");
 
                         resourcesList.RemoveAt(i);
                         i--;
@@ -326,11 +317,11 @@
             // Add nodes to XML document
             for (var i = 0; i < finalOrderList.Count; i++)
             {
-                rootNode.AppendChild(finalOrderList[i].Element);
+                finalRootNode.AppendChild(finalOrderList[i].Element);
             }
 
             // Save result file
-            return WriteResultFile(targetFile, finalDocument);
+            return this.WriteResultFile(targetFile, finalDocument);
         }
 
         private string GetFullFilePath(string file)
@@ -474,7 +465,7 @@
             return result.ToArray();
         }
 
-        private static string WriteResultFile(string resultFile, XmlDocument finalDocument)
+        private string WriteResultFile(string resultFile, XmlDocument finalDocument)
         {
             try
             {
@@ -489,7 +480,7 @@
 
                 var tempFileContent = stringWriter.ToString();
 
-                Trace.WriteLine($"Checking \"{resultFile}\"...");
+                this.Logger?.Debug($"Checking \"{resultFile}\"...");
 
                 var fileHasToBeWritten = File.Exists(resultFile) == false
                                          || ReadAllTextShared(resultFile) != tempFileContent;
@@ -508,11 +499,11 @@
                         sw.Write(tempFileContent);
                     }
 
-                    Trace.WriteLine($"Resource Dictionary saved to \"{resultFile}\".");
+                    this.Logger?.Debug($"Resource Dictionary saved to \"{resultFile}\".");
                 }
                 else
                 {
-                    Trace.WriteLine("New Resource Dictionary did not differ from existing file. No new file written.");
+                    this.Logger?.Debug("New Resource Dictionary did not differ from existing file. No new file written.");
                 }
             }
             catch (Exception e)

@@ -20,8 +20,6 @@
 
         public override bool Execute()
         {
-            //System.Diagnostics.Debugger.Launch();
-
             var generatedFiles = new List<ITaskItem>();
 
             foreach (var item in this.Items)
@@ -32,7 +30,10 @@
 
                 this.BuildEngine.LogMessageEvent(new BuildMessageEventArgs($"Generating XAML files from \"{templateFile}\" with \"{generatorParametersFile}\" to \"{outputPath}\".", string.Empty, nameof(XAMLColorSchemeGeneratorTask), MessageImportance.High));
 
-                var generator = new ColorSchemeGenerator();
+                var generator = new ColorSchemeGenerator
+                {
+                    Logger = new Logger(this.BuildEngine, nameof(XAMLColorSchemeGeneratorTask))
+                };
                 var currentGeneratedFiles = MutexHelper.ExecuteLocked(() => generator.GenerateColorSchemeFiles(generatorParametersFile, templateFile, outputPath), templateFile);
 
                 foreach (var generatedFile in currentGeneratedFiles)

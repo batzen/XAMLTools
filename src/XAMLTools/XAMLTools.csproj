@@ -22,29 +22,29 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\LICENSE" Pack="true" PackagePath="licenses"/>
-    <None Include="build/*.*" Pack="true" PackagePath="build"/>
-    <None Include="buildMultiTargeting/*.*" Pack="true" PackagePath="buildMultiTargeting"/>
+    <None Include="..\..\LICENSE" Pack="true" PackagePath="licenses" />
+    <None Include="build/*.*" Pack="true" PackagePath="build" />
+    <None Include="buildMultiTargeting/*.*" Pack="true" PackagePath="buildMultiTargeting" />
 
-    <None Include="$(OutputPath)\net472\publish\$(AssemblyName).exe" Pack="true" PackagePath="tools/net472" Visible="False"/>
-    <None Include="$(OutputPath)\net472\publish\$(AssemblyName).exe.config" Pack="true" PackagePath="tools/net472" Visible="False"/>
-    <None Include="$(OutputPath)\net472\publish\$(AssemblyName).pdb" Pack="true" PackagePath="tools/net472" Visible="False"/>
+    <None Include="$(OutputPath)\net472\publish\$(AssemblyName).exe" Pack="true" PackagePath="tools/net472" Visible="False" />
+    <None Include="$(OutputPath)\net472\publish\$(AssemblyName).exe.config" Pack="true" PackagePath="tools/net472" Visible="False" />
+    <None Include="$(OutputPath)\net472\publish\$(AssemblyName).pdb" Pack="true" PackagePath="tools/net472" Visible="False" />
 
-    <None Include="$(OutputPath)\netcoreapp3.1\publish\System.Text.Json.dll" Pack="true" PackagePath="tools/netcoreapp3.1" Visible="False"/>
-    <None Include="$(OutputPath)\netcoreapp3.1\publish\$(AssemblyName).dll" Pack="true" PackagePath="tools/netcoreapp3.1" Visible="False"/>
-    <None Include="$(OutputPath)\netcoreapp3.1\publish\$(AssemblyName).dll.config" Pack="true" PackagePath="tools/netcoreapp3.1" Visible="False"/>
-    <None Include="$(OutputPath)\netcoreapp3.1\publish\$(AssemblyName).exe" Pack="true" PackagePath="tools/netcoreapp3.1" Visible="False"/>
-    <None Include="$(OutputPath)\netcoreapp3.1\publish\$(AssemblyName).deps.json" Pack="true" PackagePath="tools/netcoreapp3.1" Visible="False"/>
-    <None Include="$(OutputPath)\netcoreapp3.1\publish\$(AssemblyName).runtimeconfig.json" Pack="true" PackagePath="tools/netcoreapp3.1" Visible="False"/>
-    <None Include="$(OutputPath)\netcoreapp3.1\publish\$(AssemblyName).pdb" Pack="true" PackagePath="tools/netcoreapp3.1" Visible="False"/>
+    <None Include="$(OutputPath)\netcoreapp3.1\publish\System.Text.Json.dll" Pack="true" PackagePath="tools/netcoreapp3.1" Visible="False" />
+    <None Include="$(OutputPath)\netcoreapp3.1\publish\$(AssemblyName).dll" Pack="true" PackagePath="tools/netcoreapp3.1" Visible="False" />
+    <None Include="$(OutputPath)\netcoreapp3.1\publish\$(AssemblyName).dll.config" Pack="true" PackagePath="tools/netcoreapp3.1" Visible="False" />
+    <None Include="$(OutputPath)\netcoreapp3.1\publish\$(AssemblyName).exe" Pack="true" PackagePath="tools/netcoreapp3.1" Visible="False" />
+    <None Include="$(OutputPath)\netcoreapp3.1\publish\$(AssemblyName).deps.json" Pack="true" PackagePath="tools/netcoreapp3.1" Visible="False" />
+    <None Include="$(OutputPath)\netcoreapp3.1\publish\$(AssemblyName).runtimeconfig.json" Pack="true" PackagePath="tools/netcoreapp3.1" Visible="False" />
+    <None Include="$(OutputPath)\netcoreapp3.1\publish\$(AssemblyName).pdb" Pack="true" PackagePath="tools/netcoreapp3.1" Visible="False" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Text.Json"/>
-    <PackageReference Include="CommandLineParser"/>
+    <PackageReference Include="System.Text.Json" />
+    <PackageReference Include="CommandLineParser" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\XAMLTools.Core\XAMLTools.Core.csproj"/>
+    <ProjectReference Include="..\XAMLTools.Core\XAMLTools.Core.csproj" />
   </ItemGroup>
 </Project>

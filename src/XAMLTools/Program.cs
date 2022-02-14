@@ -15,9 +15,14 @@
 
     internal class Program
     {
+        private class BaseOptions
+        {
+            [Option('v', HelpText = "Defines if logging should be verbose")]
+            public bool Verbose { get; set; }
+        }
 
         [Verb("combine", HelpText = "Combine multiple XAML files to one target file.")]
-        private class XAMLCombineOptions
+        private class XAMLCombineOptions : BaseOptions
         {
             [Option('s', Required = true, HelpText = "Source file containing a new line separated list of files to combine")]
             public string SourceFile { get; set; } = null!;
@@ -30,7 +35,13 @@
 
             public Task<int> Execute()
             {
-                var combiner = new XAMLCombiner();
+                var combiner = new XAMLCombiner
+                {
+                    Logger = new ConsoleLogger
+                    {
+                        Verbose = this.Verbose
+                    }
+                };
                 MutexHelper.ExecuteLocked(() => combiner.Combine(this.SourceFile, this.TargetFile, IncludeMergedDictionaryReferences), this.TargetFile);
 
                 return Task.FromResult(0);
@@ -38,7 +49,7 @@
         }
 
         [Verb("colorscheme", HelpText = "Generate XAML color scheme files.")]
-        private class XAMLColorSchemeGeneratorOptions
+        private class XAMLColorSchemeGeneratorOptions : BaseOptions
         {
             [Option('p', Required = true, HelpText = "Parameters file")]
             public string ParametersFile { get; set; } = null!;
@@ -51,7 +62,13 @@
 
             public Task<int> Execute()
             {
-                var generator = new ColorSchemeGenerator();
+                var generator = new ColorSchemeGenerator
+                {
+                    Logger = new ConsoleLogger
+                    {
+                        Verbose = this.Verbose
+                    }
+                };
 
                 MutexHelper.ExecuteLocked(() => generator.GenerateColorSchemeFiles(this.ParametersFile, this.TemplateFile, this.OutputPath), this.TemplateFile);
 
@@ -60,7 +77,7 @@
         }
 
         [Verb("dump-resources", HelpText = "Generate XAML color scheme files.")]
-        private class DumpResourcesOptions
+        private class DumpResourcesOptions : BaseOptions
         {
             [Option('a', Required = true, HelpText = "Assembly file")]
             public string AssemblyFile { get; set; } = null!;
