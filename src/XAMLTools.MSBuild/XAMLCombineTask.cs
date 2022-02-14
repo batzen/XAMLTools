@@ -25,21 +25,21 @@
 
             var generatedFiles = new List<ITaskItem>();
 
-            var grouped = this.Items.GroupBy(x => x.GetMetadata(TargetFileMetadataName));
+            var grouped = Items.GroupBy(x => x.GetMetadata(TargetFileMetadataName));
 
             var importMergedResourceDictionariesReferences = ImportMergedResourceDictionariesReferences;
+
+            if (importMergedResourceDictionariesReferences)
+            {
+                BuildEngine.LogMessageEvent(new BuildMessageEventArgs($"Import for merged ResourceDictionary elements enabled for this generated content", string.Empty, nameof(XAMLCombine), MessageImportance.Low));
+            }
 
             foreach (var item in grouped)
             {
                 var sourceFiles = item.Select(x => x.ItemSpec);
                 var targetFile = item.Key;
 
-                this.BuildEngine.LogMessageEvent(new BuildMessageEventArgs($"Generating combined XAML file \"{targetFile}\".", string.Empty, nameof(XAMLCombineTask), MessageImportance.High));
-
-                if (importMergedResourceDictionariesReferences)
-                {
-                    this.BuildEngine.LogMessageEvent(new BuildMessageEventArgs($"Import for merged ResourceDictionary elements enabled for this generated content", string.Empty, nameof(XAMLCombine), MessageImportance.Low));
-                }
+                BuildEngine.LogMessageEvent(new BuildMessageEventArgs($"Generating combined XAML file \"{targetFile}\".", string.Empty, nameof(XAMLCombineTask), MessageImportance.High));
 
                 var combiner = new XAMLCombiner();
                 targetFile = MutexHelper.ExecuteLocked(() => combiner.Combine(sourceFiles, targetFile, importMergedResourceDictionariesReferences), targetFile);
@@ -47,7 +47,7 @@
                 generatedFiles.Add(new TaskItem(targetFile));
             }
 
-            this.GeneratedFiles = generatedFiles.ToArray();
+            GeneratedFiles = generatedFiles.ToArray();
 
             return true;
         }

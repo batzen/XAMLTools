@@ -26,27 +26,29 @@
 
         private const string MergedDictionariesString = "ResourceDictionary.MergedDictionaries";
 
+        private const string ResourceDictionaryString = "ResourceDictionary";
+
         /// <summary>
         /// Expression matches substring which placed inside brackets, following '=' symbol
         /// </summary>
-        private static readonly Regex MarkupExtensionSearch = new Regex(@"(?<=\=\{)([^\{\}])+");
+        private static readonly Regex MarkupExtensionSearch = new Regex(@"(?<=\=\{)([^\{\}])+", RegexOptions.Compiled);
 
         /// <summary>
         /// Combines multiple XAML resource dictionaries in one.
         /// </summary>
         /// <param name="sourceFile">Filename of list of XAML's.</param>
         /// <param name="targetFile">Result XAML filename.</param>
-        /// <param name="importMergedResourceDictionariesReferences"></param>
-        public void Combine(string sourceFile, string targetFile, bool importMergedResourceDictionariesReferences = false)
+        /// <param name="importMergedResourceDictionaryReferences"></param>
+        public void Combine(string sourceFile, string targetFile, bool importMergedResourceDictionaryReferences)
         {
-            Trace.WriteLine(string.Format("Loading resources list from \"{0}\"", sourceFile));
+            Trace.WriteLine($"Loading resources list from \"{sourceFile}\"");
 
             sourceFile = this.GetFullFilePath(sourceFile);
 
             // Load resource file list
             var resourceFileLines = File.ReadAllLines(sourceFile);
 
-            this.Combine(resourceFileLines, targetFile, importMergedResourceDictionariesReferences);
+            this.Combine(resourceFileLines, targetFile, importMergedResourceDictionaryReferences);
         }
 
         /// <summary>
@@ -54,8 +56,8 @@
         /// </summary>
         /// <param name="sourceFiles">Source files.</param>
         /// <param name="targetFile">Result XAML filename.</param>
-        /// <param name="importMergedResourceDictionariesReferences"></param>
-        public string Combine(IEnumerable<string> sourceFiles, string targetFile, bool importMergedResourceDictionariesReferences = false)
+        /// <param name="importMergedResourceDictionaryReferences"></param>
+        public string Combine(IEnumerable<string> sourceFiles, string targetFile, bool importMergedResourceDictionaryReferences)
         {
             // Create result XML document
             var finalDocument = new XmlDocument();
@@ -65,7 +67,7 @@
             XmlElement? mergedDictionariesListNode = default;
 
             // List of existing keys, to avoid duplicates
-            var keys = new List<string>();
+            var keys = new HashSet<string>();
 
             // Associate key with ResourceElement
             var resourceElements = new Dictionary<string, ResourceElement>();
@@ -169,7 +171,7 @@
                     // Merged resource dictionaries (at the top)
                     if (node.Name == MergedDictionariesString)
                     {
-                        if (importMergedResourceDictionariesReferences)
+                        if (importMergedResourceDictionaryReferences)
                         {
                             if (rootNode.ChildNodes.Count == 0)
                             {
@@ -188,12 +190,13 @@
                             }
 
                             var currentMergedSources = mergedDictionariesListNode.ChildNodes.OfType<XmlElement>()
-                                .Select(node => node.GetAttribute("Source"))
-                                .Where(source => !string.IsNullOrEmpty(source)).ToList();
+                                .Select(nodeElement => nodeElement.GetAttribute("Source"))
+                                .Where(source => !string.IsNullOrEmpty(source))
+                                .ToList();
 
                             foreach (var mergedDictionaryReference in xmlElement.ChildNodes)
                             {
-                                if (mergedDictionaryReference is not XmlElement mergedDictionaryReferenceElement || mergedDictionaryReferenceElement.Name != "ResourceDictionary")
+                                if (mergedDictionaryReference is not XmlElement mergedDictionaryReferenceElement || mergedDictionaryReferenceElement.Name != ResourceDictionaryString)
                                 {
                                     continue;
                                 }
@@ -201,6 +204,7 @@
                                 var sourceValue = mergedDictionaryReferenceElement.GetAttribute("Source");
                                 if (string.IsNullOrEmpty(sourceValue))
                                 {
+                                    Trace.WriteLine(string.Format($"Ignore merged ResourceDictionary inside resource \"{resourceFile}\""));
                                     continue;
                                 }
 
@@ -226,18 +230,15 @@
 
                     // Find resource key
                     // TODO: Is any other variants???
-                    var key = string.Empty;
-                    if (importedElement.HasAttribute("Key"))
+                    var key = importedElement.GetAttribute("Key");
+                    if (string.IsNullOrEmpty(key))
                     {
-                        key = importedElement.Attributes["Key"].Value;
+                        key = importedElement.GetAttribute("x:Key");
                     }
-                    else if (importedElement.HasAttribute("x:Key"))
+
+                    if (string.IsNullOrEmpty(key))
                     {
-                        key = importedElement.Attributes["x:Key"].Value;
-                    }
-                    else if (importedElement.HasAttribute("TargetType"))
-                    {
-                        key = importedElement.Attributes["TargetType"].Value;
+                        key = importedElement.GetAttribute("TargetType");
                     }
 
                     if (string.IsNullOrEmpty(key) == false)
@@ -248,12 +249,13 @@
                             continue;
                         }
 
-                        keys.Add(key);
-
-                        // Create ResourceElement for key and XML  node
-                        var res = new ResourceElement(key, importedElement, FillKeys(importedElement));
-                        resourceElements.Add(key, res);
-                        resourcesList.Add(res);
+                        if (keys.Add(key))
+                        {
+                            // Create ResourceElement for key and XML  node
+                            var res = new ResourceElement(key, importedElement, FillKeys(importedElement));
+                            resourceElements.Add(key, res);
+                            resourcesList.Add(res);
+                        }
                     }
 
                     // TODO: Add output information.
