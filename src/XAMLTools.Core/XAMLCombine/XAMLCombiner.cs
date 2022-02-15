@@ -218,6 +218,15 @@
                                 }
 
                                 var sourceValue = mergedDictionaryReferenceElement.GetAttribute("Source");
+                                // Check if it's processed by combine
+                                // Not ideal but should be enough for most cases
+                                var sourceRelativeFilePath = sourceValue.Remove(0, sourceValue.IndexOf(";component/") + ";component/".Length);
+                                sourceRelativeFilePath = sourceRelativeFilePath.Replace("/", "\\");
+                                if (sourceFiles.Contains(sourceRelativeFilePath))
+                                {
+                                    continue;
+                                }
+
                                 if (string.IsNullOrEmpty(sourceValue))
                                 {
                                     Logger?.Warn(string.Format($"Ignore merged ResourceDictionary inside resource \"{resourceFile}\""));
