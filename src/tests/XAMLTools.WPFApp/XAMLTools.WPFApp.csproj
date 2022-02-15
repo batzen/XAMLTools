@@ -7,9 +7,9 @@
     <UseWPF>true</UseWPF>
 
     <ManagePackageVersionsCentrally>False</ManagePackageVersionsCentrally>
-    <XAMLCombineEnabled Condition="'$(XAMLCombineEnabled)' == ''">True</XAMLCombineEnabled>
+    <XAMLCombineEnabled Condition="'$(XAMLCombineEnabled)' == ''">False</XAMLCombineEnabled>
     <XAMLColorSchemeGeneratorEnabled Condition="'$(XAMLColorSchemeGeneratorEnabled)' == ''">False</XAMLColorSchemeGeneratorEnabled>
-    <XAMLCombineImportMergedResourceDictionaryReferences>True</XAMLCombineImportMergedResourceDictionaryReferences>
+    <XAMLCombineImportMergedResourceDictionaryReferences>False</XAMLCombineImportMergedResourceDictionaryReferences>
     <XAMLToolsPath>..\..\..\bin\$(Configuration)\XAMLTools.MSBuild\</XAMLToolsPath>
   </PropertyGroup>
 
