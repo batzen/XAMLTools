@@ -23,32 +23,31 @@
         {
             var generatedFiles = new List<ITaskItem>();
 
-            var grouped = Items.GroupBy(x => x.GetMetadata(TargetFileMetadataName));
+            var grouped = this.Items.GroupBy(x => x.GetMetadata(TargetFileMetadataName));
 
-            var importMergedResourceDictionaryReferences = ImportMergedResourceDictionaryReferences;
-
-            if (importMergedResourceDictionaryReferences)
+            if (this.ImportMergedResourceDictionaryReferences)
             {
-                BuildEngine.LogMessageEvent(new BuildMessageEventArgs($"Import for merged ResourceDictionary elements enabled for this generated content", string.Empty, nameof(XAMLCombine), MessageImportance.Low));
+                this.BuildEngine.LogMessageEvent(new BuildMessageEventArgs($"Import for merged ResourceDictionary elements enabled for this generated content", string.Empty, nameof(XAMLCombine), MessageImportance.Low));
             }
 
             foreach (var item in grouped)
             {
-                var sourceFiles = item.Select(x => x.ItemSpec);
+                var sourceFiles = item.Select(x => x.ItemSpec).ToList();
                 var targetFile = item.Key;
 
-                BuildEngine.LogMessageEvent(new BuildMessageEventArgs($"Generating combined XAML file \"{targetFile}\".", string.Empty, nameof(XAMLCombineTask), MessageImportance.High));
+                this.BuildEngine.LogMessageEvent(new BuildMessageEventArgs($"Generating combined XAML file \"{targetFile}\".", string.Empty, nameof(XAMLCombineTask), MessageImportance.High));
 
                 var combiner = new XAMLCombiner
                 {
+                    ImportMergedResourceDictionaryReferences = this.ImportMergedResourceDictionaryReferences,
                     Logger = new Logger(this.BuildEngine, nameof(XAMLCombineTask))
                 };
-                targetFile = MutexHelper.ExecuteLocked(() => combiner.Combine(sourceFiles, targetFile, importMergedResourceDictionaryReferences), targetFile);
+                targetFile = MutexHelper.ExecuteLocked(() => combiner.Combine(sourceFiles, targetFile), targetFile);
 
                 generatedFiles.Add(new TaskItem(targetFile));
             }
 
-            GeneratedFiles = generatedFiles.ToArray();
+            this.GeneratedFiles = generatedFiles.ToArray();
 
             return true;
         }

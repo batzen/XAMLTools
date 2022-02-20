@@ -37,7 +37,7 @@
 
             using (var cts = new CancellationTokenSource())
             {
-                var combineTask = Task.Run(() => xamlCombiner.Combine(themeFilePaths, this.targetFile, false), cts.Token);
+                var combineTask = Task.Run(() => xamlCombiner.Combine(themeFilePaths, this.targetFile), cts.Token);
                 var delayTask = Task.Delay(timeout, cts.Token);
 
                 var timeoutTask = Task.WhenAny(combineTask, delayTask).ContinueWith(t =>

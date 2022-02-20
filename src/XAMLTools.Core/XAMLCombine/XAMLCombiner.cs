@@ -27,20 +27,23 @@
 
         private const string ResourceDictionaryString = "ResourceDictionary";
 
+        private const string WinfxXAMLPresentationNamespaceUri = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
+
+        public bool ImportMergedResourceDictionaryReferences { get; set; }
+
         public ILogger? Logger { get; set; } = new TraceLogger();
 
         /// <summary>
         /// Expression matches substring which placed inside brackets, following '=' symbol
         /// </summary>
-        private static readonly Regex MarkupExtensionSearch = new Regex(@"(?<=\=\{)([^\{\}])+", RegexOptions.Compiled);
+        private static readonly Regex markupExtensionSearch = new(@"(?<=\=\{)([^\{\}])+", RegexOptions.Compiled);
 
         /// <summary>
         /// Combines multiple XAML resource dictionaries in one.
         /// </summary>
         /// <param name="sourceFile">Filename of list of XAML's.</param>
         /// <param name="targetFile">Result XAML filename.</param>
-        /// <param name="importMergedResourceDictionaryReferences"></param>
-        public void Combine(string sourceFile, string targetFile, bool importMergedResourceDictionaryReferences)
+        public void Combine(string sourceFile, string targetFile)
         {
             this.Logger?.Debug($"Loading resources list from \"{sourceFile}\"");
 
@@ -49,7 +52,7 @@
             // Load resource file list
             var resourceFileLines = File.ReadAllLines(sourceFile);
 
-            this.Combine(resourceFileLines, targetFile, importMergedResourceDictionaryReferences);
+            this.Combine(resourceFileLines, targetFile);
         }
 
         /// <summary>
@@ -57,12 +60,11 @@
         /// </summary>
         /// <param name="sourceFiles">Source files.</param>
         /// <param name="targetFile">Result XAML filename.</param>
-        /// <param name="importMergedResourceDictionaryReferences"></param>
-        public string Combine(IEnumerable<string> sourceFiles, string targetFile, bool importMergedResourceDictionaryReferences)
+        public string Combine(IReadOnlyCollection<string> sourceFiles, string targetFile)
         {
             // Create result XML document
             var finalDocument = new XmlDocument();
-            var finalRootNode = finalDocument.CreateElement("ResourceDictionary", "http://schemas.microsoft.com/winfx/2006/xaml/presentation");
+            var finalRootNode = finalDocument.CreateElement(ResourceDictionaryString, WinfxXAMLPresentationNamespaceUri);
             finalDocument.AppendChild(finalRootNode);
 
             XmlElement? mergedDictionariesListNode = default;
@@ -98,7 +100,7 @@
                     continue;
                 }
 
-                string winfxXamlNamespaceAttributeName = "x";
+                var winfxXamlNamespaceAttributeName = "x";
 
                 // Find http://schemas.microsoft.com/winfx/2006/xaml namespace mapping
                 foreach (XmlAttribute attribute in currentDocRoot.Attributes)
@@ -109,7 +111,6 @@
                         winfxXamlNamespaceAttributeName = attribute.LocalName;
                     }
                 }
-
 
                 for (var j = 0; j < currentDocRoot.Attributes.Count; j++)
                 {
@@ -187,16 +188,16 @@
                     // Merged resource dictionaries (at the top)
                     if (node.Name == MergedDictionariesString)
                     {
-                        if (importMergedResourceDictionaryReferences)
+                        if (this.ImportMergedResourceDictionaryReferences)
                         {
                             if (finalRootNode.ChildNodes.Count == 0)
                             {
-                                mergedDictionariesListNode = finalDocument.CreateElement(MergedDictionariesString, "http://schemas.microsoft.com/winfx/2006/xaml/presentation");
+                                mergedDictionariesListNode = finalDocument.CreateElement(MergedDictionariesString, WinfxXAMLPresentationNamespaceUri);
                                 finalRootNode.AppendChild(mergedDictionariesListNode);
                             }
                             else if (finalRootNode.FirstChild.Name != MergedDictionariesString)
                             {
-                                mergedDictionariesListNode = finalDocument.CreateElement(MergedDictionariesString, "http://schemas.microsoft.com/winfx/2006/xaml/presentation");
+                                mergedDictionariesListNode = finalDocument.CreateElement(MergedDictionariesString, WinfxXAMLPresentationNamespaceUri);
                                 finalRootNode.InsertBefore(mergedDictionariesListNode, finalRootNode.FirstChild);
                             }
 
@@ -220,7 +221,7 @@
                                 var sourceValue = mergedDictionaryReferenceElement.GetAttribute("Source");
                                 // Check if it's processed by combine
                                 // Not ideal but should be enough for most cases
-                                var sourceRelativeFilePath = sourceValue.Remove(0, sourceValue.IndexOf(";component/") + ";component/".Length);
+                                var sourceRelativeFilePath = sourceValue.Remove(0, sourceValue.IndexOf(";component/", StringComparison.Ordinal) + ";component/".Length);
                                 sourceRelativeFilePath = sourceRelativeFilePath.Replace("/", "\\");
                                 if (sourceFiles.Contains(sourceRelativeFilePath))
                                 {
@@ -229,7 +230,7 @@
 
                                 if (string.IsNullOrEmpty(sourceValue))
                                 {
-                                    Logger?.Warn(string.Format($"Ignore merged ResourceDictionary inside resource \"{resourceFile}\""));
+                                    this.Logger?.Warn(string.Format($"Ignore merged ResourceDictionary inside resource \"{resourceFile}\""));
                                     continue;
                                 }
 
@@ -245,12 +246,13 @@
                             }
                         }
 
+                        // Always continue after merged dictionary nodes
                         continue;
                     }
 
                     // Resources
 
-                    // Import XML node from one XML document to result XML document                        
+                    // Import XML node from one XML document to result XML document
                     var importedElement = (XmlElement)finalDocument.ImportNode(xmlElement, true);
 
                     // Find resource key
@@ -411,7 +413,7 @@
                         if (attr.Value.Contains(oldString))
                         {
                             // Check MarkdownExtension
-                            var match = MarkupExtensionSearch.Match(attr.Value);
+                            var match = markupExtensionSearch.Match(attr.Value);
                             if (match.Success && match.Value.StartsWith(oldString))
                             {
                                 attr.Value = attr.Value.Replace(oldString, newString);

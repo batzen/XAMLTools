@@ -30,19 +30,20 @@
             [Option('t', Required = true, HelpText = "Target file")]
             public string TargetFile { get; set; } = null!;
 
-            [Option("md", Required = false, HelpText = "Include merged dictionary references from combined files to generated")]
-            public bool IncludeMergedDictionaryReferences { get; set; } = false;
+            [Option("md", Required = false, HelpText = "Import merged dictionary references from combined files to generated")]
+            public bool ImportMergedResourceDictionaryReferences { get; set; } = false;
 
             public Task<int> Execute()
             {
                 var combiner = new XAMLCombiner
                 {
+                    ImportMergedResourceDictionaryReferences = this.ImportMergedResourceDictionaryReferences,
                     Logger = new ConsoleLogger
                     {
                         Verbose = this.Verbose
                     }
                 };
-                MutexHelper.ExecuteLocked(() => combiner.Combine(this.SourceFile, this.TargetFile, IncludeMergedDictionaryReferences), this.TargetFile);
+                MutexHelper.ExecuteLocked(() => combiner.Combine(this.SourceFile, this.TargetFile), this.TargetFile);
 
                 return Task.FromResult(0);
             }
