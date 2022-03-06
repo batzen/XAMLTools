@@ -5,6 +5,7 @@ namespace XAMLTools.XAMLColorSchemeGenerator
     using System.IO;
     using System.Linq;
     using System.Text;
+    using XAMLTools.Helpers;
 
     public class ColorSchemeGenerator
     {
@@ -93,26 +94,7 @@ namespace XAMLTools.XAMLColorSchemeGenerator
 
         public static ThemeGenerator.ThemeGeneratorParameters GetParametersFromFile(string inputFile)
         {
-            return ThemeGenerator.Current.GetParametersFromString(ReadAllTextShared(inputFile));
-        }
-
-        private static string ReadAllTextShared(string file)
-        {
-            Stream? stream = null;
-            try
-            {
-                stream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read, BufferSize);
-
-                using (var textReader = new StreamReader(stream, Encoding.UTF8))
-                {
-                    stream = null;
-                    return textReader.ReadToEnd();
-                }
-            }
-            finally
-            {
-                stream?.Dispose();
-            }
+            return ThemeGenerator.Current.GetParametersFromString(FileHelper.ReadAllTextSharedWithRetry(inputFile));
         }
 
         public string GenerateColorSchemeFile(string outputPath, string templateContent, string themeName, string themeDisplayName, string baseColorScheme, string colorScheme, string alternativeColorScheme, bool isHighContrast, params Dictionary<string, string>[] valueSources)
@@ -139,7 +121,7 @@ namespace XAMLTools.XAMLColorSchemeGenerator
             this.Logger?.Info($"Checking \"{themeFile}\"...");
 
             var fileHasToBeWritten = isNewFile
-                                     || ReadAllTextShared(themeFile) != themeTempFileContent;
+                                     || FileHelper.ReadAllTextSharedWithRetry(themeFile) != themeTempFileContent;
 
             if (fileHasToBeWritten)
             {

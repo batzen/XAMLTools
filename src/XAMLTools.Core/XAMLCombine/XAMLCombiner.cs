@@ -8,6 +8,7 @@
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Xml;
+    using XAMLTools.Helpers;
 
     public class XAMLCombiner
     {
@@ -507,7 +508,7 @@
                 this.Logger?.Debug($"Checking \"{resultFile}\"...");
 
                 var fileHasToBeWritten = File.Exists(resultFile) == false
-                                         || ReadAllTextShared(resultFile) != tempFileContent;
+                                         || FileHelper.ReadAllTextSharedWithRetry(resultFile) != tempFileContent;
 
                 if (fileHasToBeWritten)
                 {
@@ -536,25 +537,6 @@
             }
 
             return resultFile;
-        }
-
-        private static string ReadAllTextShared(string file)
-        {
-            Stream? stream = null;
-            try
-            {
-                stream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read);
-
-                using (var textReader = new StreamReader(stream))
-                {
-                    stream = null;
-                    return textReader.ReadToEnd();
-                }
-            }
-            finally
-            {
-                stream?.Dispose();
-            }
         }
     }
 }
