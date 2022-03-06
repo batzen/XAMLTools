@@ -12,7 +12,7 @@ public class MutexHelper
         var mutexName = "Local\\XamlTools_" + Path.GetFileName(file);
 
         using var mutex = new Mutex(false, mutexName);
-        bool acquired = false;
+        var acquired = false;
 
         try
         {
@@ -38,7 +38,7 @@ public class MutexHelper
         var mutexName = "Local\\XamlTools_" + Path.GetFileName(file);
 
         using var mutex = new Mutex(false, mutexName);
-        bool acquired = false;
+        var acquired = false;
 
         try
         {
