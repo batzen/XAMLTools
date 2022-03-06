@@ -33,7 +33,7 @@
   </ItemGroup>
 
   <Target Name="XAMLColorSchemeGenerator"
-          BeforeTargets="$(XAMLToolsXAMLColorSchemeGeneratorTargetsBefore)"
+          BeforeTargets="$(XAMLColorSchemeGeneratorTargetsBefore)"
           DependsOnTargets="$(XAMLColorSchemeGeneratorDependsOnTargets)"
           Condition="'$(XAMLColorSchemeGeneratorEnabled)' == 'True' And $(MSBuildProjectName.Contains('_wpftmp')) != 'True'">
 
