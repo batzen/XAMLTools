@@ -29,13 +29,13 @@ class Build : NukeBuild
             throw new Exception("Could not initialize GitVersion.");
         }
 
-        Console.WriteLine("IsLocalBuild           : {0}", IsLocalBuild.ToString());
+        Serilog.Log.Information("IsLocalBuild           : {0}", IsLocalBuild.ToString());
 
-        Console.WriteLine("Informational   Version: {0}", InformationalVersion);
-        Console.WriteLine("SemVer          Version: {0}", SemVer);
-        Console.WriteLine("AssemblySemVer  Version: {0}", AssemblySemVer);
-        Console.WriteLine("MajorMinorPatch Version: {0}", MajorMinorPatch);
-        Console.WriteLine("NuGet           Version: {0}", NuGetVersion);
+        Serilog.Log.Information("Informational   Version: {0}", InformationalVersion);
+        Serilog.Log.Information("SemVer          Version: {0}", SemVer);
+        Serilog.Log.Information("AssemblySemVer  Version: {0}", AssemblySemVer);
+        Serilog.Log.Information("MajorMinorPatch Version: {0}", MajorMinorPatch);
+        Serilog.Log.Information("NuGet           Version: {0}", NuGetVersion);
     }
 
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
@@ -125,6 +125,8 @@ class Build : NukeBuild
             Compress(BuildBinDirectory / Configuration / "XAMLTools", ArtifactsDirectory / $"XAMLTools-v{NuGetVersion}.zip");
         });
 
+    // ReSharper disable once UnusedMember.Local
+    // ReSharper disable once InconsistentNaming
     Target CI => _ => _
         .DependsOn(Compile, Test, Pack);
 }
