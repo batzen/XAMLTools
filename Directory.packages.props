@@ -19,6 +19,6 @@
 
     <PackageVersion Include="CliWrap" Version="3.4.1"/>
 
-    <PackageVersion Include="Verify.NUnit" Version="16.3.4"/>
+    <PackageVersion Include="Verify.NUnit" Version="16.4.0"/>
   </ItemGroup>
 </Project>
