@@ -2,6 +2,7 @@
   <PropertyGroup>
     <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
     <ManagePackageVersionsCentrally>True</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
     <LangVersion>10</LangVersion>
     <Prefer32Bit>false</Prefer32Bit>
     <TargetCulture>en-US</TargetCulture>
