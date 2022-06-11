@@ -17,7 +17,7 @@
     <IsBuildingInsideRider>False</IsBuildingInsideRider>
     <IsBuildingInsideRider Condition="'$(RESHARPER_FUS_BUILD)' != ''">True</IsBuildingInsideRider>
 
-    <XAMLToolsIsMultiTargeting Condition="'$(XAMLToolsIsMultiTargeting)' == '' and '$(TargetFrameworks)' != ''">true</XAMLToolsIsMultiTargeting>
+    <XAMLToolsIsMultiTargeting Condition="'$(XAMLToolsIsMultiTargeting)' == '' and '$(TargetFrameworks)' != '' and '$(IsBuildingInsideRider)' != 'true'">true</XAMLToolsIsMultiTargeting>
   </PropertyGroup>
 
   <PropertyGroup Label="XAMLCombine">
