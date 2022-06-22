@@ -264,3 +264,5 @@ tools/*
 # XamlStyler
 !XamlStyler/
 src/tests/XAMLTools.WPFApp/Themes/Generic.xaml
+
+**/*.received.*
