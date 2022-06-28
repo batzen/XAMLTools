@@ -18,7 +18,8 @@ CI builds can be consumed from [appveyor](https://ci.appveyor.com/nuget/xamltool
 ## XAMLCombine
 
 Combines multiple XAML files to one large file.  
-This is useful when you want to provide one `Generic.xaml` instead of multiple small XAML files.
+This is useful when you want to provide one `Generic.xaml` instead of multiple small XAML files.  
+Using one large XAML file not only makes it easier to consume, but can also drastically improving loading performance.
 
 ### Using the MSBuild-Task
 
@@ -31,7 +32,7 @@ This is useful when you want to provide one `Generic.xaml` instead of multiple s
 The MSBuild-Task includes the items used for combining as pages during debug builds and removes them from pages during release builds.
 This is done to reduce the binary size for release builds and still enable intellisense in debug builds for those XAML files.
 
-Remarks when using Rider:  
+**Remarks when using Rider**  
 To get intellisense in debug builds inside the XAML files and to prevent duplicate display of those files you have to define:
 
 ```
@@ -48,7 +49,7 @@ To get intellisense in debug builds inside the XAML files and to prevent duplica
 
 `XAMLTools` accepts the following commandline parameters for the `combine` verb:
 
-- `-s "Path_To_Your_SourceFile"` => A file containing a new line separated list of files to combine
+- `-s "Path_To_Your_SourceFile"` => A file containing a new line separated list of files to combine (lines starting with # are skipped)
 - `-t "Path_To_Your_Target_File.xaml"`
 
 ## XAMLColorSchemeGenerator
