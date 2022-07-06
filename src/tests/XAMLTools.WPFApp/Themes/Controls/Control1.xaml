@@ -1,7 +1,8 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
-    <Style x:Key="Control1">
+    <Style x:Key="Control1"
+           TargetType="Control">
         <Setter Property="Background">
             <Setter.Value>
                 <SolidColorBrush Color="{StaticResource Control2_Color}" />

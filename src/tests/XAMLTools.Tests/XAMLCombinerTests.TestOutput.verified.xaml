@@ -16,7 +16,8 @@ Source files:
   <sys:String x:Key="string2">stringValue</sys:String>
   <sys_0:String x:Key="string3">stringValue</sys_0:String>
   <Style TargetType="Block" />
-  <Style x:Key="Control1">
+  <Style x:Key="Control1"
+         TargetType="Control">
     <Setter Property="Background">
       <Setter.Value>
         <SolidColorBrush Color="{StaticResource Control2_Color}" />
