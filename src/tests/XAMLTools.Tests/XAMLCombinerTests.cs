@@ -31,7 +31,7 @@
             var currentAssemblyDir = Path.GetDirectoryName(this.GetType().Assembly.Location)!;
             var wpfAppDirectory = Path.GetFullPath(Path.Combine(currentAssemblyDir, "../../../../src/tests/XAMLTools.WPFApp"));
             var themeFilesDirectory = Path.GetFullPath(Path.Combine(wpfAppDirectory, "Themes/Controls"));
-            var themeFilePaths = Directory.GetFiles(themeFilesDirectory, "*.xaml", SearchOption.AllDirectories);
+            var themeFilePaths = Directory.GetFiles(themeFilesDirectory, "*.xaml", SearchOption.AllDirectories).Reverse().ToArray();
 
             var xamlCombiner = new XAMLCombiner();
 

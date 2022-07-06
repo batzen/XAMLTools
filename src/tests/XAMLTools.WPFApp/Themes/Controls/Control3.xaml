@@ -9,5 +9,5 @@
 
     <sys:String x:Key="string3">stringValue</sys:String>
 
-    <Style TargetType="Block"></Style>
+    <Style TargetType="Block" />
 </ResourceDictionary>

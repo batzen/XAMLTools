@@ -2,6 +2,11 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
     <Style x:Key="Control1">
+        <Setter Property="Background">
+            <Setter.Value>
+                <SolidColorBrush Color="{StaticResource Control2_Color}" />
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Color x:Key="Control1_Color">#FF2B579A</Color>

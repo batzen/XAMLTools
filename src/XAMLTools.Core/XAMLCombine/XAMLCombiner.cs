@@ -94,7 +94,9 @@
             var resourcesList = new List<ResourceElement>();
 
             // For each resource file
-            foreach (var resourceFile in sourceFiles.OrderBy(x => x))
+            var orderedSourceFiles = sourceFiles.OrderBy(x => x)
+                                                .ToArray();
+            foreach (var resourceFile in orderedSourceFiles)
             {
                 // ignore empty and lines that start with '#'
                 if (string.IsNullOrEmpty(resourceFile)
@@ -238,7 +240,7 @@
                                 // Not ideal but should be enough for most cases
                                 var sourceRelativeFilePath = sourceValue.Remove(0, sourceValue.IndexOf(";component/", StringComparison.Ordinal) + ";component/".Length);
                                 sourceRelativeFilePath = sourceRelativeFilePath.Replace("/", "\\");
-                                if (sourceFiles.Contains(sourceRelativeFilePath))
+                                if (orderedSourceFiles.Contains(sourceRelativeFilePath))
                                 {
                                     continue;
                                 }
@@ -293,8 +295,8 @@
 
                         if (keys.Add(key))
                         {
-                            // Create ResourceElement for key and XML  node
-                            var res = new ResourceElement(key, importedElement, FillKeys(importedElement));
+                            // Create ResourceElement for key and XML node
+                            var res = new ResourceElement(key, importedElement, GetUsedKeys(importedElement));
                             resourceElements.Add(key, res);
                             resourcesList.Add(res);
                         }
@@ -361,7 +363,7 @@
 
             if (this.WriteFileHeader)
             {
-                this.AddFileHeader(finalDocument, sourceFiles, targetFile);
+                this.AddFileHeader(finalDocument, orderedSourceFiles, targetFile);
             }
 
             // Save result file
@@ -479,7 +481,7 @@ Source files:
         /// </summary>
         /// <param name="element">Xml element which contains resource.</param>
         /// <returns>Array of keys used by resource.</returns>
-        private static string[] FillKeys(XmlElement element)
+        private static string[] GetUsedKeys(XmlElement element)
         {
             // Result list
             var result = new List<string>();
@@ -521,7 +523,7 @@ Source files:
             {
                 if (node is XmlElement nodeElement)
                 {
-                    result.AddRange(FillKeys(nodeElement));
+                    result.AddRange(GetUsedKeys(nodeElement));
                 }
             }
 
