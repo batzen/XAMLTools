@@ -22,13 +22,17 @@
 
   <PropertyGroup Label="XAMLCombine">
     <XAMLCombineEnabled Condition="'$(XAMLCombineEnabled)' == ''">true</XAMLCombineEnabled>
+
     <RemoveXAMLCombineItemsFromPages Condition="'$(RemoveXAMLCombineItemsFromPages)' == '' And '$(Configuration)' == 'Debug'">false</RemoveXAMLCombineItemsFromPages>
+
     <RemoveXAMLCombineItemsFromPages Condition="'$(RemoveXAMLCombineItemsFromPages)' == ''">true</RemoveXAMLCombineItemsFromPages>
   </PropertyGroup>
 
   <PropertyGroup Label="XAMLColorSchemeGenerator">
     <XAMLColorSchemeGeneratorEnabled Condition="'$(XAMLColorSchemeGeneratorEnabled)' == ''">true</XAMLColorSchemeGeneratorEnabled>
+
     <RemoveXAMLColorSchemeGeneratorItemsFromPages Condition="'$(RemoveXAMLColorSchemeGeneratorItemsFromPages)' == ''">true</RemoveXAMLColorSchemeGeneratorItemsFromPages>
+
     <EmbedXAMLColorSchemeGeneratorInputs Condition="'$(EmbedXAMLColorSchemeGeneratorInputs)' == ''">true</EmbedXAMLColorSchemeGeneratorInputs>
   </PropertyGroup>
 

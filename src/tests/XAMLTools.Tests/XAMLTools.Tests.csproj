@@ -19,5 +19,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\XAMLTools\XAMLTools.csproj" />
+    <ProjectReference Include="..\..\XAMLTools.MSBuild\XAMLTools.MSBuild.csproj" />
   </ItemGroup>
 </Project>
