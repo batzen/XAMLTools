@@ -11,5 +11,9 @@ namespace System.Runtime.CompilerServices
 
         public string ParameterName { get; }
     }
+    
+    public sealed class IsExternalInit : Attribute
+    {
+    }
 }
 #endif
