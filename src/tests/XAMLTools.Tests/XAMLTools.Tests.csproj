@@ -21,4 +21,10 @@
     <ProjectReference Include="..\..\XAMLTools\XAMLTools.csproj" />
     <ProjectReference Include="..\..\XAMLTools.MSBuild\XAMLTools.MSBuild.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="XAMLCombinerTests.TestOutputWinUI.verified.xaml">
+      <DependentUpon>XAMLCombinerTests.cs</DependentUpon>
+    </None>
+  </ItemGroup>
 </Project>

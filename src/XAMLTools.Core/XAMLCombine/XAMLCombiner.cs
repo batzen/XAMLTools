@@ -26,6 +26,9 @@
 
         private const string MergedDictionariesString = "ResourceDictionary.MergedDictionaries";
 
+        // WinUI / UWP
+        private const string ThemeDictionariesString = "ResourceDictionary.ThemeDictionaries";
+
         private const string ResourceDictionaryString = "ResourceDictionary";
 
         private const string WinfxXAMLPresentationNamespaceUri = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
@@ -92,6 +95,8 @@
 
             // List of read resources
             var resourcesList = new List<ResourceElement>();
+
+            var themeDictionaries = new Dictionary<string, XmlElement>();
 
             // For each resource file
             var orderedSourceFiles = sourceFiles.OrderBy(x => x)
@@ -218,19 +223,20 @@
                                 finalRootNode.InsertBefore(mergedDictionariesListNode, finalRootNode.FirstChild);
                             }
 
-                            if (mergedDictionariesListNode == null)
+                            if (mergedDictionariesListNode is null)
                             {
                                 continue;
                             }
 
                             var currentMergedSources = mergedDictionariesListNode.ChildNodes.OfType<XmlElement>()
-                                .Select(nodeElement => nodeElement.GetAttribute("Source"))
-                                .Where(source => !string.IsNullOrEmpty(source))
-                                .ToList();
+                                                                                 .Select(nodeElement => nodeElement.GetAttribute("Source"))
+                                                                                 .Where(source => !string.IsNullOrEmpty(source))
+                                                                                 .ToList();
 
                             foreach (var mergedDictionaryReference in xmlElement.ChildNodes)
                             {
-                                if (mergedDictionaryReference is not XmlElement mergedDictionaryReferenceElement || mergedDictionaryReferenceElement.Name != ResourceDictionaryString)
+                                if (mergedDictionaryReference is not XmlElement mergedDictionaryReferenceElement
+                                    || mergedDictionaryReferenceElement.Name != ResourceDictionaryString)
                                 {
                                     continue;
                                 }
@@ -267,26 +273,47 @@
                         continue;
                     }
 
+                    // WinUI / UWP
+                    if (node.Name == ThemeDictionariesString)
+                    {
+                        foreach (XmlNode childNode in node.ChildNodes)
+                        {
+                            var importedElement = (XmlElement)finalDocument.ImportNode(childNode, true);
+                            var key = GetKey(importedElement, winfxXamlNamespaceAttributeName);
+
+                            if (string.IsNullOrEmpty(key))
+                            {
+                                continue;
+                            }
+
+                            if (themeDictionaries.TryGetValue(key, out var mergedThemeDictionary) == false)
+                            {
+                                mergedThemeDictionary = importedElement;
+                                themeDictionaries.Add(key, mergedThemeDictionary);
+                            }
+                            else
+                            {
+                                foreach (XmlNode resourceDictionaryChild in childNode.ChildNodes)
+                                {
+                                    mergedThemeDictionary.AppendChild((XmlElement)finalDocument.ImportNode(resourceDictionaryChild, true));
+                                }
+                            }
+                        }
+                    }
+
                     // Resources
-
-                    // Import XML node from one XML document to result XML document
-                    var importedElement = (XmlElement)finalDocument.ImportNode(xmlElement, true);
-
-                    // Find resource key
-                    // TODO: Is any other variants???
-                    var key = importedElement.GetAttribute("Key");
-                    if (string.IsNullOrEmpty(key))
                     {
-                        key = importedElement.GetAttribute("x:Key");
-                    }
+                        // Import XML node from one XML document to result XML document
+                        var importedElement = (XmlElement)finalDocument.ImportNode(xmlElement, true);
 
-                    if (string.IsNullOrEmpty(key))
-                    {
-                        key = importedElement.GetAttribute("TargetType");
-                    }
+                        // Find resource key
+                        var key = GetKey(importedElement, winfxXamlNamespaceAttributeName);
 
-                    if (string.IsNullOrEmpty(key) == false)
-                    {
+                        if (string.IsNullOrEmpty(key))
+                        {
+                            continue;
+                        }
+
                         // Check key unique
                         if (keys.Contains(key))
                         {
@@ -300,9 +327,9 @@
                             resourceElements.Add(key, res);
                             resourcesList.Add(res);
                         }
-                    }
 
-                    // TODO: Add output information.
+                        // TODO: Add output information.
+                    }
                 }
             }
 
@@ -355,6 +382,18 @@
                 // TODO: Limit iterations count.
             }
 
+            // WinUI / UWP
+            if (themeDictionaries.Any())
+            {
+                var themeDictionariesNode = finalDocument.CreateNode(XmlNodeType.Element, ThemeDictionariesString, WinfxXAMLPresentationNamespaceUri);
+                finalRootNode.AppendChild(themeDictionariesNode);
+
+                foreach (var themeDictionary in themeDictionaries)
+                {
+                    themeDictionariesNode.AppendChild(themeDictionary.Value);
+                }
+            }
+
             // Add nodes to XML document
             for (var i = 0; i < finalOrderList.Count; i++)
             {
@@ -368,6 +407,43 @@
 
             // Save result file
             return this.WriteResultFile(targetFile, finalDocument);
+        }
+
+        private static string GetKey(XmlElement importedElement, string winfxXamlNamespaceAttributeName)
+        {
+            // TODO: Are there any other variants???
+            var key = importedElement.GetAttribute("Key");
+
+            if (string.IsNullOrEmpty(key))
+            {
+                key = importedElement.GetAttribute(winfxXamlNamespaceAttributeName + ":Key");
+            }
+
+            if (string.IsNullOrEmpty(key))
+            {
+                key = importedElement.GetAttribute(winfxXamlNamespaceAttributeName + ":Name");
+            }
+
+            if (string.IsNullOrEmpty(key))
+            {
+                key = importedElement.GetAttribute("TargetType");
+            }
+
+            // WinUI / UWP
+            if (key.Length > 0)
+            {
+                // If this node has a key and a conditional-inclusion namespace, we'll attach a prefix
+                // to the key corresponding to the condition we checked in order to allow multiple such nodes
+                // with the same key to exist.
+                var indexOfContractPresent = importedElement.NamespaceURI.IndexOf("IsApiContract", StringComparison.Ordinal);
+
+                if (indexOfContractPresent >= 0)
+                {
+                    key = importedElement.NamespaceURI.Substring(indexOfContractPresent) + ":" + key;
+                }
+            }
+            
+            return key;
         }
 
         private void AddFileHeader(XmlDocument finalDocument, IReadOnlyCollection<string> sourceFiles, string targetFile)

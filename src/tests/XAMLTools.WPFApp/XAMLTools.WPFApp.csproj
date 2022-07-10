@@ -40,5 +40,10 @@
     </XAMLColorSchemeGeneratorItems>
   </ItemGroup>
 
+  <ItemGroup Label="WinUI">
+    <Page Remove="Themes/WinUI/*.xaml" />
+    <None Include="Themes/WinUI/*.xaml" />
+  </ItemGroup>
+
   <Import Project="..\..\XAMLTools.MSBuild\build\XAMLTools.MSBuild.targets" />
 </Project>

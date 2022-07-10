@@ -1,0 +1,11 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style TargetType="Border" x:Key="BorderPanel">
+        <Setter Property="Margin" Value="{ThemeResource NavigationViewContentMargin}"/>
+        <Setter Property="CornerRadius" Value="{ThemeResource OverlayCornerRadius}"/>
+        <Setter Property="Background" Value="{ThemeResource NavigationViewContentBackground}"/>
+        <Setter Property="BorderBrush" Value="{ThemeResource NavigationViewContentGridBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+
+    <ThemeShadow x:Name="ThemeShadow"/>
+</ResourceDictionary>
