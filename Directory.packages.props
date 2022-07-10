@@ -1,7 +1,7 @@
 <Project>
   <ItemGroup Label="Build">
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="1.1.1"/>
-    <PackageVersion Include="JetBrains.Annotations" Version="2021.3.0"/>
+    <PackageVersion Include="JetBrains.Annotations" Version="2022.1.0"/>
   </ItemGroup>
 
   <ItemGroup>
