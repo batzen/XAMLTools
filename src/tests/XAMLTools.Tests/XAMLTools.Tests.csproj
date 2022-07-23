@@ -26,11 +26,8 @@
   <ItemGroup>
     <Page Remove="**/*.verified.xaml" />
     <None Include="**/*.verified.xaml" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <None Update="XAMLCombinerTests.TestOutputWinUI.verified.xaml">
-      <DependentUpon>XAMLCombinerTests.cs</DependentUpon>
-    </None>
+
+    <Page Remove="**/*.received.xaml" />
+    <None Include="**/*.received.xaml" />
   </ItemGroup>
 </Project>
