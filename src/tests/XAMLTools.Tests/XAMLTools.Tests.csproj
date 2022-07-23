@@ -1,8 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net472;net6.0</TargetFrameworks>
+    <TargetFrameworks>net472;net6.0-windows</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <UseWpf>True</UseWpf>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,6 +23,11 @@
     <ProjectReference Include="..\..\XAMLTools.MSBuild\XAMLTools.MSBuild.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Page Remove="**/*.verified.xaml" />
+    <None Include="**/*.verified.xaml" />
+  </ItemGroup>
+  
   <ItemGroup>
     <None Update="XAMLCombinerTests.TestOutputWinUI.verified.xaml">
       <DependentUpon>XAMLCombinerTests.cs</DependentUpon>

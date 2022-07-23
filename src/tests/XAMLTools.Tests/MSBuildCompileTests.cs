@@ -1,5 +1,6 @@
 ﻿namespace XAMLTools.Tests;
 
+using System.IO;
 using CliWrap;
 using CliWrap.Buffered;
 using NUnit.Framework;
