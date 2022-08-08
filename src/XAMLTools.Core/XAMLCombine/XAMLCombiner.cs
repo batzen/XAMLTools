@@ -1,4 +1,4 @@
-﻿namespace XAMLTools.XAMLCombine
+namespace XAMLTools.XAMLCombine
 {
     using System;
     using System.Collections.Generic;
@@ -616,7 +616,9 @@ Source files:
                 var xmlWriterSettings = new XmlWriterSettings 
                     { 
                         OmitXmlDeclaration = true,
-                        Indent = true
+                        Indent = true,
+                        IndentChars = "  ",
+                        NewLineHandling = NewLineHandling.None
                     };
                 var xmlWriter = XmlWriter.Create(stringWriter, xmlWriterSettings);
 
