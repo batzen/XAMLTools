@@ -31,7 +31,7 @@ public class MSBuildCompileTests
         {
             var result = await Cli.Wrap("git")
                                   .WithArguments($"clean -fxd")
-                                  .WithWorkingDirectory(wpfAppDirectory)
+                                  .WithWorkingDirectory(Path.Combine(wpfAppDirectory, "Themes"))
                                   .WithValidation(CommandResultValidation.None)
                                   .ExecuteBufferedAsync();
 
