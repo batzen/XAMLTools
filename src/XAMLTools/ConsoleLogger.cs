@@ -39,6 +39,6 @@ public class ConsoleLogger : ILogger
 
     public void Error(string message)
     {
-        Console.WriteLine(message);
+        Console.Error.WriteLine(message);
     }
 }

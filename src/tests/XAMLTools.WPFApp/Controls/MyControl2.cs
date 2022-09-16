@@ -6,3 +6,7 @@ using System.Windows.Controls;
 public class MyControl2 : Control
 {
 }
+
+public class OtherParameters
+{
+}

@@ -65,7 +65,7 @@ public class MSBuildCompileTests
         }
 
         {
-            var resourceNames = File.ReadAllLines(Path.Combine(outputPath, "ResourceNames"));
+            var resourceNames = await File.ReadAllLinesAsync(Path.Combine(outputPath, "ResourceNames"));
 
             Assert.That(resourceNames, Is.EquivalentTo(new[]
             {
@@ -74,7 +74,7 @@ public class MSBuildCompileTests
                 "XAMLTools.WPFApp.Themes.GeneratorParameters.json"
             }));
 
-            var xamlResourceNames = File.ReadAllLines(Path.Combine(outputPath, "XAMLResourceNames"));
+            var xamlResourceNames = await File.ReadAllLinesAsync(Path.Combine(outputPath, "XAMLResourceNames"));
 
             if (configuration == "Debug")
             {

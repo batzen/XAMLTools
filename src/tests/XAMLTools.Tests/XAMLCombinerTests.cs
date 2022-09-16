@@ -49,6 +49,7 @@
                         throw new TimeoutException("Timeout waiting for method after " + timeout);
                     }
 
+                    Assert.That(combineTask.Exception, Is.Null, combineTask.Exception?.ToString());
                 }, cts.Token);
 
                 await timeoutTask;
@@ -81,12 +82,29 @@
                         throw new TimeoutException("Timeout waiting for method after " + timeout);
                     }
 
+                    Assert.That(combineTask.Exception, Is.Null, combineTask.Exception?.ToString());
                 }, cts.Token);
 
                 await timeoutTask;
             }
 
             await Verifier.VerifyFile(this.targetFile);
+        }
+        
+        [Test]
+        public void TestDuplicateNamespaces()
+        {
+            var currentAssemblyDir = Path.GetDirectoryName(this.GetType().Assembly.Location)!;
+            var wpfAppDirectory = Path.GetFullPath(Path.Combine(currentAssemblyDir, "../../../../src/tests/XAMLTools.WPFApp"));
+            var themeFilesDirectory = Path.GetFullPath(Path.Combine(wpfAppDirectory, "Themes/DuplicateNamespaces"));
+            var themeFilePaths = Directory.GetFiles(themeFilesDirectory, "*.xaml", SearchOption.AllDirectories).Reverse().ToArray();
+
+            var xamlCombiner = new XAMLCombiner();
+
+            Assert.That(() => xamlCombiner.Combine(themeFilePaths, this.targetFile),
+                        Throws.Exception
+                              .With.Message
+                              .Contains("Namespace name \"xmlns:controls\" with different values was seen in "));
         }
     }
 }

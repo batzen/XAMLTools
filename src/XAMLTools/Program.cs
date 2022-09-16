@@ -55,7 +55,15 @@
                         Verbose = this.Verbose
                     }
                 };
-                MutexHelper.ExecuteLocked(() => combiner.Combine(this.SourceFile, this.TargetFile), this.TargetFile);
+
+                try
+                {
+                    MutexHelper.ExecuteLocked(() => combiner.Combine(this.SourceFile, this.TargetFile), this.TargetFile);
+                }
+                catch (Exception)
+                {
+                    return Task.FromResult(1);
+                }
 
                 return Task.FromResult(0);
             }

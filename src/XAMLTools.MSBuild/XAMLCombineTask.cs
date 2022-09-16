@@ -1,5 +1,6 @@
 ﻿namespace XAMLTools.MSBuild
 {
+    using System;
     using Microsoft.Build.Framework;
     using Microsoft.Build.Utilities;
     using System.Collections.Generic;
@@ -46,10 +47,17 @@
                     WriteFileHeader = options.WriteFileHeader,
                     FileHeader = options.FileHeader,
                     IncludeSourceFilesInFileHeader = options.IncludeSourceFilesInFileHeader, 
-                    Logger = new Logger(this.BuildEngine, nameof(XAMLCombineTask))
+                    Logger = new MSBuildLogger(this.BuildEngine, nameof(XAMLCombineTask))
                 };
 
-                targetFile = MutexHelper.ExecuteLocked(() => combiner.Combine(sourceFiles, targetFile), targetFile);
+                try
+                {
+                    targetFile = MutexHelper.ExecuteLocked(() => combiner.Combine(sourceFiles, targetFile), targetFile);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
 
                 generatedFiles.Add(new TaskItem(targetFile));
             }

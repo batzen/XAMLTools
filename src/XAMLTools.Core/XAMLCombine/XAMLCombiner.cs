@@ -52,11 +52,6 @@ namespace XAMLTools.XAMLCombine
         public ILogger? Logger { get; set; } = new TraceLogger();
 
         /// <summary>
-        /// Expression matches substring which placed inside brackets, following '=' symbol
-        /// </summary>
-        private static readonly Regex markupExtensionSearch = new(@"(?<=\=\{)([^\{\}])+", RegexOptions.Compiled);
-
-        /// <summary>
         /// Combines multiple XAML resource dictionaries in one.
         /// </summary>
         /// <param name="sourceFile">Filename of list of XAML's.</param>
@@ -101,6 +96,9 @@ namespace XAMLTools.XAMLCombine
             // For each resource file
             var orderedSourceFiles = sourceFiles.OrderBy(x => x)
                                                 .ToArray();
+
+            var seenNamespacesToFilesMapping = new Dictionary<XmlAttribute, string>();
+            
             foreach (var resourceFile in orderedSourceFiles)
             {
                 // ignore empty and lines that start with '#'
@@ -117,85 +115,44 @@ namespace XAMLTools.XAMLCombine
 
                 // Set and fix resource dictionary attributes
                 var currentDocRoot = current.DocumentElement;
-                if (currentDocRoot == null)
+                if (currentDocRoot is null)
                 {
+                    this.Logger?.Warn($"\"{resourceFile}\" did not contain a document element.");
                     continue;
+                }
+
+                foreach (XmlAttribute attribute in currentDocRoot.Attributes)
+                {
+                    var duplicate = seenNamespacesToFilesMapping.Keys.FirstOrDefault(x => x.Name == attribute.Name
+                                                                                        && x.Value != attribute.Value);
+
+                    if (duplicate is not null)
+                    {
+                        var message = $"Namespace name \"{duplicate.Name}\" with different values was seen in \"{seenNamespacesToFilesMapping[duplicate]}\" and \"{resourceFile}\".\nPlease use unique prefixes when their namespace values differs.";
+                        this.Logger?.Error(message);
+                        throw new Exception(message);
+                    }
+
+                    seenNamespacesToFilesMapping.Add(attribute, resourceFile);
+
+                    if (finalRootNode.HasAttribute(attribute.Name) == false)
+                    {
+                        // Add namespace to result resource dictionary
+                        var a = finalDocument.CreateAttribute(attribute.Prefix, attribute.LocalName, attribute.NamespaceURI);
+                        a.Value = attribute.Value;
+                        finalRootNode.Attributes.Append(a);
+                    }
                 }
 
                 var winfxXamlNamespaceAttributeName = "x";
 
                 // Find http://schemas.microsoft.com/winfx/2006/xaml namespace mapping
-                foreach (XmlAttribute attribute in currentDocRoot.Attributes)
+                foreach (XmlAttribute attribute in finalRootNode.Attributes)
                 {
                     var namespaceUri = attribute.Value;
                     if (string.Equals(namespaceUri, "http://schemas.microsoft.com/winfx/2006/xaml"))
                     {
                         winfxXamlNamespaceAttributeName = attribute.LocalName;
-                    }
-                }
-
-                for (var j = 0; j < currentDocRoot.Attributes.Count; j++)
-                {
-                    var currentDocAttribute = currentDocRoot.Attributes[j];
-                    if (finalRootNode.HasAttribute(currentDocAttribute.Name))
-                    {
-                        // If namespace with this name exists and not equal
-                        if (currentDocAttribute.Value != finalRootNode.Attributes[currentDocAttribute.Name].Value
-                            && currentDocAttribute.Prefix == "xmlns")
-                        {
-                            // Create new namespace name
-                            var index = -1;
-                            string name;
-                            do
-                            {
-                                index++;
-                                name = currentDocAttribute.LocalName + "_" + index.ToString(CultureInfo.InvariantCulture);
-                            }
-                            while (finalRootNode.HasAttribute("xmlns:" + name));
-
-                            currentDocRoot.SetAttribute("xmlns:" + name, currentDocAttribute.Value);
-
-                            // Change namespace prefixes in resource dictionary
-                            ChangeNamespacePrefix(currentDocRoot, currentDocAttribute.LocalName, name, winfxXamlNamespaceAttributeName);
-
-                            // Add renamed namespace
-                            var a = finalDocument.CreateAttribute("xmlns", name, currentDocAttribute.NamespaceURI);
-                            a.Value = currentDocAttribute.Value;
-                            finalRootNode.Attributes.Append(a);
-                        }
-                    }
-                    else
-                    {
-                        var exists = false;
-                        if (currentDocAttribute.Prefix == "xmlns")
-                        {
-                            // Try to find equal namespace with different name
-                            foreach (XmlAttribute? attributeFromFinalRoot in finalRootNode.Attributes)
-                            {
-                                if (attributeFromFinalRoot is null)
-                                {
-                                    continue;
-                                }
-
-                                if (currentDocAttribute.Value == attributeFromFinalRoot.Value)
-                                {
-                                    this.Logger?.Warn($"Normalizing namespace prefix from \"{currentDocAttribute.Name}\" to \"{attributeFromFinalRoot.Name}\" found in \"{resourceFile}\".");
-
-                                    currentDocRoot.SetAttribute(currentDocAttribute.Name, currentDocAttribute.Value);
-                                    ChangeNamespacePrefix(currentDocRoot, currentDocAttribute.LocalName, attributeFromFinalRoot.LocalName, winfxXamlNamespaceAttributeName);
-                                    exists = true;
-                                    break;
-                                }
-                            }
-                        }
-
-                        if (exists == false)
-                        {
-                            // Add namespace to result resource dictionary
-                            var a = finalDocument.CreateAttribute(currentDocAttribute.Prefix, currentDocAttribute.LocalName, currentDocAttribute.NamespaceURI);
-                            a.Value = currentDocAttribute.Value;
-                            finalRootNode.Attributes.Append(a);
-                        }
                     }
                 }
 
@@ -402,7 +359,7 @@ namespace XAMLTools.XAMLCombine
 
             if (this.WriteFileHeader)
             {
-                this.AddFileHeader(finalDocument, orderedSourceFiles, targetFile);
+                this.AddFileHeader(finalDocument, orderedSourceFiles);
             }
 
             // Save result file
@@ -446,7 +403,7 @@ namespace XAMLTools.XAMLCombine
             return key;
         }
 
-        private void AddFileHeader(XmlDocument finalDocument, IReadOnlyCollection<string> sourceFiles, string targetFile)
+        private void AddFileHeader(XmlDocument finalDocument, IReadOnlyCollection<string> sourceFiles)
         {
             var root = finalDocument.DocumentElement;
 
@@ -473,83 +430,6 @@ Source files:
             }
 
             return Path.GetFullPath(file);
-        }
-
-        /// <summary>
-        /// Changes namespace prefix for XML node.
-        /// </summary>
-        /// <param name="element">XML node.</param>
-        /// <param name="oldPrefix">Old namespace prefix.</param>
-        /// <param name="newPrefix">New namespace prefix.</param>
-        /// <param name="winfxXamlNamespaceMapping">The local name for winfx xaml namespace</param>
-        private static void ChangeNamespacePrefix(XmlElement element, string oldPrefix, string newPrefix, string winfxXamlNamespaceMapping)
-        {
-            // String for search
-            var oldString = oldPrefix + ":";
-            var newString = newPrefix + ":";
-            var oldStringSpaced = " " + oldString;
-            var newStringSpaced = " " + newString;
-
-            foreach (XmlNode? child in element.ChildNodes)
-            {
-                if (child is not XmlElement childElement)
-                {
-                    continue;
-                }
-
-
-                if (child.Prefix == oldPrefix)
-                {
-                    child.Prefix = newPrefix;
-                }
-
-                foreach (XmlAttribute? attr in childElement.Attributes)
-                {
-                    if (attr is null)
-                    {
-                        continue;
-                    }
-
-                    // Check all attributes prefix
-                    if (attr.Prefix == oldPrefix)
-                    {
-                        attr.Prefix = newPrefix;
-                    }
-
-                    if (attr.Value.Contains(oldStringSpaced))
-                    {
-                        // Check {x:Type {x:Static in attributes values
-                        // TODO: Is any other???
-                        if (attr.Value.Contains($"{{{winfxXamlNamespaceMapping}:Type") || attr.Value.Contains($"{{{winfxXamlNamespaceMapping}:Static"))
-                        {
-                            attr.Value = attr.Value.Replace(oldStringSpaced, newStringSpaced);
-                        }
-                    }
-                    else
-                    {
-                        if (attr.Value.Contains(oldString))
-                        {
-                            // Check MarkdownExtension
-                            var match = markupExtensionSearch.Match(attr.Value);
-                            if (match.Success && match.Value.StartsWith(oldString))
-                            {
-                                attr.Value = attr.Value.Replace(oldString, newString);
-                            }
-                        }
-                    }
-
-                    // Check Property attribute
-                    // TODO: Is any other???
-                    if (attr.Name == "Property"
-                        && attr.Value.StartsWith(oldString))
-                    {
-                        attr.Value = attr.Value.Replace(oldString, newString);
-                    }
-                }
-
-                // Change namespaces for child node
-                ChangeNamespacePrefix(childElement, oldPrefix, newPrefix, winfxXamlNamespaceMapping);
-            }
         }
 
         /// <summary>

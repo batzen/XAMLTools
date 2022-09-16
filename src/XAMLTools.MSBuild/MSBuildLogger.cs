@@ -4,12 +4,12 @@ using System.Diagnostics;
 using Microsoft.Build.Framework;
 using ILogger = XAMLTools.ILogger;
 
-public class Logger : ILogger
+public class MSBuildLogger : ILogger
 {
     private readonly IBuildEngine buildEngine;
     private readonly string senderName;
 
-    public Logger(IBuildEngine buildEngine, string senderName)
+    public MSBuildLogger(IBuildEngine buildEngine, string senderName)
     {
         this.buildEngine = buildEngine;
         this.senderName = senderName;

@@ -32,7 +32,7 @@
 
                 var generator = new ColorSchemeGenerator
                 {
-                    Logger = new Logger(this.BuildEngine, nameof(XAMLColorSchemeGeneratorTask))
+                    Logger = new MSBuildLogger(this.BuildEngine, nameof(XAMLColorSchemeGeneratorTask))
                 };
                 var currentGeneratedFiles = MutexHelper.ExecuteLocked(() => generator.GenerateColorSchemeFiles(generatorParametersFile, templateFile, outputPath), templateFile);
 
