@@ -5,7 +5,6 @@
     using System.Diagnostics;
     using System.IO;
     using System.Runtime;
-    using System.Threading;
     using System.Threading.Tasks;
     using CommandLine;
     using XAMLTools.Helpers;

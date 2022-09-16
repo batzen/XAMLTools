@@ -123,6 +123,18 @@ class Build : NukeBuild
                 .SetInformationalVersion(InformationalVersion));
 
             Compress(BuildBinDirectory / Configuration / "XAMLTools", ArtifactsDirectory / $"XAMLTools-v{NuGetVersion}.zip");
+
+            DotNetPack(s => s
+                            .SetProject(SourceDirectory / "XAMLTools")
+                            .SetConfiguration(Configuration)
+
+                            .When(GitVersion is not null, x => x
+                                                               .SetProperty("RepositoryBranch", GitVersion?.BranchName)
+                                                               .SetProperty("RepositoryCommit", GitVersion?.Sha))
+                            .SetVersion(NuGetVersion)
+                            .SetAssemblyVersion(AssemblySemVer)
+                            .SetFileVersion(AssemblySemFileVer)
+                            .SetInformationalVersion(InformationalVersion));
         });
 
     // ReSharper disable once UnusedMember.Local
