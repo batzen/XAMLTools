@@ -45,5 +45,10 @@
     <None Include="Themes/WinUI/*.xaml" />
   </ItemGroup>
 
+  <ItemGroup Label="Faulty">
+    <Page Remove="Themes/DuplicateNamespaces/*.xaml" />
+    <None Include="Themes/DuplicateNamespaces/*.xaml" />
+  </ItemGroup>
+
   <Import Project="..\..\XAMLTools.MSBuild\build\XAMLTools.MSBuild.targets" />
 </Project>
