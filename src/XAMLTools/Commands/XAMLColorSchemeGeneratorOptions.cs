@@ -2,10 +2,12 @@ namespace XAMLTools.Commands;
 
 using System.Threading.Tasks;
 using CommandLine;
+using JetBrains.Annotations;
 using XamlTools;
 using XAMLTools.Helpers;
 using XAMLTools.XAMLColorSchemeGenerator;
 
+[PublicAPI]
 [Verb("colorscheme", HelpText = "Generate XAML color scheme files.")]
 public class XAMLColorSchemeGeneratorOptions : BaseOptions
 {
