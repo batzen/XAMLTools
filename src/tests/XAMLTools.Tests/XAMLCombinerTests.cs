@@ -104,7 +104,7 @@
             Assert.That(() => xamlCombiner.Combine(themeFilePaths, this.targetFile),
                         Throws.Exception
                               .With.Message
-                              .Contains("Namespace name \"xmlns:controls\" with different values was seen in "));
+                              .Contains("Namespace name \"controls\" with different values was seen in "));
         }
     }
 }

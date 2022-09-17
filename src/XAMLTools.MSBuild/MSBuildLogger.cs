@@ -1,6 +1,5 @@
 namespace XAMLTools.MSBuild;
 
-using System.Diagnostics;
 using Microsoft.Build.Framework;
 using ILogger = XAMLTools.ILogger;
 

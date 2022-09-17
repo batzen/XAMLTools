@@ -2,12 +2,11 @@ namespace XAMLTools.XAMLCombine
 {
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.IO;
     using System.Linq;
     using System.Text;
-    using System.Text.RegularExpressions;
     using System.Xml;
+    using System.Xml.Linq;
     using XAMLTools.Helpers;
 
     public class XAMLCombiner : IXamlCombinerOptions
@@ -76,11 +75,11 @@ namespace XAMLTools.XAMLCombine
         public string Combine(IReadOnlyCollection<string> sourceFiles, string targetFile)
         {
             // Create result XML document
-            var finalDocument = new XmlDocument();
-            var finalRootNode = finalDocument.CreateElement(ResourceDictionaryString, WinfxXAMLPresentationNamespaceUri);
-            finalDocument.AppendChild(finalRootNode);
+            var finalDocument = new XDocument();
+            var finalRootElement = new XElement(XName.Get(ResourceDictionaryString, WinfxXAMLPresentationNamespaceUri));
+            finalDocument.Add(finalRootElement);
 
-            XmlElement? mergedDictionariesListNode = default;
+            XElement? mergedDictionariesListElement = default;
 
             // List of existing keys, to avoid duplicates
             var keys = new HashSet<string>();
@@ -91,13 +90,13 @@ namespace XAMLTools.XAMLCombine
             // List of read resources
             var resourcesList = new List<ResourceElement>();
 
-            var themeDictionaries = new Dictionary<string, XmlElement>();
+            var themeDictionaries = new Dictionary<string, XElement>();
 
             // For each resource file
             var orderedSourceFiles = sourceFiles.OrderBy(x => x)
                                                 .ToArray();
 
-            var seenNamespacesToFilesMapping = new Dictionary<XmlAttribute, string>();
+            var seenNamespacesToFilesMapping = new Dictionary<XAttribute, string>();
             
             foreach (var resourceFile in orderedSourceFiles)
             {
@@ -108,97 +107,88 @@ namespace XAMLTools.XAMLCombine
                     continue;
                 }
 
-                var current = new XmlDocument();
-                current.Load(this.GetFullFilePath(resourceFile));
+                var current = XDocument.Load(this.GetFullFilePath(resourceFile), LoadOptions.SetLineInfo | LoadOptions.SetBaseUri);
 
                 this.Logger?.Debug($"Loading resource \"{resourceFile}\"");
 
                 // Set and fix resource dictionary attributes
-                var currentDocRoot = current.DocumentElement;
+                var currentDocRoot = current.Root;
                 if (currentDocRoot is null)
                 {
                     this.Logger?.Warn($"\"{resourceFile}\" did not contain a document element.");
                     continue;
                 }
 
-                foreach (XmlAttribute attribute in currentDocRoot.Attributes)
+                foreach (var attribute in currentDocRoot.Attributes())
                 {
-                    var duplicate = seenNamespacesToFilesMapping.Keys.FirstOrDefault(x => x.Name == attribute.Name
+                    var duplicate = seenNamespacesToFilesMapping.Keys.FirstOrDefault(x => x.Name.LocalName == attribute.Name.LocalName
                                                                                         && x.Value != attribute.Value);
 
                     if (duplicate is not null)
                     {
-                        var message = $"Namespace name \"{duplicate.Name}\" with different values was seen in \"{seenNamespacesToFilesMapping[duplicate]}\" and \"{resourceFile}\".\nPlease use unique prefixes when their namespace values differs.";
+                        var message = $"Namespace name \"{duplicate.Name.LocalName}\" with different values was seen in \"{seenNamespacesToFilesMapping[duplicate]}\" and \"{resourceFile}\".\nPlease use unique prefixes when their namespace values differs.";
                         this.Logger?.Error(message);
                         throw new Exception(message);
                     }
 
                     seenNamespacesToFilesMapping.Add(attribute, resourceFile);
 
-                    if (finalRootNode.HasAttribute(attribute.Name) == false)
+                    if (finalRootElement.Attribute(attribute.Name.ToString()) is null)
                     {
                         // Add namespace to result resource dictionary
-                        var a = finalDocument.CreateAttribute(attribute.Prefix, attribute.LocalName, attribute.NamespaceURI);
-                        a.Value = attribute.Value;
-                        finalRootNode.Attributes.Append(a);
+                        finalRootElement.SetAttributeValue(attribute.Name, attribute.Value);
                     }
                 }
 
-                var winfxXamlNamespaceAttributeName = "x";
+                var winfxXamlNamespaceAttributeName = "http://schemas.microsoft.com/winfx/2006/xaml";
 
                 // Find http://schemas.microsoft.com/winfx/2006/xaml namespace mapping
-                foreach (XmlAttribute attribute in finalRootNode.Attributes)
+                foreach (var attribute in finalRootElement.Attributes())
                 {
-                    var namespaceUri = attribute.Value;
-                    if (string.Equals(namespaceUri, "http://schemas.microsoft.com/winfx/2006/xaml"))
-                    {
-                        winfxXamlNamespaceAttributeName = attribute.LocalName;
-                    }
+                    // var namespaceUri = attribute.Value;
+                    // if (string.Equals(namespaceUri, "http://schemas.microsoft.com/winfx/2006/xaml"))
+                    // {
+                    //     winfxXamlNamespaceAttributeName = attribute.Name.LocalName;
+                    // }
                 }
 
                 // Extract resources
-                foreach (XmlNode? node in currentDocRoot.ChildNodes)
+                foreach (var element in currentDocRoot.Elements())
                 {
-                    if (node is not XmlElement xmlElement)
-                    {
-                        continue;
-                    }
-
                     // Merged resource dictionaries (at the top)
-                    if (node.Name == MergedDictionariesString)
+                    if (element.Name.LocalName == MergedDictionariesString)
                     {
                         if (this.ImportMergedResourceDictionaryReferences)
                         {
-                            if (finalRootNode.ChildNodes.Count == 0)
+                            if (finalRootElement.Elements().Any() == false)
                             {
-                                mergedDictionariesListNode = finalDocument.CreateElement(MergedDictionariesString, WinfxXAMLPresentationNamespaceUri);
-                                finalRootNode.AppendChild(mergedDictionariesListNode);
+                                mergedDictionariesListElement = new XElement(XName.Get(MergedDictionariesString, WinfxXAMLPresentationNamespaceUri));
+                                finalRootElement.Add(mergedDictionariesListElement);
                             }
-                            else if (finalRootNode.FirstChild.Name != MergedDictionariesString)
+                            else if (element.Name.LocalName != MergedDictionariesString)
                             {
-                                mergedDictionariesListNode = finalDocument.CreateElement(MergedDictionariesString, WinfxXAMLPresentationNamespaceUri);
-                                finalRootNode.InsertBefore(mergedDictionariesListNode, finalRootNode.FirstChild);
+                                mergedDictionariesListElement = new XElement(XName.Get(MergedDictionariesString, WinfxXAMLPresentationNamespaceUri));
+                                finalRootElement.AddFirst(mergedDictionariesListElement);
                             }
 
-                            if (mergedDictionariesListNode is null)
+                            if (mergedDictionariesListElement is null)
                             {
                                 continue;
                             }
 
-                            var currentMergedSources = mergedDictionariesListNode.ChildNodes.OfType<XmlElement>()
-                                                                                 .Select(nodeElement => nodeElement.GetAttribute("Source"))
-                                                                                 .Where(source => !string.IsNullOrEmpty(source))
-                                                                                 .ToList();
+                            var currentMergedSources = mergedDictionariesListElement.Elements()
+                                                                                    .Select(mergedDictionaryElement => mergedDictionaryElement.Attribute("Source"))
+                                                                                    .Where(source => source is not null && string.IsNullOrEmpty(source.Value) == false)
+                                                                                    .ToList();
 
-                            foreach (var mergedDictionaryReference in xmlElement.ChildNodes)
+                            foreach (var mergedDictionaryReference in element.Elements())
                             {
-                                if (mergedDictionaryReference is not XmlElement mergedDictionaryReferenceElement
-                                    || mergedDictionaryReferenceElement.Name != ResourceDictionaryString)
+                                if (mergedDictionaryReference.Name.LocalName != ResourceDictionaryString)
                                 {
                                     continue;
                                 }
 
-                                var sourceValue = mergedDictionaryReferenceElement.GetAttribute("Source");
+                                var sourceValue = mergedDictionaryReference.Attribute("Source")!.Value;
                                 // Check if it's processed by combine
                                 // Not ideal but should be enough for most cases
                                 var sourceRelativeFilePath = sourceValue.Remove(0, sourceValue.IndexOf(";component/", StringComparison.Ordinal) + ";component/".Length);
@@ -220,22 +210,22 @@ namespace XAMLTools.XAMLCombine
                                     continue;
                                 }
 
-                                // Import ResourceDictionary reference node from processed XML document to final XML document                        
-                                var importedResourceDictionaryReference = (XmlElement)finalDocument.ImportNode(mergedDictionaryReferenceElement, false);
-                                mergedDictionariesListNode.AppendChild(importedResourceDictionaryReference);
+                                // Import ResourceDictionary reference element from processed XML document to final XML document
+                                var importedResourceDictionaryReference = new XElement(mergedDictionaryReference);
+                                mergedDictionariesListElement.Add(importedResourceDictionaryReference);
                             }
                         }
 
-                        // Always continue after merged dictionary nodes
+                        // Always continue after merged dictionary elements
                         continue;
                     }
 
                     // WinUI / UWP
-                    if (node.Name == ThemeDictionariesString)
+                    if (element.Name.LocalName == ThemeDictionariesString)
                     {
-                        foreach (XmlNode childNode in node.ChildNodes)
+                        foreach (var childElement in element.Elements())
                         {
-                            var importedElement = (XmlElement)finalDocument.ImportNode(childNode, true);
+                            var importedElement = new XElement(childElement);
                             var key = GetKey(importedElement, winfxXamlNamespaceAttributeName);
 
                             if (string.IsNullOrEmpty(key))
@@ -250,9 +240,9 @@ namespace XAMLTools.XAMLCombine
                             }
                             else
                             {
-                                foreach (XmlNode resourceDictionaryChild in childNode.ChildNodes)
+                                foreach (var resourceDictionaryChild in childElement.Elements())
                                 {
-                                    mergedThemeDictionary.AppendChild((XmlElement)finalDocument.ImportNode(resourceDictionaryChild, true));
+                                    mergedThemeDictionary.Add(new XElement(resourceDictionaryChild));
                                 }
                             }
                         }
@@ -260,32 +250,31 @@ namespace XAMLTools.XAMLCombine
 
                     // Resources
                     {
-                        // Import XML node from one XML document to result XML document
-                        var importedElement = (XmlElement)finalDocument.ImportNode(xmlElement, true);
+                        // Import XML element from one XML document to result XML document
+                        var importedElement = new XElement(element);
 
                         // Find resource key
                         var key = GetKey(importedElement, winfxXamlNamespaceAttributeName);
 
                         if (string.IsNullOrEmpty(key))
                         {
+                            this.Logger?.Warn($"Element had no key and was skipped.{Environment.NewLine}{GetDebugInfo(element)}");
                             continue;
                         }
 
                         // Check key unique
-                        if (keys.Contains(key))
-                        {
-                            continue;
-                        }
-
                         if (keys.Add(key))
                         {
-                            // Create ResourceElement for key and XML node
+                            // Create ResourceElement for key and XML element
                             var res = new ResourceElement(key, importedElement, GetUsedKeys(importedElement));
                             resourceElements.Add(key, res);
                             resourcesList.Add(res);
                         }
-
-                        // TODO: Add output information.
+                        else
+                        {
+                            this.Logger?.Warn($"Key \"{key}\" was found in multiple imported files and was skipped.{Environment.NewLine}{GetDebugInfo(element)}");
+                            continue;
+                        }
                     }
                 }
             }
@@ -342,19 +331,20 @@ namespace XAMLTools.XAMLCombine
             // WinUI / UWP
             if (themeDictionaries.Any())
             {
-                var themeDictionariesNode = finalDocument.CreateNode(XmlNodeType.Element, ThemeDictionariesString, WinfxXAMLPresentationNamespaceUri);
-                finalRootNode.AppendChild(themeDictionariesNode);
+                var themeDictionariesElement = new XElement(XName.Get(ThemeDictionariesString, WinfxXAMLPresentationNamespaceUri));
+
+                finalRootElement.Add(themeDictionariesElement);
 
                 foreach (var themeDictionary in themeDictionaries)
                 {
-                    themeDictionariesNode.AppendChild(themeDictionary.Value);
+                    themeDictionariesElement.Add(themeDictionary.Value);
                 }
             }
 
-            // Add nodes to XML document
+            // Add elements to XML document
             for (var i = 0; i < finalOrderList.Count; i++)
             {
-                finalRootNode.AppendChild(finalOrderList[i].Element);
+                finalRootElement.Add(finalOrderList[i].Element);
             }
 
             if (this.WriteFileHeader)
@@ -362,54 +352,73 @@ namespace XAMLTools.XAMLCombine
                 this.AddFileHeader(finalDocument, orderedSourceFiles);
             }
 
+            this.CleanUpEmptyElements(finalDocument);
+            
             // Save result file
             return this.WriteResultFile(targetFile, finalDocument);
         }
 
-        private static string GetKey(XmlElement importedElement, string winfxXamlNamespaceAttributeName)
+        private void CleanUpEmptyElements(XDocument finalDocument)
+        {
+            foreach (var descendantNode in finalDocument.DescendantNodes())
+            {
+                if (descendantNode is not XElement element)
+                {
+                    continue;
+                }
+
+                if (element.HasElements == false
+                    && element.Value == string.Empty)
+                {
+                    element.RemoveNodes();
+                }
+            }
+        }
+
+        private static string GetKey(XElement importedElement, string winfxXamlNamespaceAttributeName)
         {
             // TODO: Are there any other variants???
-            var key = importedElement.GetAttribute("Key");
+            var key = importedElement.Attribute("Key")?.Value;
 
             if (string.IsNullOrEmpty(key))
             {
-                key = importedElement.GetAttribute(winfxXamlNamespaceAttributeName + ":Key");
+                key = importedElement.Attribute(XName.Get("Key", winfxXamlNamespaceAttributeName))?.Value;
             }
 
             if (string.IsNullOrEmpty(key))
             {
-                key = importedElement.GetAttribute(winfxXamlNamespaceAttributeName + ":Name");
+                key = importedElement.Attribute(XName.Get("Name", winfxXamlNamespaceAttributeName))?.Value;
             }
 
             if (string.IsNullOrEmpty(key))
             {
-                key = importedElement.GetAttribute("TargetType");
+                key = importedElement.Attribute("TargetType")?.Value;
             }
 
             // WinUI / UWP
-            if (key.Length > 0)
+            if (string.IsNullOrEmpty(key) == false)
             {
-                // If this node has a key and a conditional-inclusion namespace, we'll attach a prefix
-                // to the key corresponding to the condition we checked in order to allow multiple such nodes
+                // If this element has a key and a conditional-inclusion namespace, we'll attach a prefix
+                // to the key corresponding to the condition we checked in order to allow multiple such elements
                 // with the same key to exist.
-                var indexOfContractPresent = importedElement.NamespaceURI.IndexOf("IsApiContract", StringComparison.Ordinal);
+                var indexOfContractPresent = importedElement.Name.Namespace.NamespaceName.IndexOf("IsApiContract", StringComparison.Ordinal);
 
                 if (indexOfContractPresent >= 0)
                 {
-                    key = importedElement.NamespaceURI.Substring(indexOfContractPresent) + ":" + key;
+                    key = importedElement.Name.Namespace.NamespaceName.Substring(indexOfContractPresent) + ":" + key;
                 }
             }
-            
-            return key;
+
+            return key ?? string.Empty;
         }
 
-        private void AddFileHeader(XmlDocument finalDocument, IReadOnlyCollection<string> sourceFiles)
+        private void AddFileHeader(XDocument finalDocument, IReadOnlyCollection<string> sourceFiles)
         {
-            var root = finalDocument.DocumentElement;
+            var root = finalDocument.Root;
 
-            var fileHeaderComment = finalDocument.CreateComment(this.FileHeader);
+            var fileHeaderComment = new XComment(this.FileHeader);
 
-            finalDocument.InsertBefore(fileHeaderComment, root);
+            root.AddBeforeSelf(fileHeaderComment);
 
             if (this.IncludeSourceFilesInFileHeader)
             {
@@ -417,8 +426,8 @@ namespace XAMLTools.XAMLCombine
 Source files:
 {string.Join(Environment.NewLine, sourceFiles)}
 ";
-                var sourceFilesComment = finalDocument.CreateComment(sourceFilesCommentContent);
-                finalDocument.InsertAfter(sourceFilesComment, fileHeaderComment);
+                var sourceFilesComment = new XComment(sourceFilesCommentContent);
+                fileHeaderComment.AddAfterSelf(sourceFilesComment);
             }
         }
 
@@ -437,13 +446,13 @@ Source files:
         /// </summary>
         /// <param name="element">Xml element which contains resource.</param>
         /// <returns>Array of keys used by resource.</returns>
-        private static string[] GetUsedKeys(XmlElement element)
+        private static string[] GetUsedKeys(XElement element)
         {
             // Result list
             var result = new List<string>();
 
             // Check all attributes
-            foreach (XmlAttribute? attr in element.Attributes)
+            foreach (var attr in element.Attributes())
             {
                 if (attr is null)
                 {
@@ -474,40 +483,42 @@ Source files:
                 }
             }
 
-            // Check child nodes
-            foreach (XmlNode? node in element.ChildNodes)
+            // Check child elements
+            foreach (var childElement in element.Elements())
             {
-                if (node is XmlElement nodeElement)
-                {
-                    result.AddRange(GetUsedKeys(nodeElement));
-                }
+                result.AddRange(GetUsedKeys(childElement));
             }
 
             return result.ToArray();
         }
 
-        private string WriteResultFile(string resultFile, XmlDocument finalDocument)
+        private string WriteResultFile(string resultFile, XDocument finalDocument)
         {
             try
             {
                 resultFile = resultFile.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
 
-                var stringWriter = new UTF8StringWriter();
+                var stringWriter = new StringWriter();
                 var xmlWriterSettings = new XmlWriterSettings 
                     { 
                         OmitXmlDeclaration = true,
                         Indent = true,
                         IndentChars = "  ",
-                        NewLineHandling = NewLineHandling.None
+                        NewLineHandling = NewLineHandling.None,
+                        NamespaceHandling = NamespaceHandling.OmitDuplicates
                     };
                 var xmlWriter = XmlWriter.Create(stringWriter, xmlWriterSettings);
 
                 using (stringWriter)
                 {
-                    finalDocument.Save(xmlWriter);
+                    using (xmlWriter)
+                    {
+                        finalDocument.WriteTo(xmlWriter);
+                    }
                 }
 
                 var tempFileContent = stringWriter.ToString();
+                var tempFileContent2 = finalDocument.ToString(SaveOptions.OmitDuplicateNamespaces);
 
                 this.Logger?.Debug($"Checking \"{resultFile}\"...");
 
@@ -541,6 +552,17 @@ Source files:
             }
 
             return resultFile;
+        }
+
+        private static string GetDebugInfo(XElement element)
+        {
+            if (element is IXmlLineInfo lineInfo
+                && lineInfo.HasLineInfo())
+            {
+                return $"At: {lineInfo.LineNumber}:{lineInfo.LinePosition} ({element.Document.BaseUri}){Environment.NewLine}{element}";
+            }
+
+            return element.ToString();
         }
     }
 }

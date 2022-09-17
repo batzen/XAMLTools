@@ -34,11 +34,17 @@ public class ConsoleLogger : ILogger
 
     public void Warn(string message)
     {
+        var foreground = Console.ForegroundColor;
+        Console.ForegroundColor = ConsoleColor.DarkYellow;
         Console.WriteLine(message);
+        Console.ForegroundColor = foreground;
     }
 
     public void Error(string message)
     {
+        var foreground = Console.ForegroundColor;
+        Console.ForegroundColor = ConsoleColor.DarkRed;
         Console.Error.WriteLine(message);
+        Console.ForegroundColor = foreground;
     }
 }
