@@ -91,7 +91,7 @@
 
             await Verifier.VerifyFile(this.targetFile);
         }
-        
+
         [Test]
         public void TestDuplicateNamespaces()
         {
@@ -107,7 +107,7 @@
                               .With.Message
                               .Contains("Namespace name \"controls\" with different values was seen in "));
         }
-        
+
         [Test]
         public void TestDuplicateKeys()
         {
