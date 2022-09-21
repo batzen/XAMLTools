@@ -81,9 +81,6 @@ namespace XAMLTools.XAMLCombine
 
             XElement? mergedDictionariesListElement = default;
 
-            // List of existing keys, to avoid duplicates
-            var keys = new HashSet<string>();
-
             // Associate key with ResourceElement
             var resourceElements = new Dictionary<string, ResourceElement>();
 
@@ -263,14 +260,14 @@ namespace XAMLTools.XAMLCombine
                         }
 
                         // Check key unique
-                        if (keys.Add(key))
+                        if (resourceElements.TryGetValue(key, out var existingElement) == false)
                         {
                             // Create ResourceElement for key and XML element
                             var res = new ResourceElement(key, importedElement, GetUsedKeys(importedElement));
                             resourceElements.Add(key, res);
                             resourcesList.Add(res);
                         }
-                        else
+                        else if (importedElement.ToString() != existingElement.Element.ToString())
                         {
                             this.Logger?.Warn($"Key \"{key}\" was found in multiple imported files and was skipped.{Environment.NewLine}{GetDebugInfo(element)}");
                             continue;

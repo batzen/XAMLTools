@@ -46,6 +46,9 @@
   </ItemGroup>
 
   <ItemGroup Label="Faulty">
+    <Page Remove="Themes/DuplicateKeys/*.xaml" />
+    <None Include="Themes/DuplicateKeys/*.xaml" />
+
     <Page Remove="Themes/DuplicateNamespaces/*.xaml" />
     <None Include="Themes/DuplicateNamespaces/*.xaml" />
   </ItemGroup>

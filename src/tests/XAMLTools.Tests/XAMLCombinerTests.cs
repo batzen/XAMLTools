@@ -5,6 +5,7 @@
     using System.Diagnostics;
     using System.IO;
     using System.Threading.Tasks;
+    using XAMLTools.Tests.TestHelpers;
     using XAMLTools.XAMLCombine;
 
     [TestFixture]
@@ -105,6 +106,27 @@
                         Throws.Exception
                               .With.Message
                               .Contains("Namespace name \"controls\" with different values was seen in "));
+        }
+        
+        [Test]
+        public void TestDuplicateKeys()
+        {
+            var currentAssemblyDir = Path.GetDirectoryName(this.GetType().Assembly.Location)!;
+            var wpfAppDirectory = Path.GetFullPath(Path.Combine(currentAssemblyDir, "../../../../src/tests/XAMLTools.WPFApp"));
+            var themeFilesDirectory = Path.GetFullPath(Path.Combine(wpfAppDirectory, "Themes/DuplicateKeys"));
+            var themeFilePaths = Directory.GetFiles(themeFilesDirectory, "*.xaml", SearchOption.AllDirectories).Reverse().ToArray();
+
+            var testLogger = new TestLogger();
+
+            var xamlCombiner = new XAMLCombiner
+            {
+                Logger = testLogger
+            };
+            xamlCombiner.Combine(themeFilePaths, this.targetFile);
+
+            Assert.That(testLogger.Errors, Is.Empty);
+            Assert.That(testLogger.Warnings, Has.Count.EqualTo(1));
+            Assert.That(testLogger.Warnings[0], Does.StartWith("Key \"DuplicateDifferentContent\" was found in multiple imported files and was skipped.\r\nAt: 9:6"));
         }
     }
 }
