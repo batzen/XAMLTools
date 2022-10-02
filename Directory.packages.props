@@ -5,7 +5,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageVersion Include="System.Text.Json" Version="6.0.5"/>
+    <PackageVersion Include="System.Text.Json" Version="6.0.6"/>
     <PackageVersion Include="CommandLineParser" Version="2.9.1"/>
 
     <PackageVersion Include="Microsoft.Build.Tasks.Core" Version="17.0.0"/>
@@ -13,12 +13,12 @@
   </ItemGroup>
 
   <ItemGroup Label="Test">
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.2.0"/>
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.3.2"/>
     <PackageVersion Include="NUnit" Version="3.13.3"/>
-    <PackageVersion Include="NUnit3TestAdapter" Version="4.2.1"/>
+    <PackageVersion Include="NUnit3TestAdapter" Version="4.3.0-alpha-net7.4"/>
 
-    <PackageVersion Include="CliWrap" Version="3.4.4"/>
+    <PackageVersion Include="CliWrap" Version="3.5.0"/>
 
-    <PackageVersion Include="Verify.NUnit" Version="16.3.4"/>
+    <PackageVersion Include="Verify.NUnit" Version="17.10.2"/>
   </ItemGroup>
 </Project>
