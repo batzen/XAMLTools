@@ -15,7 +15,7 @@
         }
 
         /// <summary>
-        /// Resource key. 
+        /// Resource key.
         /// </summary>
         public string Key { get; }
 

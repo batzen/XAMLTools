@@ -94,7 +94,7 @@ namespace XAMLTools.XAMLCombine
                                                 .ToArray();
 
             var seenNamespacesToFilesMapping = new Dictionary<XAttribute, string>();
-            
+
             foreach (var resourceFile in orderedSourceFiles)
             {
                 // ignore empty and lines that start with '#'
@@ -138,16 +138,6 @@ namespace XAMLTools.XAMLCombine
                 }
 
                 var winfxXamlNamespaceAttributeName = "http://schemas.microsoft.com/winfx/2006/xaml";
-
-                // Find http://schemas.microsoft.com/winfx/2006/xaml namespace mapping
-                foreach (var attribute in finalRootElement.Attributes())
-                {
-                    // var namespaceUri = attribute.Value;
-                    // if (string.Equals(namespaceUri, "http://schemas.microsoft.com/winfx/2006/xaml"))
-                    // {
-                    //     winfxXamlNamespaceAttributeName = attribute.Name.LocalName;
-                    // }
-                }
 
                 // Extract resources
                 foreach (var element in currentDocRoot.Elements())
@@ -350,7 +340,7 @@ namespace XAMLTools.XAMLCombine
             }
 
             this.CleanUpEmptyElements(finalDocument);
-            
+
             // Save result file
             return this.WriteResultFile(targetFile, finalDocument);
         }
@@ -496,8 +486,8 @@ Source files:
                 resultFile = resultFile.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
 
                 var stringWriter = new StringWriter();
-                var xmlWriterSettings = new XmlWriterSettings 
-                    { 
+                var xmlWriterSettings = new XmlWriterSettings
+                    {
                         OmitXmlDeclaration = true,
                         Indent = true,
                         IndentChars = "  ",

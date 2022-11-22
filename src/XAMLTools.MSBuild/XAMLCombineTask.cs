@@ -46,7 +46,7 @@
                     ImportMergedResourceDictionaryReferences = options.ImportMergedResourceDictionaryReferences,
                     WriteFileHeader = options.WriteFileHeader,
                     FileHeader = options.FileHeader,
-                    IncludeSourceFilesInFileHeader = options.IncludeSourceFilesInFileHeader, 
+                    IncludeSourceFilesInFileHeader = options.IncludeSourceFilesInFileHeader,
                     Logger = new MSBuildLogger(this.BuildEngine, nameof(XAMLCombineTask))
                 };
 

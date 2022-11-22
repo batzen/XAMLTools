@@ -3,9 +3,9 @@ namespace XAMLTools.Tests.TestHelpers;
 public class TestLogger : ILogger
 {
     public List<string> Warnings { get; } = new();
-    
+
     public List<string> Errors { get; } = new();
-    
+
     public void Debug(string message)
     {
     }
