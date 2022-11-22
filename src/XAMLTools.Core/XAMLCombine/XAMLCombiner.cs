@@ -169,8 +169,12 @@ namespace XAMLTools.XAMLCombine
 
                             foreach (var mergedDictionaryReference in element.Elements())
                             {
+                                // #65 => Import everything as is if it's not a regular ResourceDictionary
                                 if (mergedDictionaryReference.Name.LocalName != ResourceDictionaryString)
                                 {
+                                    // Import non ResourceDictionary reference element from processed XML document to final XML document
+                                    var importedNonResourceDictionaryReference = new XElement(mergedDictionaryReference);
+                                    mergedDictionariesListElement.Add(importedNonResourceDictionaryReference);
                                     continue;
                                 }
 
