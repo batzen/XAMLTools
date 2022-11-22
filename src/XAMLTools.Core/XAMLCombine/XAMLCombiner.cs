@@ -30,6 +30,7 @@ namespace XAMLTools.XAMLCombine
 
         private const string ResourceDictionaryString = "ResourceDictionary";
 
+        private const string WinfxXAMLNamespaceUri = "http://schemas.microsoft.com/winfx/2006/xaml";
         private const string WinfxXAMLPresentationNamespaceUri = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
 
         public const bool ImportMergedResourceDictionaryReferencesDefault = false;
@@ -137,8 +138,6 @@ namespace XAMLTools.XAMLCombine
                     }
                 }
 
-                var winfxXamlNamespaceAttributeName = "http://schemas.microsoft.com/winfx/2006/xaml";
-
                 // Extract resources
                 foreach (var element in currentDocRoot.Elements())
                 {
@@ -213,7 +212,7 @@ namespace XAMLTools.XAMLCombine
                         foreach (var childElement in element.Elements())
                         {
                             var importedElement = new XElement(childElement);
-                            var key = GetKey(importedElement, winfxXamlNamespaceAttributeName);
+                            var key = GetKey(importedElement, WinfxXAMLNamespaceUri);
 
                             if (string.IsNullOrEmpty(key))
                             {
@@ -241,7 +240,7 @@ namespace XAMLTools.XAMLCombine
                         var importedElement = new XElement(element);
 
                         // Find resource key
-                        var key = GetKey(importedElement, winfxXamlNamespaceAttributeName);
+                        var key = GetKey(importedElement, WinfxXAMLNamespaceUri);
 
                         if (string.IsNullOrEmpty(key))
                         {
