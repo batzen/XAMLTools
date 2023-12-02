@@ -97,6 +97,7 @@ public class MSBuildCompileTests
                                     "themes/controls/control3.baml",
                                     "themes/controls/control2.baml",
                                     "themes/controls/control1.baml",
+                                    "themes/controls/zconverters.baml",
                                 }));
             }
             else
