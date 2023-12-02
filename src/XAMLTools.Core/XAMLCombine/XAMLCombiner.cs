@@ -181,7 +181,7 @@ namespace XAMLTools.XAMLCombine
                                     var componentMarkerIndex = sourceValue.IndexOf(COMPONENT_MARKER, StringComparison.OrdinalIgnoreCase);
                                     if (componentMarkerIndex is -1)
                                     {
-                                        this.Logger?.Warn(string.Format($"Ignored merged ResourceDictionary inside resource \"{resourceFile}\" because it's source has no 'component' path.{Environment.NewLine}{GetDebugInfo(mergedDictionaryReference)}"));
+                                        this.Logger?.Warn(string.Format($"Ignored merged ResourceDictionary inside \"{resourceFile}\" because it's source has no 'component' path.{Environment.NewLine}{GetDebugInfo(mergedDictionaryReference)}"));
                                         continue;
                                     }
 
@@ -194,7 +194,7 @@ namespace XAMLTools.XAMLCombine
 
                                     if (string.IsNullOrEmpty(sourceValue))
                                     {
-                                        this.Logger?.Warn(string.Format($"Ignored merged ResourceDictionary inside resource \"{resourceFile}\".{Environment.NewLine}{GetDebugInfo(mergedDictionaryReference)}"));
+                                        this.Logger?.Warn(string.Format($"Ignored merged ResourceDictionary inside \"{resourceFile}\".{Environment.NewLine}{GetDebugInfo(mergedDictionaryReference)}"));
                                         continue;
                                     }
 
