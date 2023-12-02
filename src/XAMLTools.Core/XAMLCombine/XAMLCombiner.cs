@@ -177,7 +177,15 @@ namespace XAMLTools.XAMLCombine
                                     // Check if it's processed by combine
                                     // Not ideal but should be enough for most cases
                                     const string COMPONENT_MARKER = ";component/";
-                                    var sourceRelativeFilePath = sourceValue.Remove(0, sourceValue.IndexOf(COMPONENT_MARKER, StringComparison.Ordinal) + COMPONENT_MARKER.Length);
+
+                                    var componentMarkerIndex = sourceValue.IndexOf(COMPONENT_MARKER, StringComparison.OrdinalIgnoreCase);
+                                    if (componentMarkerIndex is -1)
+                                    {
+                                        this.Logger?.Warn(string.Format($"Ignored merged ResourceDictionary inside resource \"{resourceFile}\" because it's source has no 'component' path.{Environment.NewLine}{GetDebugInfo(mergedDictionaryReference)}"));
+                                        continue;
+                                    }
+
+                                    var sourceRelativeFilePath = sourceValue.Remove(0, componentMarkerIndex + COMPONENT_MARKER.Length);
                                     sourceRelativeFilePath = sourceRelativeFilePath.Replace("/", "\\");
                                     if (orderedSourceFiles.Contains(sourceRelativeFilePath))
                                     {
@@ -186,7 +194,7 @@ namespace XAMLTools.XAMLCombine
 
                                     if (string.IsNullOrEmpty(sourceValue))
                                     {
-                                        this.Logger?.Warn(string.Format($"Ignore merged ResourceDictionary inside resource \"{resourceFile}\""));
+                                        this.Logger?.Warn(string.Format($"Ignored merged ResourceDictionary inside resource \"{resourceFile}\".{Environment.NewLine}{GetDebugInfo(mergedDictionaryReference)}"));
                                         continue;
                                     }
 
