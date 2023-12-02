@@ -5,6 +5,7 @@ namespace XAMLTools.XAMLCombine
     using System.IO;
     using System.Linq;
     using System.Text;
+    using System.Text.RegularExpressions;
     using System.Xml;
     using System.Xml.Linq;
     using XAMLTools.Helpers;
@@ -13,15 +14,7 @@ namespace XAMLTools.XAMLCombine
     {
         private const int BufferSize = 32768; // 32 Kilobytes
 
-        /// <summary>
-        /// Dynamic resource string.
-        /// </summary>
-        private const string DynamicResourceString = "{DynamicResource ";
-
-        /// <summary>
-        /// Static resource string.
-        /// </summary>
-        private const string StaticResourceString = "{StaticResource ";
+        private static Regex resourceUsageRegex = new(@"({(DynamicResource|StaticResource)\s(?<ResourceKey>.*?)})", RegexOptions.IgnorePatternWhitespace);
 
         private const string MergedDictionariesString = "ResourceDictionary.MergedDictionaries";
 
@@ -456,26 +449,18 @@ Source files:
                     continue;
                 }
 
-                if (attr.Value.StartsWith(DynamicResourceString))
+                if (attr.Value.StartsWith("{")
+                    && resourceUsageRegex.Matches(attr.Value) is { Count: > 0 } matches)
                 {
-                    // Find key
-                    var key = attr.Value.Substring(DynamicResourceString.Length, attr.Value.Length - DynamicResourceString.Length - 1).Trim();
-
-                    // Add key to result
-                    if (result.Contains(key) == false)
+                    foreach (Match match in matches)
                     {
-                        result.Add(key);
-                    }
-                }
-                else if (attr.Value.StartsWith(StaticResourceString))
-                {
-                    // Find key
-                    var key = attr.Value.Substring(StaticResourceString.Length, attr.Value.Length - StaticResourceString.Length - 1).Trim();
+                        var resourceKey = match.Groups["ResourceKey"].Value;
 
-                    // Add key to result
-                    if (result.Contains(key) == false)
-                    {
-                        result.Add(key);
+                        // Add key to result
+                        if (result.Contains(resourceKey) == false)
+                        {
+                            result.Add(resourceKey);
+                        }
                     }
                 }
             }

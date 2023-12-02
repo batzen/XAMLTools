@@ -7,11 +7,11 @@ Source files:
 {SolutionDirectory}src\tests\XAMLTools.WPFApp\Themes\Controls\Control1.xaml
 {SolutionDirectory}src\tests\XAMLTools.WPFApp\Themes\Controls\Control2.xaml
 {SolutionDirectory}src\tests\XAMLTools.WPFApp\Themes\Controls\Control3.xaml
+{SolutionDirectory}src\tests\XAMLTools.WPFApp\Themes\Controls\zConverters.xaml
 -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:controls1="clr-namespace:XAMLTools.WPFApp.Controls.MyControl1Namespace" xmlns:sys2="clr-namespace:System;assembly=mscorlib" xmlns:controls2="clr-namespace:XAMLTools.WPFApp.Controls.MyControl2Namespace">
   <Color x:Key="Control1_Color">#FF2B579A</Color>
   <sys2:String x:Key="string1">stringValue</sys2:String>
-  <Style TargetType="{x:Type controls1:MyControl1}" />
   <DataTemplate x:Key="Test">
     <ScrollViewer Name="ScrollViewer" />
     <DataTemplate.Triggers>
@@ -34,11 +34,21 @@ Source files:
   </DataTemplate>
   <sys2:String x:Key="string3">stringValue</sys2:String>
   <Style TargetType="Block" />
+  <Color x:Key="Control3_Color">#FF2B579B</Color>
+  <BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter" />
   <Style x:Key="Control1" TargetType="Control">
     <Setter Property="Background">
       <Setter.Value>
         <SolidColorBrush Color="{StaticResource Control2_Color}" />
       </Setter.Value>
     </Setter>
+    <Setter Property="Foreground">
+      <Setter.Value>
+        <SolidColorBrush Color="{DynamicResource Control3_Color}" />
+      </Setter.Value>
+    </Setter>
+  </Style>
+  <Style TargetType="{x:Type controls1:MyControl1}">
+    <Setter Property="Visibility" Value="{Binding ., Converter={StaticResource booleanToVisibilityConverter}}" />
   </Style>
 </ResourceDictionary>

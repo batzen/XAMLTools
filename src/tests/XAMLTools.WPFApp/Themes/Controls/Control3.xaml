@@ -10,4 +10,6 @@
     <sys:String x:Key="string3">stringValue</sys:String>
 
     <Style TargetType="Block" />
+    
+    <Color x:Key="Control3_Color">#FF2B579B</Color>
 </ResourceDictionary>

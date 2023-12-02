@@ -9,12 +9,19 @@
                 <SolidColorBrush Color="{StaticResource Control2_Color}" />
             </Setter.Value>
         </Setter>
+        <Setter Property="Foreground">
+            <Setter.Value>
+                <SolidColorBrush Color="{DynamicResource Control3_Color}" />
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Color x:Key="Control1_Color">#FF2B579A</Color>
 
     <sys:String x:Key="string1">stringValue</sys:String>
-    <Style TargetType="{x:Type controls1:MyControl1}" />
+    <Style TargetType="{x:Type controls1:MyControl1}">
+        <Setter Property="Visibility" Value="{Binding ., Converter={StaticResource booleanToVisibilityConverter}}" />
+    </Style>
 
     <DataTemplate x:Key="Test">
         <ScrollViewer Name="ScrollViewer">

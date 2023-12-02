@@ -12,7 +12,7 @@
 
     <sys2:String x:Key="string2">stringValue</sys2:String>
     <Style TargetType="{x:Type controls2:MyControl2}" />
-    
+
     <DataTemplate x:Key="AnotherTest">
         <ScrollViewer Name="ScrollViewer">
         </ScrollViewer>
