@@ -178,26 +178,30 @@ namespace XAMLTools.XAMLCombine
                                     continue;
                                 }
 
-                                var sourceValue = mergedDictionaryReference.Attribute("Source")!.Value;
-                                // Check if it's processed by combine
-                                // Not ideal but should be enough for most cases
-                                var sourceRelativeFilePath = sourceValue.Remove(0, sourceValue.IndexOf(";component/", StringComparison.Ordinal) + ";component/".Length);
-                                sourceRelativeFilePath = sourceRelativeFilePath.Replace("/", "\\");
-                                if (orderedSourceFiles.Contains(sourceRelativeFilePath))
+                                var sourceAttribute = mergedDictionaryReference.Attribute("Source");
+                                if (sourceAttribute?.Value is { Length: > 0 } sourceValue)
                                 {
-                                    continue;
-                                }
+                                    // Check if it's processed by combine
+                                    // Not ideal but should be enough for most cases
+                                    const string COMPONENT_MARKER = ";component/";
+                                    var sourceRelativeFilePath = sourceValue.Remove(0, sourceValue.IndexOf(COMPONENT_MARKER, StringComparison.Ordinal) + COMPONENT_MARKER.Length);
+                                    sourceRelativeFilePath = sourceRelativeFilePath.Replace("/", "\\");
+                                    if (orderedSourceFiles.Contains(sourceRelativeFilePath))
+                                    {
+                                        continue;
+                                    }
 
-                                if (string.IsNullOrEmpty(sourceValue))
-                                {
-                                    this.Logger?.Warn(string.Format($"Ignore merged ResourceDictionary inside resource \"{resourceFile}\""));
-                                    continue;
-                                }
+                                    if (string.IsNullOrEmpty(sourceValue))
+                                    {
+                                        this.Logger?.Warn(string.Format($"Ignore merged ResourceDictionary inside resource \"{resourceFile}\""));
+                                        continue;
+                                    }
 
-                                // Check if it was already added
-                                if (currentMergedSources.Any(x => x.Equals(sourceValue)))
-                                {
-                                    continue;
+                                    // Check if it was already added
+                                    if (currentMergedSources.Any(x => x.Equals(sourceValue)))
+                                    {
+                                        continue;
+                                    }
                                 }
 
                                 // Import ResourceDictionary reference element from processed XML document to final XML document
@@ -256,13 +260,16 @@ namespace XAMLTools.XAMLCombine
                         if (resourceElements.TryGetValue(key, out var existingElement) == false)
                         {
                             // Create ResourceElement for key and XML element
-                            var res = new ResourceElement(key, importedElement, GetUsedKeys(importedElement));
+                            var res = new ResourceElement(key, importedElement, GetUsedKeys(importedElement))
+                                {
+                                    ElementDebugInfo = GetDebugInfo(element)
+                                };
                             resourceElements.Add(key, res);
                             resourcesList.Add(res);
                         }
                         else if (importedElement.ToString() != existingElement.Element.ToString())
                         {
-                            this.Logger?.Warn($"Key \"{key}\" was found in multiple imported files and was skipped.{Environment.NewLine}{GetDebugInfo(element)}");
+                            this.Logger?.Warn($"Key \"{key}\" was found in multiple imported files, with differing content, and was skipped.{Environment.NewLine}Existing: {existingElement.GetElementDebugInfo()}{Environment.NewLine}Current: {GetDebugInfo(element)}");
                             continue;
                         }
                     }

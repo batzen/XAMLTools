@@ -28,5 +28,17 @@
         /// XAML keys used in this resource.
         /// </summary>
         public string[] UsedKeys { get; }
+
+        public string? ElementDebugInfo { get; set; }
+
+        public string GetElementDebugInfo()
+        {
+            if (string.IsNullOrEmpty(this.ElementDebugInfo) is false)
+            {
+                return this.ElementDebugInfo!;
+            }
+
+            return this.Element.ToString();
+        }
     }
 }

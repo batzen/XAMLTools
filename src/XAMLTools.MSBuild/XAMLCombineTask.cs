@@ -54,8 +54,9 @@
                 {
                     targetFile = MutexHelper.ExecuteLocked(() => combiner.Combine(sourceFiles, targetFile), targetFile);
                 }
-                catch (Exception)
+                catch (Exception exception)
                 {
+                    this.BuildEngine.LogErrorEvent(new BuildErrorEventArgs("XAMLCombine", "XAMLCombine_Exception", string.Empty, 0, 0, 0, 0, exception.ToString(), string.Empty, nameof(XAMLCombine)));
                     return false;
                 }
 

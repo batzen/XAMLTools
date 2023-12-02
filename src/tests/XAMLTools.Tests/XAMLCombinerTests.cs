@@ -126,7 +126,7 @@
 
             Assert.That(testLogger.Errors, Is.Empty);
             Assert.That(testLogger.Warnings, Has.Count.EqualTo(1));
-            Assert.That(testLogger.Warnings[0], Does.StartWith("Key \"DuplicateDifferentContent\" was found in multiple imported files and was skipped.\r\nAt: 9:6"));
+            Assert.That(testLogger.Warnings[0], Does.StartWith("Key \"DuplicateDifferentContent\" was found in multiple imported files, with differing content, and was skipped.\r\nExisting: At: 9:6"));
         }
     }
 }
