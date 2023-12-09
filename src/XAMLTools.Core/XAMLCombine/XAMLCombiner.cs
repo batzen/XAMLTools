@@ -14,7 +14,7 @@ namespace XAMLTools.XAMLCombine
     {
         private const int BufferSize = 32768; // 32 Kilobytes
 
-        private static Regex resourceUsageRegex = new(@"({(DynamicResource|StaticResource)\s(?<ResourceKey>.*?)})", RegexOptions.IgnorePatternWhitespace);
+        private static readonly Regex resourceUsageRegex = new(@"({(DynamicResource|StaticResource)\s(?<ResourceKey>.*?)})", RegexOptions.IgnorePatternWhitespace);
 
         private const string MergedDictionariesString = "ResourceDictionary.MergedDictionaries";
 
@@ -463,6 +463,13 @@ Source files:
                     foreach (Match match in matches)
                     {
                         var resourceKey = match.Groups["ResourceKey"].Value;
+
+                        // compensate regex cutting of trailing "}" if key starts with "{".
+                        if (resourceKey.StartsWith("{", StringComparison.Ordinal)
+                            && resourceKey.EndsWith("}", StringComparison.Ordinal) is false)
+                        {
+                            resourceKey += "}";
+                        }
 
                         // Add key to result
                         if (result.Contains(resourceKey) == false)
