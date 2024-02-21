@@ -30,6 +30,13 @@
 
     <Color x:Key="Fluent.Ribbon.Colors.HighlightColor">{{Fluent.Ribbon.Colors.HighlightColor}}</Color>
 
+    <Color x:Key="Fluent.Ribbon.Colors.AccentLight1">{{Fluent.Ribbon.Colors.AccentLight1}}</Color>
+    <Color x:Key="Fluent.Ribbon.Colors.AccentLight2">{{Fluent.Ribbon.Colors.AccentLight2}}</Color>
+    <Color x:Key="Fluent.Ribbon.Colors.AccentLight3">{{Fluent.Ribbon.Colors.AccentLight3}}</Color>
+    <Color x:Key="Fluent.Ribbon.Colors.AccentDark1">{{Fluent.Ribbon.Colors.AccentDark1}}</Color>
+    <Color x:Key="Fluent.Ribbon.Colors.AccentDark2">{{Fluent.Ribbon.Colors.AccentDark2}}</Color>
+    <Color x:Key="Fluent.Ribbon.Colors.AccentDark3">{{Fluent.Ribbon.Colors.AccentDark3}}</Color>
+
     <!-- Base colors -->
     <Color x:Key="BlackColor">{{BlackColor}}</Color>
     <Color x:Key="WhiteColor">{{WhiteColor}}</Color>

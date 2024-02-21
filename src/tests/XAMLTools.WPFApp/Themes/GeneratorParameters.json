@@ -31,7 +31,13 @@
         "Fluent.Ribbon.Brushes.RibbonTabItem.Foreground": "{StaticResource Gray5}",
         "Fluent.Ribbon.Brushes.RibbonTabItem.Active.Background": "#363636",
         "Fluent.Ribbon.Brushes.RibbonTabItem.MouseOver.Background": "#444444",
-        "Fluent.Ribbon.Brushes.RibbonTabItem.MouseOver.Foreground": "{StaticResource BlackColor}"
+        "Fluent.Ribbon.Brushes.RibbonTabItem.MouseOver.Foreground": "{StaticResource BlackColor}",
+        "Fluent.Ribbon.Colors.AccentLight1": "{{AccentDark1}}",
+        "Fluent.Ribbon.Colors.AccentLight2": "{{AccentDark2}}",
+        "Fluent.Ribbon.Colors.AccentLight3": "{{AccentDark3}}",
+        "Fluent.Ribbon.Colors.AccentDark1": "{{AccentLight1}}",
+        "Fluent.Ribbon.Colors.AccentDark2": "{{AccentLight2}}",
+        "Fluent.Ribbon.Colors.AccentDark3": "{{AccentLight3}}"
       }
     },
     {
@@ -57,7 +63,13 @@
         "Fluent.Ribbon.Brushes.RibbonTabItem.Foreground": "{StaticResource BlackColor}",
         "Fluent.Ribbon.Brushes.RibbonTabItem.Active.Background": "{StaticResource WhiteColor}",
         "Fluent.Ribbon.Brushes.RibbonTabItem.MouseOver.Background": "Transparent",
-        "Fluent.Ribbon.Brushes.RibbonTabItem.MouseOver.Foreground": "{StaticResource Fluent.Ribbon.Colors.HighlightColor}"
+        "Fluent.Ribbon.Brushes.RibbonTabItem.MouseOver.Foreground": "{StaticResource Fluent.Ribbon.Colors.HighlightColor}",
+        "Fluent.Ribbon.Colors.AccentLight1": "{{AccentLight1}}",
+        "Fluent.Ribbon.Colors.AccentLight2": "{{AccentLight2}}",
+        "Fluent.Ribbon.Colors.AccentLight3": "{{AccentLight3}}",
+        "Fluent.Ribbon.Colors.AccentDark1": "{{AccentDark1}}",
+        "Fluent.Ribbon.Colors.AccentDark2": "{{AccentDark2}}",
+        "Fluent.Ribbon.Colors.AccentDark3": "{{AccentDark3}}"
       }
     }
   ],
@@ -90,7 +102,13 @@
         "Fluent.Ribbon.Colors.AccentColor60": "#992B579A",
         "Fluent.Ribbon.Colors.AccentColor40": "#662B579A",
         "Fluent.Ribbon.Colors.AccentColor20": "#332B579A",
-        "Fluent.Ribbon.Colors.HighlightColor": "#FF086F9E"
+        "Fluent.Ribbon.Colors.HighlightColor": "#FF086F9E",
+        "AccentLight1": "#FF1D89DE",
+        "AccentLight2": "#FF3B9BE5",
+        "AccentLight3": "#FF58ACED",
+        "AccentDark1": "#FF0068C6",
+        "AccentDark2": "#FF0058B4",
+        "AccentDark3": "#FF0048A3"
       }
     },
     {
@@ -104,7 +122,13 @@
         "Fluent.Ribbon.Colors.AccentColor60": "#9960A917",
         "Fluent.Ribbon.Colors.AccentColor40": "#6660A917",
         "Fluent.Ribbon.Colors.AccentColor20": "#3360A917",
-        "Fluent.Ribbon.Colors.HighlightColor": "#FF477D11"
+        "Fluent.Ribbon.Colors.HighlightColor": "#FF477D11",
+        "AccentLight1": "#FF1D89DE",
+        "AccentLight2": "#FF3B9BE5",
+        "AccentLight3": "#FF58ACED",
+        "AccentDark1": "#FF0068C6",
+        "AccentDark2": "#FF0058B4",
+        "AccentDark3": "#FF0048A3"
       }
     },
     {
@@ -117,7 +141,13 @@
         "Fluent.Ribbon.Colors.AccentColor60": "#9960A917",
         "Fluent.Ribbon.Colors.AccentColor40": "#6660A917",
         "Fluent.Ribbon.Colors.AccentColor20": "#3360A917",
-        "Fluent.Ribbon.Colors.HighlightColor": "#FF477D11"
+        "Fluent.Ribbon.Colors.HighlightColor": "#FF477D11",
+        "AccentLight1": "#FF1D89DE",
+        "AccentLight2": "#FF3B9BE5",
+        "AccentLight3": "#FF58ACED",
+        "AccentDark1": "#FF0068C6",
+        "AccentDark2": "#FF0058B4",
+        "AccentDark3": "#FF0048A3"
       }
     },
     {
@@ -128,7 +158,13 @@
         "Fluent.Ribbon.Colors.AccentColor60": "#992B579A",
         "Fluent.Ribbon.Colors.AccentColor40": "#662B579A",
         "Fluent.Ribbon.Colors.AccentColor20": "#332B579A",
-        "Fluent.Ribbon.Colors.HighlightColor": "#FF086F9E"
+        "Fluent.Ribbon.Colors.HighlightColor": "#FF086F9E",
+        "AccentLight1": "#FF1D89DE",
+        "AccentLight2": "#FF3B9BE5",
+        "AccentLight3": "#FF58ACED",
+        "AccentDark1": "#FF0068C6",
+        "AccentDark2": "#FF0058B4",
+        "AccentDark3": "#FF0048A3"
       }
     },
     {
@@ -143,7 +179,13 @@
         "Fluent.Ribbon.Colors.IdealForegroundColor": "Black",
         "Fluent.Ribbon.Colors.DarkIdealForegroundDisabledColor": "Pink",
         "Fluent.Ribbon.Colors.ExtremeHighlightColor": "#FFFFD232",
-        "Fluent.Ribbon.Colors.DarkExtremeHighlightColor": "#FFF29536"
+        "Fluent.Ribbon.Colors.DarkExtremeHighlightColor": "#FFF29536",
+        "AccentLight1": "#FF1D89DE",
+        "AccentLight2": "#FF3B9BE5",
+        "AccentLight3": "#FF58ACED",
+        "AccentDark1": "#FF0068C6",
+        "AccentDark2": "#FF0058B4",
+        "AccentDark3": "#FF0048A3"
       }
     }
   ]

@@ -43,15 +43,15 @@ namespace XAMLTools.XAMLColorSchemeGenerator
                 {
                     foreach (var value in valueSource)
                     {
-                        var finalValue = value.Value; //ConvertValue(value.Value);
-                        var newTemplatecontent = templateContent.Replace($"{{{{{value.Key}}}}}", finalValue);
+                        var finalValue = value.Value;
+                        var newTemplateContent = templateContent.Replace($"{{{{{value.Key}}}}}", finalValue);
 
-                        if (templateContent != newTemplatecontent)
+                        if (templateContent != newTemplateContent)
                         {
                             contentChanged = true;
                         }
 
-                        templateContent = newTemplatecontent;
+                        templateContent = newTemplateContent;
                     }
                 }
             }
