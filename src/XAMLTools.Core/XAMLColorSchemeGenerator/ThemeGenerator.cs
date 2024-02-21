@@ -1,4 +1,4 @@
-﻿namespace XAMLTools.XAMLColorSchemeGenerator
+namespace XAMLTools.XAMLColorSchemeGenerator
 {
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -32,13 +32,30 @@
             templateContent = templateContent.Replace("{{AlternativeColorScheme}}", alternativeColorScheme);
             templateContent = templateContent.Replace("{{IsHighContrast}}", isHighContrast.ToString());
 
-            foreach (var valueSource in valueSources)
+            bool contentChanged;
+
+            // Loop till content does not change anymore.
+            do
             {
-                foreach (var value in valueSource)
+                contentChanged = false;
+
+                foreach (var valueSource in valueSources)
                 {
-                    templateContent = templateContent.Replace($"{{{{{value.Key}}}}}", value.Value);
+                    foreach (var value in valueSource)
+                    {
+                        var finalValue = value.Value; //ConvertValue(value.Value);
+                        var newTemplatecontent = templateContent.Replace($"{{{{{value.Key}}}}}", finalValue);
+
+                        if (templateContent != newTemplatecontent)
+                        {
+                            contentChanged = true;
+                        }
+
+                        templateContent = newTemplatecontent;
+                    }
                 }
             }
+            while (contentChanged is true);
 
             return templateContent;
         }
