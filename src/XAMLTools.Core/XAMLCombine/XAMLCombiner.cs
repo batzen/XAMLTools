@@ -393,6 +393,11 @@ namespace XAMLTools.XAMLCombine
                 key = importedElement.Attribute("TargetType")?.Value;
             }
 
+            if (string.IsNullOrEmpty(key))
+            {
+                key = importedElement.Attribute("DataType")?.Value;
+            }
+
             // WinUI / UWP
             if (string.IsNullOrEmpty(key) == false)
             {
