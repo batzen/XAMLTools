@@ -26,7 +26,7 @@
             {
                 // Expect TimeoutException, Mutex shoudn't throw any ApplicationException
                 var innerException = ex.InnerException;
-                Assert.IsTrue(innerException is TimeoutException, $"InnerException was {innerException?.GetType().Name}");
+                Assert.That(innerException is TimeoutException, Is.True, $"InnerException was {innerException?.GetType().Name}");
             }
         }
 
