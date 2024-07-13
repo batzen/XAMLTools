@@ -81,6 +81,7 @@ public class MSBuildCompileTests
                 Assert.That(xamlResourceNames, Is.EquivalentTo(
                                 new[]
                                 {
+                                    "themes/controls/datatemplates.baml",
                                     "themes/colorschemes/light.yellow.colorful.baml",
                                     "themes/colorschemes/dark.yellow.colorful.baml",
                                     "themes/colorschemes/light.yellow.baml",

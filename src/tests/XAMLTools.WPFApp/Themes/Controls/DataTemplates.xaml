@@ -1,5 +1,5 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:system="clr-namespace:System;assembly=mscorlib">
-    <DataTemplate DataType="{x:Type system:DateTime}"></DataTemplate>
+                    xmlns:sys2="clr-namespace:System;assembly=mscorlib">
+    <DataTemplate DataType="{x:Type sys2:DateTime}"></DataTemplate>
 </ResourceDictionary>
