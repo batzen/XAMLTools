@@ -36,6 +36,8 @@ Source files:
   <sys2:String x:Key="string3">stringValue</sys2:String>
   <Style TargetType="Block" />
   <Color x:Key="Control3_Color">#FF2B579B</Color>
+  <DataTemplate x:Key="DataTemplateFromAdHocMergedDict" DataType="{x:Type sys2:DateTime}" />
+  <BooleanToVisibilityConverter x:Key="booleanToVisibilityConverterFromAdHocMergedDict" />
   <DataTemplate DataType="{x:Type sys2:DateTime}" />
   <BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter" />
   <Style x:Key="Control1" TargetType="Control">

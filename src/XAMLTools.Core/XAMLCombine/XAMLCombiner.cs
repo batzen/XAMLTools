@@ -137,78 +137,88 @@ namespace XAMLTools.XAMLCombine
                     // Merged resource dictionaries (at the top)
                     if (element.Name.LocalName == MergedDictionariesString)
                     {
-                        if (this.ImportMergedResourceDictionaryReferences)
+                        if (finalRootElement.Elements().Any() == false)
                         {
-                            if (finalRootElement.Elements().Any() == false)
-                            {
-                                mergedDictionariesListElement = new XElement(XName.Get(MergedDictionariesString, WinfxXAMLPresentationNamespaceUri));
-                                finalRootElement.Add(mergedDictionariesListElement);
-                            }
-                            else if (element.Name.LocalName != MergedDictionariesString)
-                            {
-                                mergedDictionariesListElement = new XElement(XName.Get(MergedDictionariesString, WinfxXAMLPresentationNamespaceUri));
-                                finalRootElement.AddFirst(mergedDictionariesListElement);
-                            }
+                            mergedDictionariesListElement = new XElement(XName.Get(MergedDictionariesString, WinfxXAMLPresentationNamespaceUri));
+                            finalRootElement.Add(mergedDictionariesListElement);
+                        }
+                        else if (element.Name.LocalName != MergedDictionariesString)
+                        {
+                            mergedDictionariesListElement = new XElement(XName.Get(MergedDictionariesString, WinfxXAMLPresentationNamespaceUri));
+                            finalRootElement.AddFirst(mergedDictionariesListElement);
+                        }
 
-                            if (mergedDictionariesListElement is null)
+                        if (mergedDictionariesListElement is null)
+                        {
+                            continue;
+                        }
+
+                        var currentMergedSources = mergedDictionariesListElement.Elements()
+                                                                                .Select(mergedDictionaryElement => mergedDictionaryElement.Attribute("Source"))
+                                                                                .Where(source => source is not null && string.IsNullOrEmpty(source.Value) == false)
+                                                                                .ToList();
+
+                        foreach (var mergedDictionaryReference in element.Elements())
+                        {
+                            // #65 => Import everything as is if it's not a regular ResourceDictionary
+                            if (mergedDictionaryReference.Name.LocalName != ResourceDictionaryString)
                             {
+                                // Import non ResourceDictionary reference element from processed XML document to final XML document
+                                var importedNonResourceDictionaryReference = new XElement(mergedDictionaryReference);
+                                mergedDictionariesListElement.Add(importedNonResourceDictionaryReference);
                                 continue;
                             }
 
-                            var currentMergedSources = mergedDictionariesListElement.Elements()
-                                                                                    .Select(mergedDictionaryElement => mergedDictionaryElement.Attribute("Source"))
-                                                                                    .Where(source => source is not null && string.IsNullOrEmpty(source.Value) == false)
-                                                                                    .ToList();
-
-                            foreach (var mergedDictionaryReference in element.Elements())
+                            var sourceAttribute = mergedDictionaryReference.Attribute("Source");
+                            if (sourceAttribute?.Value is { Length: > 0 } sourceValue)
                             {
-                                // #65 => Import everything as is if it's not a regular ResourceDictionary
-                                if (mergedDictionaryReference.Name.LocalName != ResourceDictionaryString)
+                                if (this.ImportMergedResourceDictionaryReferences is false)
                                 {
-                                    // Import non ResourceDictionary reference element from processed XML document to final XML document
-                                    var importedNonResourceDictionaryReference = new XElement(mergedDictionaryReference);
-                                    mergedDictionariesListElement.Add(importedNonResourceDictionaryReference);
                                     continue;
                                 }
 
-                                var sourceAttribute = mergedDictionaryReference.Attribute("Source");
-                                if (sourceAttribute?.Value is { Length: > 0 } sourceValue)
+                                // Check if it's processed by combine
+                                // Not ideal but should be enough for most cases
+                                const string COMPONENT_MARKER = ";component/";
+
+                                var componentMarkerIndex = sourceValue.IndexOf(COMPONENT_MARKER, StringComparison.OrdinalIgnoreCase);
+                                if (componentMarkerIndex is -1)
                                 {
-                                    // Check if it's processed by combine
-                                    // Not ideal but should be enough for most cases
-                                    const string COMPONENT_MARKER = ";component/";
-
-                                    var componentMarkerIndex = sourceValue.IndexOf(COMPONENT_MARKER, StringComparison.OrdinalIgnoreCase);
-                                    if (componentMarkerIndex is -1)
-                                    {
-                                        this.Logger?.Warn(string.Format($"Ignored merged ResourceDictionary inside \"{resourceFile}\" because it's source has no 'component' path.{Environment.NewLine}{GetDebugInfo(mergedDictionaryReference)}"));
-                                        continue;
-                                    }
-
-                                    var sourceRelativeFilePath = sourceValue.Remove(0, componentMarkerIndex + COMPONENT_MARKER.Length);
-                                    sourceRelativeFilePath = sourceRelativeFilePath.Replace("/", "\\");
-                                    if (orderedSourceFiles.Contains(sourceRelativeFilePath))
-                                    {
-                                        continue;
-                                    }
-
-                                    if (string.IsNullOrEmpty(sourceValue))
-                                    {
-                                        this.Logger?.Warn(string.Format($"Ignored merged ResourceDictionary inside \"{resourceFile}\".{Environment.NewLine}{GetDebugInfo(mergedDictionaryReference)}"));
-                                        continue;
-                                    }
-
-                                    // Check if it was already added
-                                    if (currentMergedSources.Any(x => x.Equals(sourceValue)))
-                                    {
-                                        continue;
-                                    }
+                                    this.Logger?.Warn(string.Format($"Ignored merged ResourceDictionary inside \"{resourceFile}\" because it's source has no 'component' path.{Environment.NewLine}{GetDebugInfo(mergedDictionaryReference)}"));
+                                    continue;
                                 }
 
-                                // Import ResourceDictionary reference element from processed XML document to final XML document
-                                var importedResourceDictionaryReference = new XElement(mergedDictionaryReference);
-                                mergedDictionariesListElement.Add(importedResourceDictionaryReference);
+                                var sourceRelativeFilePath = sourceValue.Remove(0, componentMarkerIndex + COMPONENT_MARKER.Length);
+                                sourceRelativeFilePath = sourceRelativeFilePath.Replace("/", "\\");
+                                if (orderedSourceFiles.Contains(sourceRelativeFilePath))
+                                {
+                                    continue;
+                                }
+
+                                if (string.IsNullOrEmpty(sourceValue))
+                                {
+                                    this.Logger?.Warn(string.Format($"Ignored merged ResourceDictionary inside \"{resourceFile}\".{Environment.NewLine}{GetDebugInfo(mergedDictionaryReference)}"));
+                                    continue;
+                                }
+
+                                // Check if it was already added
+                                if (currentMergedSources.Any(x => x.Equals(sourceValue)))
+                                {
+                                    continue;
+                                }
                             }
+                            else // There was no source specified. Import all elements from the ad-hoc ResourceDictionary.
+                            {
+                                foreach (var elementFromMergedDictionary in mergedDictionaryReference.Elements())
+                                {
+                                    ImportResource(elementFromMergedDictionary);
+                                }
+                            }
+                        }
+
+                        if (mergedDictionariesListElement.Nodes().Any() is false)
+                        {
+                            mergedDictionariesListElement.Remove();
                         }
 
                         // Always continue after merged dictionary elements
@@ -245,34 +255,7 @@ namespace XAMLTools.XAMLCombine
 
                     // Resources
                     {
-                        // Import XML element from one XML document to result XML document
-                        var importedElement = new XElement(element);
-
-                        // Find resource key
-                        var key = GetKey(importedElement, WinfxXAMLNamespaceUri);
-
-                        if (string.IsNullOrEmpty(key))
-                        {
-                            this.Logger?.Warn($"Element had no key and was skipped.{Environment.NewLine}{GetDebugInfo(element)}");
-                            continue;
-                        }
-
-                        // Check key unique
-                        if (resourceElements.TryGetValue(key, out var existingElement) == false)
-                        {
-                            // Create ResourceElement for key and XML element
-                            var res = new ResourceElement(key, importedElement, GetUsedKeys(importedElement))
-                                {
-                                    ElementDebugInfo = GetDebugInfo(element)
-                                };
-                            resourceElements.Add(key, res);
-                            resourcesList.Add(res);
-                        }
-                        else if (importedElement.ToString() != existingElement.Element.ToString())
-                        {
-                            this.Logger?.Warn($"Key \"{key}\" was found in multiple imported files, with differing content, and was skipped.{Environment.NewLine}Existing: {existingElement.GetElementDebugInfo()}{Environment.NewLine}Current: {GetDebugInfo(element)}");
-                            continue;
-                        }
+                        ImportResource(element);
                     }
                 }
             }
@@ -354,6 +337,38 @@ namespace XAMLTools.XAMLCombine
 
             // Save result file
             return this.WriteResultFile(targetFile, finalDocument);
+
+            void ImportResource(XElement element)
+            {
+                // Import XML element from one XML document to result XML document
+                var importedElement = new XElement(element);
+
+                // Find resource key
+                var key = GetKey(importedElement, WinfxXAMLNamespaceUri);
+
+                if (string.IsNullOrEmpty(key))
+                {
+                    this.Logger?.Warn($"Element had no key and was skipped.{Environment.NewLine}{GetDebugInfo(element)}");
+                    return;
+                }
+
+                // Check key unique
+                if (resourceElements.TryGetValue(key, out var existingElement) == false)
+                {
+                    // Create ResourceElement for key and XML element
+                    var res = new ResourceElement(key, importedElement, GetUsedKeys(importedElement))
+                    {
+                        ElementDebugInfo = GetDebugInfo(element)
+                    };
+                    resourceElements.Add(key, res);
+                    resourcesList.Add(res);
+                }
+                else if (importedElement.ToString() != existingElement.Element.ToString())
+                {
+                    this.Logger?.Warn($"Key \"{key}\" was found in multiple imported files, with differing content, and was skipped.{Environment.NewLine}Existing: {existingElement.GetElementDebugInfo()}{Environment.NewLine}Current: {GetDebugInfo(element)}");
+                    return;
+                }
+            }
         }
 
         private void CleanUpEmptyElements(XDocument finalDocument)
