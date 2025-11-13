@@ -251,6 +251,9 @@ namespace XAMLTools.XAMLCombine
                                 }
                             }
                         }
+
+                        // Always continue after ThemeDictionaries elements
+                        continue;
                     }
 
                     // Resources
