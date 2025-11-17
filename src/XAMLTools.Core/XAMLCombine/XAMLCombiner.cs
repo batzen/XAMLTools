@@ -202,7 +202,7 @@ namespace XAMLTools.XAMLCombine
                                 }
 
                                 // Check if it was already added
-                                if (currentMergedSources.Any(x => x.Equals(sourceValue)))
+                                if (currentMergedSources.Any(x => x!.Equals(sourceValue)))
                                 {
                                     continue;
                                 }
@@ -435,7 +435,7 @@ namespace XAMLTools.XAMLCombine
 
         private void AddFileHeader(XDocument finalDocument, IReadOnlyCollection<string> sourceFiles)
         {
-            var root = finalDocument.Root;
+            var root = finalDocument.Root!;
 
             var fileHeaderComment = new XComment(this.FileHeader);
 
@@ -576,7 +576,7 @@ Source files:
             if (element is IXmlLineInfo lineInfo
                 && lineInfo.HasLineInfo())
             {
-                return $"At: {lineInfo.LineNumber}:{lineInfo.LinePosition} ({element.Document.BaseUri}){Environment.NewLine}{element}";
+                return $"At: {lineInfo.LineNumber}:{lineInfo.LinePosition} ({element.Document!.BaseUri}){Environment.NewLine}{element}";
             }
 
             return element.ToString();

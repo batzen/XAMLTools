@@ -7,7 +7,7 @@
     <XAMLToolsAssemblyDirectory Condition="$(MSBuildRuntimeType) != 'Core'">$(XAMLToolsPath)net472</XAMLToolsAssemblyDirectory>
     <XAMLToolsAssembly Condition="$(XAMLToolsAssembly) == ''">$(XAMLToolsAssemblyDirectory)\$(MSBuildThisFileName).dll</XAMLToolsAssembly>
 
-    <XAMLToolsToolDirectory Condition="$(MSBuildRuntimeType) == 'Core'">$(XAMLToolsPath)tools\netcoreapp3.1\</XAMLToolsToolDirectory>
+    <XAMLToolsToolDirectory Condition="$(MSBuildRuntimeType) == 'Core'">$(XAMLToolsPath)tools\net8.0\</XAMLToolsToolDirectory>
     <XAMLToolsToolDirectory Condition="$(MSBuildRuntimeType) != 'Core'">$(XAMLToolsPath)tools\net472\</XAMLToolsToolDirectory>
     <XAMLToolsExecutable>$(XAMLToolsToolDirectory)\XAMLTools.exe</XAMLToolsExecutable>
 

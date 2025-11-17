@@ -30,7 +30,7 @@ public class XAMLCombineTaskItemOptions : IXamlCombinerOptions, IEquatable<XAMLC
         return result;
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj is not XAMLCombineTaskItemOptions other)
         {

@@ -19,11 +19,7 @@
 
     <None Include="$(OutputPath)\net472\*.dll" Pack="true" PackagePath="build/net472" Visible="False" />
 
-    <None Include="$(OutputRoot)\XAMLTools\netcoreapp3.1\*.dll" Pack="true" PackagePath="tools/netcoreapp3.1" Visible="False" />
-    <None Include="$(OutputRoot)\XAMLTools\netcoreapp3.1\XAMLTools.dll.config" Pack="true" PackagePath="tools/netcoreapp3.1" Visible="False" />
-    <None Include="$(OutputRoot)\XAMLTools\netcoreapp3.1\XAMLTools.deps.json" Pack="true" PackagePath="tools/netcoreapp3.1" Visible="False" />
-    <None Include="$(OutputRoot)\XAMLTools\netcoreapp3.1\XAMLTools.exe" Pack="true" PackagePath="tools/netcoreapp3.1" Visible="False" />
-    <None Include="$(OutputRoot)\XAMLTools\netcoreapp3.1\XAMLTools.runtimeconfig.json" Pack="true" PackagePath="tools/netcoreapp3.1" Visible="False" />
+    <None Include="$(OutputPath)\net8.0\*.dll" Pack="true" PackagePath="build/net8.0" Visible="False" />
 
     <None Include="$(OutputPath)\netstandard2.0\*.dll" Pack="true" PackagePath="build/netstandard2.0" Visible="False" />
   </ItemGroup>

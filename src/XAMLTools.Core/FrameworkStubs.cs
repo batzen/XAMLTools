@@ -1,4 +1,4 @@
-#if !NET60_OR_GREATER
+#if !NETCOREAPP
 namespace System.Runtime.CompilerServices
 {
     [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)]

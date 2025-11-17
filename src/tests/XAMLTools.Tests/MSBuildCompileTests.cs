@@ -23,7 +23,7 @@ public class MSBuildCompileTests
         const string framework = "net472";
 #else
         const string assemblyName = "XAMLTools.WPFApp.dll";
-        const string framework = "net6.0-windows";
+        const string framework = "net8.0-windows";
 #endif
 
         var binPath = Path.Combine(wpfAppDirectory, "bin", configuration, framework);
