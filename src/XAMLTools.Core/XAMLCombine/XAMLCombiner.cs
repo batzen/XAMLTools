@@ -522,10 +522,7 @@ Source files:
                 var xmlWriterSettings = new XmlWriterSettings
                     {
                         OmitXmlDeclaration = true,
-                        Indent = true,
-                        IndentChars = "  ",
-                        NewLineHandling = NewLineHandling.None,
-                        NamespaceHandling = NamespaceHandling.OmitDuplicates
+                        Indent = true
                     };
                 var xmlWriter = XmlWriter.Create(stringWriter, xmlWriterSettings);
 
