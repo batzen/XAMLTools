@@ -7,9 +7,7 @@ using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitVersion;
 
-using static Nuke.Common.IO.CompressionTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
-using static Nuke.Common.IO.FileSystemTasks;
 
 [UnsetVisualStudioEnvironmentVariables]
 class Build : NukeBuild
@@ -90,7 +88,7 @@ class Build : NukeBuild
             .Before(Pack)
             .Executes(() =>
         {
-            EnsureCleanDirectory(TestResultsDir);
+            TestResultsDir.CreateOrCleanDirectory();
 
             DotNetTest(_ => _
                 .SetConfiguration(Configuration)
@@ -100,7 +98,7 @@ class Build : NukeBuild
                 .EnableNoRestore()
                 .AddLoggers("trx")
                 .SetResultsDirectory(TestResultsDir)
-                .SetVerbosity(DotNetVerbosity.Normal));
+                .SetVerbosity(DotNetVerbosity.normal));
         });
 
     Target Pack => _ => _
@@ -108,13 +106,13 @@ class Build : NukeBuild
         .Produces(ArtifactsDirectory / "*.nupkg", ArtifactsDirectory / "*.zip")
         .Executes(() =>
         {
-            EnsureCleanDirectory(ArtifactsDirectory);
+            ArtifactsDirectory.CreateOrCleanDirectory();
 
             DotNetPack(s => s
                 .SetProject(SourceDirectory / "XAMLTools.MSBuild")
                 .SetConfiguration(Configuration)
 
-                .When(GitVersion is not null, x => x
+                .When(_ => GitVersion is not null, x => x
                                                    .SetProperty("RepositoryBranch", GitVersion?.BranchName)
                                                    .SetProperty("RepositoryCommit", GitVersion?.Sha))
                 .SetVersion(NuGetVersion)
@@ -122,13 +120,13 @@ class Build : NukeBuild
                 .SetFileVersion(AssemblySemFileVer)
                 .SetInformationalVersion(InformationalVersion));
 
-            Compress(BuildBinDirectory / Configuration / "XAMLTools", ArtifactsDirectory / $"XAMLTools-v{NuGetVersion}.zip");
+            (BuildBinDirectory / Configuration / "XAMLTools").CompressTo(ArtifactsDirectory / $"XAMLTools-v{NuGetVersion}.zip");
 
             DotNetPack(s => s
                             .SetProject(SourceDirectory / "XAMLTools")
                             .SetConfiguration(Configuration)
 
-                            .When(GitVersion is not null, x => x
+                            .When(_ => GitVersion is not null, x => x
                                                                .SetProperty("RepositoryBranch", GitVersion?.BranchName)
                                                                .SetProperty("RepositoryCommit", GitVersion?.Sha))
                             .SetVersion(NuGetVersion)
