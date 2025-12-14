@@ -4,6 +4,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <UseWpf>True</UseWpf>
+    <TestTfmsInParallel>false</TestTfmsInParallel>
   </PropertyGroup>
 
   <ItemGroup>

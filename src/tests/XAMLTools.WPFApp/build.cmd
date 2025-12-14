@@ -1,1 +1,1 @@
-dotnet build -nodereuse:false -t:rebuild -c debug -p:XAMLCombineEnabled=true -p:XAMLColorSchemeGeneratorEnabled=true
+dotnet build -nodereuse:false -t:build -c debug --no-dependencies -p:XAMLCombineEnabled=true -p:XAMLColorSchemeGeneratorEnabled=true -v:n

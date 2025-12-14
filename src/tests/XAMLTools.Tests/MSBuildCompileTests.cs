@@ -9,9 +9,11 @@ using NUnit.Framework;
 public class MSBuildCompileTests
 {
     [Test]
-    [TestCase("Debug")]
-    [TestCase("Release")]
-    public async Task CheckCompileOutputAfterGitClean(string configuration)
+    [TestCase("Debug", true)]
+    [TestCase("Release", true)]
+    [TestCase("Debug", false)]
+    [TestCase("Release", false)]
+    public async Task CheckCompileOutputAfterGitClean(string configuration, bool withFrameworkArgument)
     {
         var currentAssemblyDir = Path.GetDirectoryName(this.GetType().Assembly.Location)!;
         var wpfAppDirectory = Path.GetFullPath(Path.Combine(currentAssemblyDir, "../../../../src/tests/XAMLTools.WPFApp"));
@@ -39,8 +41,11 @@ public class MSBuildCompileTests
         }
 
         {
+            var frameworkArgument = withFrameworkArgument
+                ? $"-f {framework}"
+                : string.Empty;
             var result = await Cli.Wrap("dotnet")
-                            .WithArguments($"build -c {configuration} -f {framework} /p:XAMLColorSchemeGeneratorEnabled=true /p:XAMLCombineEnabled=true /nr:false --no-dependencies -v:m")
+                            .WithArguments($"build -c {configuration} {frameworkArgument} -t:rebuild /p:XAMLColorSchemeGeneratorEnabled=true /p:XAMLCombineEnabled=true /nr:false --no-dependencies -v:diag")
                             .WithWorkingDirectory(wpfAppDirectory)
                             .WithValidation(CommandResultValidation.None)
                             .ExecuteBufferedAsync();
