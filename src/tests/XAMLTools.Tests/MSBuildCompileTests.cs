@@ -45,7 +45,7 @@ public class MSBuildCompileTests
                 ? $"-f {framework}"
                 : string.Empty;
             var result = await Cli.Wrap("dotnet")
-                            .WithArguments($"build -c {configuration} {frameworkArgument} -t:rebuild /p:XAMLColorSchemeGeneratorEnabled=true /p:XAMLCombineEnabled=true /nr:false --no-dependencies -v:diag")
+                            .WithArguments($"build -c {configuration} {frameworkArgument} -t:rebuild /p:XAMLColorSchemeGeneratorEnabled=true /p:XAMLCombineEnabled=true /nr:false --no-dependencies -v:n")
                             .WithWorkingDirectory(wpfAppDirectory)
                             .WithValidation(CommandResultValidation.None)
                             .ExecuteBufferedAsync();
