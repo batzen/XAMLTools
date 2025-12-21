@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <XAMLToolsIsMultiTargeting Condition="'$(XAMLToolsIsMultiTargeting)' == '' and '$(IsBuildingInsideRider)' != 'true'">true</XAMLToolsIsMultiTargeting>
+  <PropertyGroup>
+    <XAMLToolsIsMultiTargeting Condition="'$(XAMLToolsIsMultiTargeting)' == '' and '$(IsBuildingInsideRider)' != 'true'">true</XAMLToolsIsMultiTargeting>
+  </PropertyGroup>
   <Import Project="$(MSBuildThisFileDirectory)..\build\$(MSBuildThisFile)"/>
 </Project>
