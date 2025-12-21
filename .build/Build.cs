@@ -27,13 +27,14 @@ class Build : NukeBuild
             throw new Exception("Could not initialize GitVersion.");
         }
 
-        Serilog.Log.Information("IsLocalBuild           : {0}", IsLocalBuild.ToString());
+        Serilog.Log.Information("IsLocalBuild      : {0}", IsLocalBuild.ToString());
 
-        Serilog.Log.Information("Informational   Version: {0}", InformationalVersion);
-        Serilog.Log.Information("SemVer          Version: {0}", SemVer);
-        Serilog.Log.Information("AssemblySemVer  Version: {0}", AssemblySemVer);
-        Serilog.Log.Information("MajorMinorPatch Version: {0}", MajorMinorPatch);
-        Serilog.Log.Information("NuGet           Version: {0}", NuGetVersion);
+        Serilog.Log.Information("Informational     : {0}", InformationalVersion);
+        Serilog.Log.Information("SemVer            : {0}", SemVer);
+        Serilog.Log.Information("FullSemVer        : {0}", FullSemVer);
+        Serilog.Log.Information("AssemblySemVer    : {0}", AssemblySemVer);
+        Serilog.Log.Information("AssemblySemFileVer: {0}", AssemblySemFileVer);
+        Serilog.Log.Information("MajorMinorPatch   : {0}", MajorMinorPatch);
     }
 
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
@@ -43,12 +44,12 @@ class Build : NukeBuild
 
     [GitVersion(Framework = "netcoreapp3.1")] readonly GitVersion GitVersion;
 
-    string AssemblySemVer => GitVersion?.AssemblySemVer ?? "1.0.0";
-    string SemVer => GitVersion?.SemVer ?? "1.0.0";
     string InformationalVersion => GitVersion?.InformationalVersion ?? "1.0.0";
-    string NuGetVersion => GitVersion?.NuGetVersion ?? "1.0.0";
-    string MajorMinorPatch => GitVersion?.MajorMinorPatch ?? "1.0.0";
+    string SemVer => GitVersion?.SemVer ?? "1.0.0";
+    string FullSemVer => GitVersion?.FullSemVer ?? "1.0.0";
+    string AssemblySemVer => GitVersion?.AssemblySemVer ?? "1.0.0";
     string AssemblySemFileVer => GitVersion?.AssemblySemFileVer ?? "1.0.0";
+    string MajorMinorPatch => GitVersion?.MajorMinorPatch ?? "1.0.0";
 
     AbsolutePath BuildBinDirectory => RootDirectory / "bin";
 
@@ -115,12 +116,12 @@ class Build : NukeBuild
                 .When(_ => GitVersion is not null, x => x
                                                    .SetProperty("RepositoryBranch", GitVersion?.BranchName)
                                                    .SetProperty("RepositoryCommit", GitVersion?.Sha))
-                .SetVersion(NuGetVersion)
+                .SetVersion(FullSemVer)
                 .SetAssemblyVersion(AssemblySemVer)
                 .SetFileVersion(AssemblySemFileVer)
                 .SetInformationalVersion(InformationalVersion));
 
-            (BuildBinDirectory / Configuration / "XAMLTools").CompressTo(ArtifactsDirectory / $"XAMLTools-v{NuGetVersion}.zip");
+            (BuildBinDirectory / Configuration / "XAMLTools").CompressTo(ArtifactsDirectory / $"XAMLTools-v{FullSemVer}.zip");
 
             DotNetPack(s => s
                             .SetProject(SourceDirectory / "XAMLTools")
@@ -129,7 +130,7 @@ class Build : NukeBuild
                             .When(_ => GitVersion is not null, x => x
                                                                .SetProperty("RepositoryBranch", GitVersion?.BranchName)
                                                                .SetProperty("RepositoryCommit", GitVersion?.Sha))
-                            .SetVersion(NuGetVersion)
+                            .SetVersion(FullSemVer)
                             .SetAssemblyVersion(AssemblySemVer)
                             .SetFileVersion(AssemblySemFileVer)
                             .SetInformationalVersion(InformationalVersion));
