@@ -39,6 +39,8 @@
     <Company>https://github.com/batzen/XAMLTools</Company>
     <Product>XAMLTools</Product>
     <Copyright>Copyright © 2015 - $([System.DateTime]::Today.ToString(yyyy)) Bastian Schmidt</Copyright>
+
+    <DeterministicTimestamp>false</DeterministicTimestamp>
   </PropertyGroup>
 
   <!-- NuGet -->
