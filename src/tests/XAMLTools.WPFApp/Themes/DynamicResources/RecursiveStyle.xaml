@@ -1,0 +1,10 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style x:Key="NodeStyle" TargetType="{x:Type TreeViewItem}">
+        <Setter Property="ItemContainerStyle" Value="{DynamicResource NodeStyle}" />
+    </Style>
+
+    <Style x:Key="NestedNodeStyle" TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource NodeStyle}">
+        <Setter Property="ItemContainerStyle" Value="{DynamicResource NodeStyle}" />
+    </Style>
+</ResourceDictionary>
