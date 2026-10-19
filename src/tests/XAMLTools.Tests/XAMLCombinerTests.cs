@@ -93,6 +93,29 @@
         }
 
         [Test]
+        public void Combine_CircularResourceDependencies_ThrowsInsteadOfLooping()
+        {
+            var currentAssemblyDir = Path.GetDirectoryName(this.GetType().Assembly.Location)!;
+            var wpfAppDirectory = Path.GetFullPath(Path.Combine(currentAssemblyDir, "../../../../src/tests/XAMLTools.WPFApp"));
+            var themeFilesDirectory = Path.GetFullPath(Path.Combine(wpfAppDirectory, "Themes/CircularDependencies"));
+            var themeFilePaths = Directory.GetFiles(themeFilesDirectory, "*.xaml", SearchOption.AllDirectories);
+
+            var xamlCombiner = new XAMLCombiner();
+
+            Assert.Multiple(() =>
+            {
+                foreach (var themeFilePath in themeFilePaths)
+                {
+                    Assert.That(() => xamlCombiner.Combine(new[] { themeFilePath }, this.targetFile),
+                                Throws.Exception
+                                      .With.Message
+                                      .Contains("Cannot order due to a possible circular reference"),
+                                themeFilePath);
+                }
+            });
+        }
+
+        [Test]
         public void TestDuplicateNamespaces()
         {
             var currentAssemblyDir = Path.GetDirectoryName(this.GetType().Assembly.Location)!;

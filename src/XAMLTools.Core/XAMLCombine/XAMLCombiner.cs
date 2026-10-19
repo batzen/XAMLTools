@@ -283,12 +283,19 @@ namespace XAMLTools.XAMLCombine
             // Add other resources in correct order
             while (resourcesList.Count > 0)
             {
+                string lastSeenKey = "none";
+                string lastSeenResource = "none";
+                var resourceCount = resourcesList.Count;
+
                 for (var i = 0; i < resourcesList.Count; i++)
                 {
+                    lastSeenResource = resourcesList[i].Key;
+
                     // Check used keys is in result list
                     var containsAll = true;
                     for (var j = 0; j < resourcesList[i].UsedKeys.Length; j++)
                     {
+                        lastSeenKey = resourcesList[i].UsedKeys[j];
                         if (resourceElements.ContainsKey(resourcesList[i].UsedKeys[j])
                             && finalOrderList.Contains(resourceElements[resourcesList[i].UsedKeys[j]]) == false)
                         {
@@ -309,7 +316,11 @@ namespace XAMLTools.XAMLCombine
                     }
                 }
 
-                // TODO: Limit iterations count.
+                if (resourcesList.Count == resourceCount)
+                {
+                    var remainingKeys = string.Join(", ", resourcesList.Select(resource => resource.Key));
+                    throw new InvalidOperationException($"Cannot order due to a possible circular reference in the remaining resources: {remainingKeys}. Resource '{lastSeenResource}' is blocked by dependency '{lastSeenKey}'.");
+                }
             }
 
             // WinUI / UWP

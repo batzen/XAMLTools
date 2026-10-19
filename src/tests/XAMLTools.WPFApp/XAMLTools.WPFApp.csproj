@@ -46,6 +46,9 @@
   </ItemGroup>
 
   <ItemGroup Label="Faulty">
+    <Page Remove="Themes/CircularDependencies/*.xaml" />
+    <None Include="Themes/CircularDependencies/*.xaml" />
+
     <Page Remove="Themes/DuplicateKeys/*.xaml" />
     <None Include="Themes/DuplicateKeys/*.xaml" />
 
