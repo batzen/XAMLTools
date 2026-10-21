@@ -51,6 +51,9 @@
 
     <Page Remove="Themes/DuplicateNamespaces/*.xaml" />
     <None Include="Themes/DuplicateNamespaces/*.xaml" />
+
+    <Page Remove="Themes/ExternalStyles/*.xaml" />
+    <None Include="Themes/ExternalStyles/*.xaml" />
   </ItemGroup>
 
   <Import Project="..\..\XAMLTools.MSBuild\build\XAMLTools.MSBuild.targets" />

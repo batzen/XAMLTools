@@ -1,5 +1,7 @@
 namespace XAMLTools.XAMLCombine;
 
+using System.Collections.Generic;
+
 public interface IXamlCombinerOptions
 {
     bool ImportMergedResourceDictionaryReferences { get; }
@@ -9,4 +11,6 @@ public interface IXamlCombinerOptions
     string FileHeader { get; }
 
     bool IncludeSourceFilesInFileHeader { get; }
+
+    IEnumerable<string> ExcludedNameSpaces { get; }
 }

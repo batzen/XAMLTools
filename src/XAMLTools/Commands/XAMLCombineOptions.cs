@@ -1,6 +1,7 @@
 namespace XAMLTools.Commands;
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using CommandLine;
 using JetBrains.Annotations;
@@ -30,6 +31,9 @@ public class XAMLCombineOptions : BaseOptions, IXamlCombinerOptions
     [Option("IncludeSourceFilesInFileHeader", Required = false, HelpText = "Include source files in file header")]
     public bool IncludeSourceFilesInFileHeader { get; set; } = XAMLCombiner.IncludeSourceFilesInFileHeaderDefault;
 
+    [Option("ExcludedNameSpaces", Required = false, Separator = '#', HelpText = "Hash-separated namespaces whose Style.BasedOn type references are resolved externally")]
+    public IEnumerable<string> ExcludedNameSpaces { get; set; } = Array.Empty<string>();
+
     public Task<int> Execute()
     {
         var combiner = new XAMLCombiner
@@ -38,6 +42,7 @@ public class XAMLCombineOptions : BaseOptions, IXamlCombinerOptions
             WriteFileHeader = this.WriteFileHeader,
             FileHeader = this.FileHeader,
             IncludeSourceFilesInFileHeader = this.IncludeSourceFilesInFileHeader,
+            ExcludedNameSpaces = this.ExcludedNameSpaces,
             Logger = new ConsoleLogger
             {
                 Verbose = this.Verbose

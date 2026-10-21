@@ -93,6 +93,23 @@
         }
 
         [Test]
+        public void TestExternalStyleBaseReference()
+        {
+            var currentAssemblyDir = Path.GetDirectoryName(this.GetType().Assembly.Location)!;
+            var wpfAppDirectory = Path.GetFullPath(Path.Combine(currentAssemblyDir, "../../../../src/tests/XAMLTools.WPFApp"));
+            var themeFilesDirectory = Path.GetFullPath(Path.Combine(wpfAppDirectory, "Themes/ExternalStyles"));
+            var themeFilePaths = Directory.GetFiles(themeFilesDirectory, "*.xaml", SearchOption.AllDirectories);
+
+            var xamlCombiner = new XAMLCombiner
+            {
+                ExcludedNameSpaces = new[] { "clr-namespace:System.Windows;assembly=PresentationFramework" }
+            };
+
+            Assert.That(() => xamlCombiner.Combine(themeFilePaths, this.targetFile),
+                        Throws.Nothing);
+        }
+
+        [Test]
         public void TestDuplicateNamespaces()
         {
             var currentAssemblyDir = Path.GetDirectoryName(this.GetType().Assembly.Location)!;

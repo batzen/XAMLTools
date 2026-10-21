@@ -1,6 +1,8 @@
 namespace XAMLTools.MSBuild;
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Build.Framework;
 using XAMLTools.XAMLCombine;
 
@@ -16,6 +18,8 @@ public class XAMLCombineTaskItemOptions : IXamlCombinerOptions, IEquatable<XAMLC
 
     public bool IncludeSourceFilesInFileHeader { get; init; } = XAMLCombiner.IncludeSourceFilesInFileHeaderDefault;
 
+    public IEnumerable<string> ExcludedNameSpaces { get; init; } = Array.Empty<string>();
+
     public static XAMLCombineTaskItemOptions From(ITaskItem taskItem)
     {
         var result = new XAMLCombineTaskItemOptions
@@ -25,6 +29,7 @@ public class XAMLCombineTaskItemOptions : IXamlCombinerOptions, IEquatable<XAMLC
             WriteFileHeader = GetBool(taskItem, nameof(WriteFileHeader), XAMLCombiner.WriteFileHeaderDefault),
             FileHeader = GetString(taskItem, nameof(FileHeader), XAMLCombiner.FileHeaderDefault),
             IncludeSourceFilesInFileHeader = GetBool(taskItem, nameof(IncludeSourceFilesInFileHeader), XAMLCombiner.IncludeSourceFilesInFileHeaderDefault),
+            ExcludedNameSpaces = GetStrings(taskItem, nameof(ExcludedNameSpaces)),
         };
 
         return result;
@@ -56,7 +61,8 @@ public class XAMLCombineTaskItemOptions : IXamlCombinerOptions, IEquatable<XAMLC
                && this.ImportMergedResourceDictionaryReferences == other.ImportMergedResourceDictionaryReferences
                && this.WriteFileHeader == other.WriteFileHeader
                && this.FileHeader == other.FileHeader
-               && this.IncludeSourceFilesInFileHeader == other.IncludeSourceFilesInFileHeader;
+               && this.IncludeSourceFilesInFileHeader == other.IncludeSourceFilesInFileHeader
+               && new HashSet<string>(this.ExcludedNameSpaces).SetEquals(other.ExcludedNameSpaces);
     }
 
     public override int GetHashCode()
@@ -70,6 +76,7 @@ public class XAMLCombineTaskItemOptions : IXamlCombinerOptions, IEquatable<XAMLC
             hashCode = (hashCode * 397) ^ this.WriteFileHeader.GetHashCode();
             hashCode = (hashCode * 397) ^ this.FileHeader.GetHashCode();
             hashCode = (hashCode * 397) ^ this.IncludeSourceFilesInFileHeader.GetHashCode();
+            hashCode = (hashCode * 397) ^ new HashSet<string>(this.ExcludedNameSpaces).Count;
             return hashCode;
         }
     }
@@ -82,6 +89,15 @@ public class XAMLCombineTaskItemOptions : IXamlCombinerOptions, IEquatable<XAMLC
     public static bool operator !=(XAMLCombineTaskItemOptions? left, XAMLCombineTaskItemOptions? right)
     {
         return !Equals(left, right);
+    }
+
+    private static IEnumerable<string> GetStrings(ITaskItem taskItem, string metadataName)
+    {
+        return GetString(taskItem, metadataName, string.Empty)
+            .Split(new[] { '#' }, StringSplitOptions.RemoveEmptyEntries)
+            .Select(value => value.Trim())
+            .Where(value => value.Length > 0)
+            .ToArray();
     }
 
     private static bool GetBool(ITaskItem taskItem, string metadataName, bool defaultValue)
